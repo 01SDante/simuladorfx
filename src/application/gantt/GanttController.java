@@ -1,0 +1,72 @@
+package application.gantt;
+
+import java.util.Arrays;
+
+import application.gantt.GanttChart.ExtraData;
+import application.gantt.GanttChart;
+import javafx.collections.FXCollections;
+import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+public class GanttController {
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void GanttDiagram() {
+
+		Stage stage = new Stage();
+		stage.setTitle("Gantt");
+
+		String[] machines = new String[] { "Cola n", "E/S", "CPU" };
+
+		final NumberAxis xAxis = new NumberAxis();
+		final CategoryAxis yAxis = new CategoryAxis();
+
+		final GanttChart<Number, String> chart = new GanttChart<Number, String>(xAxis, yAxis);
+		xAxis.setLabel("");
+		xAxis.setTickLabelFill(Color.CHOCOLATE);
+		xAxis.setMinorTickCount(4);
+
+		yAxis.setLabel("");
+		yAxis.setTickLabelFill(Color.CHOCOLATE);
+		yAxis.setTickLabelGap(10);
+		yAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(machines)));
+
+		chart.setTitle("Diagrama de Gantt");
+		chart.setLegendVisible(false);
+		chart.setBlockHeight(50);
+		String machine;
+
+		machine = machines[0];
+		XYChart.Series series1 = new XYChart.Series();
+//		series1.getData().add(new XYChart.Data(0, machine, new ExtraData(1, "status-green")));
+		series1.getData().add(new XYChart.Data(1, machine, new ExtraData(1, "status-green")));
+		series1.getData().add(new XYChart.Data(2, machine, new ExtraData(1, "status-red")));
+		series1.getData().add(new XYChart.Data(3, machine, new ExtraData(1, "status-yellow")));
+
+		machine = machines[1];
+		XYChart.Series series2 = new XYChart.Series();
+		series2.getData().add(new XYChart.Data(0, machine, new ExtraData(1, "status-yellow")));
+		series2.getData().add(new XYChart.Data(1, machine, new ExtraData(1, "status-red")));
+		series2.getData().add(new XYChart.Data(3, machine, new ExtraData(1, "status-blue")));
+
+		machine = machines[2];
+		XYChart.Series series3 = new XYChart.Series();
+		series3.getData().add(new XYChart.Data(0, machine, new ExtraData(1, "status-red")));
+		series3.getData().add(new XYChart.Data(1, machine, new ExtraData(2, "status-blue")));
+		series3.getData().add(new XYChart.Data(3, machine, new ExtraData(1, "status-green")));
+
+		chart.getData().addAll(series1, series2, series3);
+
+//		chart.getStylesheets().add(getClass().getResource("gantt.css").toExternalForm());
+		chart.getStylesheets().add("/application/gantt/gantt.css");
+
+		Scene scene = new Scene(chart, 620, 350);
+		stage.setScene(scene);
+		stage.show();
+	}
+
+}

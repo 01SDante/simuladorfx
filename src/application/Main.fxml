@@ -15,6 +15,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -57,7 +59,7 @@
                                        <HBox.margin>
                                           <Insets left="10.0" right="10.0" top="20.0" />
                                        </HBox.margin></Label>
-                                    <TextField alignment="CENTER">
+                                    <TextField fx:id="limiteMemoria" alignment="TOP_LEFT" onAction="#limiteMemoria">
                                        <HBox.margin>
                                           <Insets left="10.0" right="10.0" top="20.0" />
                                        </HBox.margin></TextField>
@@ -88,7 +90,7 @@
                                        <padding>
                                           <Insets left="12.0" />
                                        </padding></Label>
-                                    <ChoiceBox prefWidth="150.0">
+                                    <ChoiceBox fx:id="particiones" prefWidth="150.0">
                                        <HBox.margin>
                                           <Insets left="10.0" />
                                        </HBox.margin></ChoiceBox>
@@ -99,7 +101,7 @@
                                        <padding>
                                           <Insets left="20.0" />
                                        </padding></Label>
-                                    <ChoiceBox layoutX="175.0" layoutY="61.0" prefWidth="150.0">
+                                    <ChoiceBox fx:id="politicas" layoutX="175.0" layoutY="61.0" prefWidth="150.0">
                                        <HBox.margin>
                                           <Insets right="30.0" />
                                        </HBox.margin>
@@ -125,7 +127,7 @@
                                        <padding>
                                           <Insets left="50.0" />
                                        </padding></Label>
-                                    <ChoiceBox prefWidth="150.0">
+                                    <ChoiceBox fx:id="algoritmos" prefWidth="150.0">
                                        <HBox.margin>
                                           <Insets left="10.0" right="30.0" />
                                        </HBox.margin></ChoiceBox>
@@ -173,7 +175,7 @@
                                        <children>
                                           <CheckBox disable="true" mnemonicParsing="false" selected="true" text="Cola 1" />
                                           <Label text="Algoritmo:" />
-                                          <ChoiceBox prefWidth="150.0" />
+                                          <ChoiceBox fx:id="colaMultinivelA1" prefWidth="150.0" />
                                           <Label text="Quantum:" />
                                           <TextField />
                                        </children>
@@ -185,7 +187,7 @@
                                        <children>
                                           <CheckBox disable="true" mnemonicParsing="false" selected="true" text="Cola 2" />
                                           <Label text="Algoritmo:" />
-                                          <ChoiceBox prefWidth="150.0" />
+                                          <ChoiceBox fx:id="colaMultinivelA2" prefWidth="150.0" />
                                           <Label text="Quantum:" />
                                           <TextField />
                                        </children>
@@ -194,7 +196,7 @@
                                        <children>
                                           <CheckBox mnemonicParsing="false" text="Cola 3" />
                                           <Label text="Algoritmo:" />
-                                          <ChoiceBox prefWidth="150.0" />
+                                          <ChoiceBox fx:id="colaMultinivelA3" prefWidth="150.0" />
                                           <Label text="Quantum:" />
                                           <TextField />
                                        </children>
@@ -203,7 +205,7 @@
                                        <children>
                                           <CheckBox mnemonicParsing="false" text="Cola 4" />
                                           <Label text="Algoritmo:" />
-                                          <ChoiceBox prefWidth="150.0" />
+                                          <ChoiceBox fx:id="colaMultinivelA4" prefWidth="150.0" />
                                           <Label text="Quantum:" />
                                           <TextField />
                                        </children>
@@ -367,10 +369,44 @@
          <right>
             <VBox prefHeight="600.0" prefWidth="150.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="executeButton" mnemonicParsing="false" onAction="#execute" prefHeight="220.0" prefWidth="150.0" text="Ejecutar" />
-                  <Button fx:id="memoryMapButton" mnemonicParsing="false" onAction="#loadMemoryMap" prefHeight="220.0" prefWidth="150.0" text="Mapa de Memoria" />
-                  <Button fx:id="ganttButton" mnemonicParsing="false" onAction="#loadGantt" prefHeight="220.0" prefWidth="150.0" text="Gantt" />
-                  <Button fx:id="statisticsButton" layoutX="10.0" layoutY="393.0" mnemonicParsing="false" onAction="#loadStatistics" prefHeight="220.0" prefWidth="150.0" text="Estadísticas" />
+                  <Button fx:id="executeButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#execute" prefHeight="220.0" prefWidth="150.0" text="Ejecutar">
+                     <graphic>
+                        <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/execute-icon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                  <Button fx:id="memoryMapButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#loadMemoryMap" prefHeight="220.0" prefWidth="150.0" text="Mapa de Memoria">
+                     <graphic>
+                        <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/memory-icon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="15.0" top="5.0" />
+                     </padding></Button>
+                  <Button fx:id="ganttButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#loadGantt" prefHeight="220.0" prefWidth="150.0" text="Gantt">
+                     <graphic>
+                        <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/gantt-icon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                  <Button fx:id="statisticsButton" contentDisplay="TOP" layoutX="10.0" layoutY="393.0" mnemonicParsing="false" onAction="#loadStatistics" prefHeight="220.0" prefWidth="150.0" text="Estadísticas">
+                     <graphic>
+                        <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/statistics-icon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                </children></VBox>
          </right>
          <bottom>

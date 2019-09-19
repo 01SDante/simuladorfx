@@ -1,23 +1,67 @@
 package application;
 
+import application.gantt.GanttController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
 
 public class MainController {
+	
+	// CAMPOS
+	@FXML private TextField limiteMemoria;
+
+	// BOTONES
+	@FXML private Button executeButton;
+	@FXML private Button memoryMapButton;
+	@FXML private Button ganttButton;
+	@FXML private Button statisticsButton;
+	
+	// CHOICEBOX
+	private ObservableList<String> listaParticiones = FXCollections.observableArrayList("Fijas", "Variables");
+	@FXML private ChoiceBox<String> particiones;
+	private ObservableList<String> listaPoliticas = FXCollections.observableArrayList("First-Fit", "Best-Fit", "Worst-fit", "Base y Desplaz.");
+	@FXML private ChoiceBox<String> politicas;
+	private ObservableList<String> listaAlgoritmos = FXCollections.observableArrayList("FCFS", "Prioridades", "Round-Robin", "Colas Multinivel");
+	@FXML private ChoiceBox<String> algoritmos;
+	
+	private ObservableList<String> listaAlgoritmosCM = FXCollections.observableArrayList("FCFS", "Prioridades", "Round-Robin");
+	@FXML private ChoiceBox<String> colaMultinivelA1;
+	@FXML private ChoiceBox<String> colaMultinivelA2;
+	@FXML private ChoiceBox<String> colaMultinivelA3;
+	@FXML private ChoiceBox<String> colaMultinivelA4;
 
 	@FXML
-	private Button executeButton;
-	@FXML
-	private Button memoryMapButton;
-	@FXML
-	private Button ganttButton;
-	@FXML
-	private Button statisticsButton;
+	public void initialize() {
+
+		// CARGAMOS LOS CHOICEBOX
+		particiones.setValue("Fijas");
+		particiones.setItems(listaParticiones);
+		
+		politicas.setValue("First-Fit");
+		politicas.setItems(listaPoliticas);
+		
+		algoritmos.setValue("FCFS");
+		algoritmos.setItems(listaAlgoritmos);
+		
+		colaMultinivelA1.setValue("FCFS");
+		colaMultinivelA1.setItems(listaAlgoritmosCM);
+		colaMultinivelA2.setValue("FCFS");
+		colaMultinivelA2.setItems(listaAlgoritmosCM);
+		colaMultinivelA3.setValue("FCFS");
+		colaMultinivelA3.setItems(listaAlgoritmosCM);
+		colaMultinivelA4.setValue("FCFS");
+		colaMultinivelA4.setItems(listaAlgoritmosCM);
+	}
 
 	// METODO PARA CARGAR LAS VISTAS
 	public void loadWindow(String location, String title) {
@@ -32,6 +76,28 @@ public class MainController {
 
 		} catch (Exception e) {
 			System.out.println("Error cargando vista: '" + title + "'. ERROR: " + e.getMessage());
+		}
+	}
+	
+	// Event Listener on TextField[#limiteMemoria].onAction
+	@FXML
+	public void limiteMemoria(ActionEvent event) {
+		try {
+			int limite = Integer.parseInt(limiteMemoria.getText());
+			if (limite < 100 || limite > 1000) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error - Simulador");
+				alert.setHeaderText(null);
+				alert.setContentText("Ingresar un entero entre 100 y 1000.");
+				alert.showAndWait();
+			}
+		} catch (Exception e) {
+			System.out.println("Error en ingreso de datos en campo 'Límite Memoria'. ERROR: " + e.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Ingresar un entero.");
+			alert.showAndWait();
 		}
 	}
 
@@ -50,7 +116,8 @@ public class MainController {
 	// Event Listener on Button[#ganttButton].onAction
 	@FXML
 	public void loadGantt(ActionEvent event) {
-		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
+//		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
+		GanttController.GanttDiagram();
 	}
 
 	// Event Listener on Button[#statisticsButton].onAction
