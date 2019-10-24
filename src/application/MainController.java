@@ -3,6 +3,8 @@ package application;
 import application.gantt.GanttController;
 import application.memory_map.MemoryMapController;
 import application.statistics.StatisticsController;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,9 +16,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class MainController {
@@ -27,17 +33,18 @@ public class MainController {
 	
 	// PESTANIAS
 	@FXML private Tab particionesFijas;
-	@FXML private Tab colasMultinivel;
 	
-	// CAMPOS
-	@FXML private TextField limiteMemoria;
-	@FXML private TextField quantum;
-
 	// BOTONES
 	@FXML private Button executeButton;
 	@FXML private Button memoryMapButton;
 	@FXML private Button ganttButton;
 	@FXML private Button statisticsButton;
+
+	// CAMPOS
+	@FXML private TextField limiteMemoria;
+	@FXML private TextField porcentajeSO;
+	@FXML private TextField cantidadParticionesFijas;
+	@FXML private TextField quantum;
 	
 	// CHOICEBOX
 	private ObservableList<String> listaParticiones = FXCollections.observableArrayList("Fijas", "Variables");
@@ -50,12 +57,9 @@ public class MainController {
 	private ObservableList<String> listaAlgoritmos = FXCollections.observableArrayList("FCFS", "Prioridades", "Round-Robin", "Colas Multinivel");
 	@FXML private ChoiceBox<String> algoritmos;
 	
-	private ObservableList<String> listaAlgoritmosCM = FXCollections.observableArrayList("FCFS", "Prioridades", "Round-Robin");
-	@FXML private ChoiceBox<String> colaMultinivelA1;
-	@FXML private ChoiceBox<String> colaMultinivelA2;
-	@FXML private ChoiceBox<String> colaMultinivelA3;
-	@FXML private ChoiceBox<String> colaMultinivelA4;
-
+	// BARRA NOTIFICACIONES
+	@FXML private Label notificaciones;
+	
 	@FXML
 	public void initialize() {
 
@@ -66,15 +70,11 @@ public class MainController {
 		algoritmos.setValue("FCFS");
 		algoritmos.setItems(listaAlgoritmos);
 		
-		colaMultinivelA1.setValue("FCFS");
-		colaMultinivelA1.setItems(listaAlgoritmosCM);
-		colaMultinivelA2.setValue("FCFS");
-		colaMultinivelA2.setItems(listaAlgoritmosCM);
-		colaMultinivelA3.setValue("FCFS");
-		colaMultinivelA3.setItems(listaAlgoritmosCM);
-		colaMultinivelA4.setValue("FCFS");
-		colaMultinivelA4.setItems(listaAlgoritmosCM);
+		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PARTICIONES
+		inicializarColumnasTablaParticiones();
 		
+		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
+		inicializarColumnasTablaProcesos();
 	}
 	
 	/*
@@ -165,20 +165,10 @@ public class MainController {
 	// EVENTO CHOICEBOX ALGORITMO PESTANIA CONDICIONES INICIALES
 	@FXML
 	public void algoritmoCondicionesIniciales(ActionEvent event) {
-		switch (algoritmos.getValue()) {
-		case "Round-Robin":
+		if (algoritmos.getValue() == "Round-Robin") 
 			quantum.setDisable(false);
-			colasMultinivel.setDisable(true);
-			break;
-		case "Colas Multinivel":
+		else 
 			quantum.setDisable(true);
-			colasMultinivel.setDisable(false);
-			break;
-		default:
-			quantum.setDisable(true);
-			colasMultinivel.setDisable(true);
-			break;
-		}
 	}
 
 	/*
@@ -188,10 +178,10 @@ public class MainController {
 	
 	// RESTRICCION CAMPO LIMITE DE MEMORIA
 	@FXML
-	public void limiteMemoria(ActionEvent event) {
+	public void restriccionMemoria(ActionEvent event) {
 		try {
-			int limite = Integer.parseInt(limiteMemoria.getText().trim());
-			if (limite < 100 || limite > 1000) {
+			int limiteMemoria = Integer.parseInt(this.limiteMemoria.getText().trim());
+			if (limiteMemoria < 100 || limiteMemoria > 1000) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error - Simulador");
 				alert.setHeaderText(null);
@@ -206,6 +196,276 @@ public class MainController {
 			alert.setContentText("Ingresar un entero.");
 			alert.showAndWait();
 		}
+	}
+	
+	// RESTRICCION CAMPO PORCENTAJE SO
+	@FXML
+	public void restriccionPorcentajeSO(ActionEvent event) {
+		try {
+			int porcentajeSO = Integer.parseInt(this.porcentajeSO.getText().trim());
+			if (porcentajeSO < 1 || porcentajeSO > 50) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error - Simulador");
+				alert.setHeaderText(null);
+				alert.setContentText("Ingresar un entero entre 1 y 50.");
+				alert.showAndWait();
+			} else {
+				limiteMemoriaAux = (int) (Integer.parseInt(limiteMemoria.getText()) * ((double) (100 - porcentajeSO)) / 100.0);
+				notificaciones.setText("Memoria disponible: " + limiteMemoriaAux + " u.m.");
+			}
+		} catch (Exception e) {
+			System.out.println("Error en ingreso de datos en campo 'Porcentaje SO'. ERROR: " + e.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Ingresar un entero.");
+			alert.showAndWait();
+		}
+	}
+	
+	// RESTRICCION CAMPO CANTIDAD PARTICIONES FIJAS
+	@FXML
+	public void restriccionCantidadParticionesFijas(ActionEvent event) {
+		try {
+			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
+			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 6) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error - Simulador");
+				alert.setHeaderText(null);
+				alert.setContentText("Ingresar un entero entre 3 y 6.");
+				alert.showAndWait();
+			}
+		} catch (Exception e) {
+			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Ingresar un entero.");
+			alert.showAndWait();
+		}
+	}
+	
+	// RESTRICCION CAMPO QUANTUM
+	@FXML
+	public void restriccionQuantum(ActionEvent event) {
+		try {
+			int quantum = Integer.parseInt(this.quantum.getText().trim());
+			if (quantum < 3 || quantum > 5) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error - Simulador");
+				alert.setHeaderText(null);
+				alert.setContentText("Ingresar un entero entre 3 y 5.");
+				alert.showAndWait();
+			}
+		} catch (Exception e) {
+			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Ingresar un entero.");
+			alert.showAndWait();
+		}
+	}
+	
+	/*
+	 * -------------------------- PESTANIA PARTICIONES FIJAS --------------------------
+	 * 
+	 */
+	
+	// TABLA PARTICIONES FIJAS
+	@FXML private TableView<Particion> tablaParticion;
+	@FXML private TableColumn<Particion, Integer> idParticion;
+	@FXML private TableColumn<Particion, Integer> tamanioParticion;
+	@FXML private TableColumn<Particion, Integer> dirInicio;
+	@FXML private TableColumn<Particion, Integer> dirFin;
+	
+	private ObservableList<Particion> elementosTablaParticionesFijas = FXCollections.observableArrayList();
+	
+	// BOTONES AGREGAR/ELIMINAR PARTICION
+	@FXML private Button agregarParticion;
+	@FXML private Button eliminarParticion;
+	
+	// CAMPO TAMANIO NUEVA PARTICION
+	@FXML private TextField tamanioNuevaParticion;
+	
+	// INICIALIZAR COLUMNAS TABLA PARTICIONES
+	private void inicializarColumnasTablaParticiones() {
+		idParticion.setCellValueFactory(new PropertyValueFactory<>("id"));
+		tamanioParticion.setCellValueFactory(new PropertyValueFactory<>("tamanio"));
+		dirInicio.setCellValueFactory(new PropertyValueFactory<>("dirInicio"));
+		dirFin.setCellValueFactory(new PropertyValueFactory<>("dirFin"));
+	}
+	
+	// ID AUTO-GENERADO PARTICIONES FIJAS
+	private int idParticionFija = 0; 
+
+	// EVENTO BOTON AGREGAR NUEVA PARTICION
+	@FXML
+	public void botonAgregarParticion(ActionEvent event) {
+		try {
+			int tamanioNuevaParticion = Integer.parseInt(this.tamanioNuevaParticion.getText().trim());
+			if (tamanioNuevaParticion < 0) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error - Simulador");
+				alert.setHeaderText(null);
+				alert.setContentText("Ingresar un entero mayor a 0.");
+				alert.showAndWait();
+			} else {
+				//actualizarMemoriaDisponible();
+				
+				Particion particion = new Particion(idParticionFija, tamanioNuevaParticion, 0, 0);
+				elementosTablaParticionesFijas.add(particion);
+				tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+				notificaciones.setText("Agregada partición: " + idParticionFija + ". Memoria restante: ");
+				idParticionFija++;
+			}
+		} catch (Exception e) {
+			System.out.println("Error en ingreso de datos en campo 'Tamaño Partición'. ERROR: " + e.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Ingresar un entero.");
+			alert.showAndWait();
+		}
+	}
+	
+	private int limiteMemoriaAux;
+//	private int cantidadParticionesFijasAux;
+//	private static void actualizarMemoriaDisponible() {
+//		cantidadParticionesFijasAux--;
+//	};
+	
+	// CLASE INTERNA PARTICION
+	public static class Particion {
+		
+		private final SimpleIntegerProperty id;
+		private final SimpleIntegerProperty tamanio;
+		private final SimpleIntegerProperty dirInicio;
+		private final SimpleIntegerProperty dirFin;
+		
+		public Particion(int id, int tamanio, int dirInicio, int dirFin) {
+			this.id = new SimpleIntegerProperty(id);
+			this.tamanio = new SimpleIntegerProperty(tamanio);
+			this.dirInicio = new SimpleIntegerProperty(dirInicio);
+			this.dirFin = new SimpleIntegerProperty(dirFin);
+		}
+
+		public int getId() {
+			return id.get();
+		}
+
+		public int getTamanio() {
+			return tamanio.get();
+		}
+
+		public int getDirInicio() {
+			return dirInicio.get();
+		}
+
+		public int getDirFin() {
+			return dirFin.get();
+		}
+		
+	}
+	
+	/*
+	 * ------------------------------ PESTANIA PROCESOS ------------------------------
+	 * 
+	 */
+	
+	// TABLA PROCESOS
+	@FXML private TableView<Proceso> tablaProceso;
+	@FXML private TableColumn<Proceso, Integer> idProceso;
+	@FXML private TableColumn<Proceso, Integer> tamanioProceso;
+	@FXML private TableColumn<Proceso, Integer> prioridadProceso;
+	@FXML private TableColumn<Proceso, Integer> cpuProceso;
+	@FXML private TableColumn<Proceso, Integer> esProceso;
+	@FXML private TableColumn<Proceso, Integer> tArriboProceso;
+	
+	private ObservableList<Proceso> elementosTablaProcesos = FXCollections.observableArrayList();
+	
+	// BOTONES AGREGAR/ELIMINAR PROCESO
+	@FXML private Button agregarProceso;
+	@FXML private Button eliminarProceso;
+		
+	// CAMPOS NUEVO PROCESO
+	@FXML private TextField tamanioNuevoProceso;
+	@FXML private TextField prioridadNuevoProceso;
+	@FXML private TextField cpuNuevoProceso;
+	@FXML private TextField esNuevoProceso;
+	@FXML private TextField tArriboNuevoProceso;
+	
+	// INICIALIZAR COLUMNAS TABLA PROCESOS
+	private void inicializarColumnasTablaProcesos() {
+		idProceso.setCellValueFactory(new PropertyValueFactory<>("id"));
+		tamanioProceso.setCellValueFactory(new PropertyValueFactory<>("tamanio"));
+		prioridadProceso.setCellValueFactory(new PropertyValueFactory<>("prioridad"));
+		cpuProceso.setCellValueFactory(new PropertyValueFactory<>("cpu"));
+		esProceso.setCellValueFactory(new PropertyValueFactory<>("es"));
+		tArriboProceso.setCellValueFactory(new PropertyValueFactory<>("tArribo"));
+	}
+	
+	// ID AUTO-GENERADO PARTICIONES FIJAS
+	private int idProcesoNuevo = 0;
+	
+	// EVENTO BOTN AGREGAR NUEVO PROCESO
+	@FXML public void botonAgregarProceso(ActionEvent event) {
+		int tamanioNuevoProceso = Integer.parseInt(this.tamanioNuevoProceso.getText().trim());
+		int prioridadNuevoProceso = Integer.parseInt(this.prioridadNuevoProceso.getText().trim());
+		int cpuNuevoProceso = Integer.parseInt(this.cpuNuevoProceso.getText().trim());
+		int esNuevoProceso = Integer.parseInt(this.esNuevoProceso.getText().trim());
+		int tArriboNuevoProceso = Integer.parseInt(this.tArriboNuevoProceso.getText().trim());
+		
+		Proceso proceso = new Proceso(idProcesoNuevo, tamanioNuevoProceso, prioridadNuevoProceso, cpuNuevoProceso, esNuevoProceso, tArriboNuevoProceso);
+		elementosTablaProcesos.add(proceso);
+		tablaProceso.getItems().setAll(elementosTablaProcesos);
+		notificaciones.setText("Agregada proceso: " + idProcesoNuevo);
+		idProcesoNuevo++;
+	}
+	
+	// CLASE INTERNA PROCESO
+	public static class Proceso {
+		
+		private final SimpleIntegerProperty id;
+		private final SimpleIntegerProperty tamanio;
+		private final SimpleIntegerProperty prioridad;
+		private final SimpleIntegerProperty cpu;
+		private final SimpleIntegerProperty es;
+		private final SimpleIntegerProperty tArribo;
+
+		public Proceso(int id, int tamanio, int prioridad, int cpu, int es, int tArribo) {
+			this.id = new SimpleIntegerProperty(id);
+			this.tamanio = new SimpleIntegerProperty(tamanio);
+			this.prioridad = new SimpleIntegerProperty(prioridad);
+			this.cpu = new SimpleIntegerProperty(cpu);
+			this.es = new SimpleIntegerProperty(es);
+			this.tArribo = new SimpleIntegerProperty(tArribo);
+		}
+
+		public int getId() {
+			return id.get();
+		}
+
+		public int getTamanio() {
+			return tamanio.get();
+		}
+
+		public int getPrioridad() {
+			return prioridad.get();
+		}
+
+		public int getCpu() {
+			return cpu.get();
+		}
+
+		public int getEs() {
+			return es.get();
+		}
+
+		public int gettArribo() {
+			return tArribo.get();
+		}
+		
 	}
 	
 }
