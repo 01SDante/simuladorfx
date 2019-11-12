@@ -113,6 +113,18 @@ public class MainController {
 
 		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
 		inicializarColumnasTablaProcesos();
+		
+		// Cargamos las tablas cond datos de prueba
+//		elementosTablaParticionesFijas.add(new Particion(1, 120, 0, 0));
+//		elementosTablaParticionesFijas.add(new Particion(2, 200, 0, 0));
+//		elementosTablaParticionesFijas.add(new Particion(3, 80, 0, 0));
+//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+//		
+//		elementosTablaProcesos.add(new Proceso(1, 100, 3, 2, 0));
+//		elementosTablaProcesos.add(new Proceso(2, 150, 4, 1, 2));
+//		elementosTablaProcesos.add(new Proceso(3, 90, 3, 2, 5));
+//		elementosTablaProcesos.add(new Proceso(4, 75, 2, 3, 6));
+//		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
 	/*
