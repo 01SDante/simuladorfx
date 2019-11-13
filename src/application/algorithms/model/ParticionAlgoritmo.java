@@ -13,6 +13,13 @@ public class ParticionAlgoritmo {
 		this.libre = estado;
 	}
 
+	public ParticionAlgoritmo(int id, int tamanio, int proceso, boolean libre) {
+		this.id = id;
+		this.tamanio = tamanio;
+		this.proceso = proceso;
+		this.libre = libre;
+	}
+
 	public int getId() {
 		return id;
 	}

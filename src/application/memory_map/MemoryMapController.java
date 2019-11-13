@@ -1,5 +1,8 @@
 package application.memory_map;
 
+import java.util.ArrayList;
+
+import application.algorithms.model.ParticionAlgoritmo;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,6 +12,76 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MemoryMapController {
+
+	public static void MapaMemoriaFCFS(ArrayList<ArrayList<ParticionAlgoritmo>> particiones) {
+
+		HBox hbox = new HBox();
+
+		for (int i = 0; i < particiones.size(); i++) {
+
+			Canvas canvas = new Canvas(200, 800);
+			GraphicsContext gc = canvas.getGraphicsContext2D();
+
+			int yRectangulo = 100; // Corner izquierdo eje y del rectangulo
+			int yTexto = 120; // Posicion eje y texto
+
+			gc.setFill(Color.BLUE);
+			gc.fillRect(50, 45, 150, 50);
+
+			gc.setStroke(Color.BLACK);
+			gc.strokeText("T = " + i, 110, 30);
+
+			gc.setStroke(Color.WHITE);
+			gc.strokeText("SO : 100 u.m.", 60, 75);
+
+			for (int j = 0; j < particiones.get(i).size(); j++) {
+				
+				ParticionAlgoritmo p = particiones.get(i).get(j);
+
+				if (p.getLibre()) {
+					gc.setFill(Color.GREEN);
+					gc.fillRect(50, yRectangulo, 150, 100);
+
+					gc.strokeText("Partición: " + p.getId(), 60, yTexto);
+					yTexto += 20;
+					gc.strokeText("Tamaño: " + p.getTamanio() + " u.m.", 60, yTexto);
+					yTexto += 20;
+					gc.strokeText("Proceso: - ", 60, yTexto);
+					yTexto += 20;
+					gc.strokeText("Estado: Libre", 60, yTexto);
+
+				} else {
+					gc.setFill(Color.RED);
+					gc.fillRect(50, yRectangulo, 150, 100);
+					
+					gc.strokeText("Partición: " + p.getId(), 60, yTexto);
+					yTexto += 20;
+					gc.strokeText("Tamaño: " + p.getTamanio() + " u.m.", 60, yTexto);
+					yTexto += 20;
+					gc.strokeText("Proceso: " + p.getProceso(), 60, yTexto);
+					yTexto += 20;
+					gc.strokeText("Estado: Ocupado", 60, yTexto);
+				}
+
+				yRectangulo += 105;
+				yTexto += 45;
+
+			}
+
+			hbox.getChildren().add(canvas);
+
+		}
+
+		ScrollPane sp = new ScrollPane(hbox);
+
+		Scene scene = new Scene(sp, 600, 400, new Color(0.8, 0.8, 0.8, 0.2));
+
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setTitle("Mapa de Memoria");
+		stage.show();
+
+	}
 
 	public static void MemoryMap() {
 
@@ -137,7 +210,7 @@ public class MemoryMapController {
 		ScrollPane sp = new ScrollPane(hbox);
 
 		Scene scene = new Scene(sp, 600, 400, color);
-		
+
 		Stage stage = new Stage();
 		stage.setScene(scene);
 		stage.setTitle("Mapa de Memoria");

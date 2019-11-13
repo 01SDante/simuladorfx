@@ -28,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import application.algorithms.model.ParticionAlgoritmo;
 import application.algorithms.model.ProcesoAlgoritmo;
 
 public class MainController {
@@ -89,8 +90,6 @@ public class MainController {
 	private int mayorTamanio = 0; // Tamanio mayor particion
 
 	private int idProcesoNuevo = 1; // ID auto-generado procesos
-	
-	private ArrayList<ProcesoAlgoritmo> ganttCPU = new ArrayList<ProcesoAlgoritmo>();
 
 	@FXML
 	public void initialize() {
@@ -119,13 +118,13 @@ public class MainController {
 
 		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
 		inicializarColumnasTablaProcesos();
-		
+
 		// Cargamos las tablas cond datos de prueba
 //		elementosTablaParticionesFijas.add(new Particion(1, 120, 0, 0));
 //		elementosTablaParticionesFijas.add(new Particion(2, 200, 0, 0));
 //		elementosTablaParticionesFijas.add(new Particion(3, 80, 0, 0));
 //		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-//		
+//
 //		elementosTablaProcesos.add(new Proceso(1, 100, 3, 2, 0));
 //		elementosTablaProcesos.add(new Proceso(2, 150, 4, 1, 2));
 //		elementosTablaProcesos.add(new Proceso(3, 90, 3, 2, 5));
@@ -184,15 +183,16 @@ public class MainController {
 	@FXML
 	public void loadMemoryMap(ActionEvent event) {
 //		loadWindow("/application/memory_map/MemoryMap.fxml", "Mapa de memoria");
-		MemoryMapController.MemoryMap();
+//		MemoryMapController.MemoryMap();
+		MemoryMapController.MapaMemoriaFCFS(FCFS.FCFSMapaMemoria());
 	}
 
 	// EVENTO BOTON GANTT
 	@FXML
 	public void loadGantt(ActionEvent event) {
 //		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
-		ganttCPU = FCFS.FCFSGantt();
-		GanttController.GanttFCFS(ganttCPU);
+//		ganttCPU = FCFS.FCFSGantt();
+		GanttController.GanttFCFS(FCFS.FCFSGantt());
 	}
 
 	// EVENTO BOTON ESTADISTICAS

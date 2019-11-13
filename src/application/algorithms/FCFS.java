@@ -13,7 +13,9 @@ import javafx.collections.ObservableList;
 public class FCFS {
 
 	public static ArrayList<ProcesoAlgoritmo> ganttCpu;
-
+	
+	public static ArrayList<ArrayList<ParticionAlgoritmo>> mapaMemoria;
+	
 	/*
 	 * Devuelve la lista de procesos para armar el Gantt
 	 */
@@ -21,18 +23,32 @@ public class FCFS {
 		return ganttCpu;
 	}
 
+	/*
+	 * Devuelve el estado de las particiones para armar el mapa
+	 */
+	public static ArrayList<ArrayList<ParticionAlgoritmo>> FCFSMapaMemoria(){
+		return mapaMemoria;
+	}
+
+	/*
+	 * EJECUTAR
+	 * 
+	 */
 	public static void ejecutar(ObservableList<Particion> tablaParticiones, ObservableList<Proceso> tablaProcesos) {
 
 		System.out.println("FCFS - Particiones Fijas - FirstFit\n");
 
-		List<ParticionAlgoritmo> particiones = new ArrayList<ParticionAlgoritmo>();
-		List<ProcesoAlgoritmo> procesos = new ArrayList<ProcesoAlgoritmo>();
-		List<ProcesoAlgoritmo> nuevos = new ArrayList<ProcesoAlgoritmo>();
-		List<ProcesoAlgoritmo> listos = new ArrayList<ProcesoAlgoritmo>();
-		List<ProcesoAlgoritmo> ejecutandoCpu1 = new ArrayList<ProcesoAlgoritmo>();
+		ArrayList<ParticionAlgoritmo> particiones = new ArrayList<ParticionAlgoritmo>();
+		ArrayList<ProcesoAlgoritmo> procesos = new ArrayList<ProcesoAlgoritmo>();
+		ArrayList<ProcesoAlgoritmo> nuevos = new ArrayList<ProcesoAlgoritmo>();
+		ArrayList<ProcesoAlgoritmo> listos = new ArrayList<ProcesoAlgoritmo>();
+		ArrayList<ProcesoAlgoritmo> ejecutandoCpu1 = new ArrayList<ProcesoAlgoritmo>();
 
 		// Inicializamos GanttCPU
 		ganttCpu = new ArrayList<ProcesoAlgoritmo>();
+
+		// Inicializamos mapaMemoria
+		mapaMemoria = new ArrayList<ArrayList<ParticionAlgoritmo>>();
 
 		// CARGAMOS LAS LISTAS PARTICIONES Y PROCESOS
 		for (Particion p : tablaParticiones) {
@@ -49,20 +65,20 @@ public class FCFS {
 		}
 
 		// Imprimimos
-		System.out.println("Particiones:");
-		imprimirParticiones(particiones);
-		System.out.println("Procesos:");
-		imprimirProcesos(procesos);
-
-		System.out.println("**********************************************************");
+//		System.out.println("Particiones:");
+//		imprimirParticiones(particiones);
+//		System.out.println("Procesos:");
+//		imprimirProcesos(procesos);
+//
+//		System.out.println("**********************************************************");
 
 		int t = 0; // Reloj
 		boolean ejecutado = false;
 
 		while (t <= tIrrupcion) {
 
-			System.out.println("Estado particiones en t=" + t + ":");
-			imprimirParticiones(particiones);
+//			System.out.println("Estado particiones en t=" + t + ":");
+//			imprimirParticiones(particiones);
 
 			/*
 			 * COLA DE NUEVOS
@@ -72,14 +88,14 @@ public class FCFS {
 				if (p.getTArribo() == t)
 					nuevos.add(p);
 			}
-			System.out.println("COLA NUEVOS");
-			System.out.println("--------------------");
-			System.out.println("Cola Nuevos en t=" + t + ": ");
-			imprimirProcesos(nuevos);
-			System.out.println("Cola Listos en t=" + t + ":");
-			imprimirProcesos(listos);
-			System.out.println("Cola ejecutando CPU1 en t=" + t + ":");
-			imprimirProcesos(ejecutandoCpu1);
+//			System.out.println("COLA NUEVOS");
+//			System.out.println("--------------------");
+//			System.out.println("Cola Nuevos en t=" + t + ": ");
+//			imprimirProcesos(nuevos);
+//			System.out.println("Cola Listos en t=" + t + ":");
+//			imprimirProcesos(listos);
+//			System.out.println("Cola ejecutando CPU1 en t=" + t + ":");
+//			imprimirProcesos(ejecutandoCpu1);
 
 			/*
 			 * SI HAY QUE EJECUTAR, EJECUTO ANTES PARA LIBERAR UNA POSIBLE PARTICION
@@ -135,14 +151,15 @@ public class FCFS {
 					}
 				}
 			}
-			System.out.println("COLA LISTOS");
-			System.out.println("--------------------");
-			System.out.println("Cola Nuevos en t=" + t + ": ");
-			imprimirProcesos(nuevos);
-			System.out.println("Cola Listos en t=" + t + ":");
-			imprimirProcesos(listos);
-			System.out.println("Cola ejecutando CPU1 en t=" + t + ":");
-			imprimirProcesos(ejecutandoCpu1);
+			
+//			System.out.println("COLA LISTOS");
+//			System.out.println("--------------------");
+//			System.out.println("Cola Nuevos en t=" + t + ": ");
+//			imprimirProcesos(nuevos);
+//			System.out.println("Cola Listos en t=" + t + ":");
+//			imprimirProcesos(listos);
+//			System.out.println("Cola ejecutando CPU1 en t=" + t + ":");
+//			imprimirProcesos(ejecutandoCpu1);
 
 			/*
 			 * COLA EJECUTANDO CPU1
@@ -189,24 +206,34 @@ public class FCFS {
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
 			}
-
-			System.out.println("PROCESOS EJECUTANDO");
-			System.out.println("--------------------");
-			System.out.println("Cola Nuevos en t=" + t + ": ");
-			imprimirProcesos(nuevos);
-			System.out.println("Cola Listos en t=" + t + ":");
-			imprimirProcesos(listos);
-			System.out.println("Cola ejecutando CPU1 en t=" + t + ":");
-			imprimirProcesos(ejecutandoCpu1);
-			System.out.println("Estado particiones en t=" + t + ":");
-			imprimirParticiones(particiones);
+			
+			/*
+			 * GUARDO EL ESTADO DE LAS PARTICIONES
+			 * 
+			 */
+			mapaMemoria.add(t, new ArrayList<ParticionAlgoritmo>());
+			for (ParticionAlgoritmo p: particiones) {
+				ParticionAlgoritmo particion = new ParticionAlgoritmo(p.getId(), p.getTamanio(), p.getProceso(), p.getLibre());
+				mapaMemoria.get(t).add(particion);
+			}
+			
+//			System.out.println("PROCESOS EJECUTANDO");
+//			System.out.println("--------------------");
+//			System.out.println("Cola Nuevos en t=" + t + ": ");
+//			imprimirProcesos(nuevos);
+//			System.out.println("Cola Listos en t=" + t + ":");
+//			imprimirProcesos(listos);
+//			System.out.println("Cola ejecutando CPU1 en t=" + t + ":");
+//			imprimirProcesos(ejecutandoCpu1);
+//			System.out.println("Estado particiones en t=" + t + ":");
+//			imprimirParticiones(particiones);
 
 			ejecutado = false;
 			t++;
-			System.out.println("**********************************************************");
+//			System.out.println("**********************************************************");
 
-		}
-
+		} // Fin while
+		
 	} // FIN FCFS
 
 	/*
