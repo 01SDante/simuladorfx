@@ -2,14 +2,38 @@
     -fx-background-color:rgba(224,0,0,0.75);
 }
 
+.status-orange {
+	-fx-background-color:rgba(255,165,0,0.7);
+}
+
+.status-yellow {
+    -fx-background-color:rgba(240,250,40,0.7);
+}
+
 .status-green {
     -fx-background-color:rgba(0,128,0,0.7);
+}
+
+.status-cyan {
+    -fx-background-color:rgba(0,255,255,0.7);
 }
 
 .status-blue {
     -fx-background-color:rgba(0,0,128,0.7);
 }
 
-.status-yellow {
-    -fx-background-color:rgba(240,250,40,0.7);
+.status-magenta {
+    -fx-background-color:rgba(255,0,255,0.7);
+}
+
+.status-silver {
+    -fx-background-color:rgba(192,192,192,0.7);
+}
+
+.status-saddlebrown {
+    -fx-background-color:rgba(139,69,19,0.7);
+}
+
+.status-teal {
+    -fx-background-color:rgba(0,128,128,0.7);
 }

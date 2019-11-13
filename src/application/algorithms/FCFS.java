@@ -1,6 +1,7 @@
 package application.algorithms;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import application.algorithms.model.ParticionAlgoritmo;
@@ -11,6 +12,15 @@ import javafx.collections.ObservableList;
 
 public class FCFS {
 
+	public static ArrayList<ProcesoAlgoritmo> ganttCpu;
+
+	/*
+	 * Devuelve la lista de procesos para armar el Gantt
+	 */
+	public static ArrayList<ProcesoAlgoritmo> FCFSGantt() {
+		return ganttCpu;
+	}
+
 	public static void ejecutar(ObservableList<Particion> tablaParticiones, ObservableList<Proceso> tablaProcesos) {
 
 		System.out.println("FCFS - Particiones Fijas - FirstFit\n");
@@ -20,6 +30,9 @@ public class FCFS {
 		List<ProcesoAlgoritmo> nuevos = new ArrayList<ProcesoAlgoritmo>();
 		List<ProcesoAlgoritmo> listos = new ArrayList<ProcesoAlgoritmo>();
 		List<ProcesoAlgoritmo> ejecutandoCpu1 = new ArrayList<ProcesoAlgoritmo>();
+
+		// Inicializamos GanttCPU
+		ganttCpu = new ArrayList<ProcesoAlgoritmo>();
 
 		// CARGAMOS LAS LISTAS PARTICIONES Y PROCESOS
 		for (Particion p : tablaParticiones) {
@@ -88,6 +101,15 @@ public class FCFS {
 					}
 					// Luego saco el proceso
 					ejecutandoCpu1.remove(0);
+					/*
+					 * Actualizo la cola GanttCPU
+					 * 
+					 */
+					int procesoGantt = procesos.indexOf(procesoActual);
+					Proceso proceso = tablaProcesos.get(procesoGantt);
+					ProcesoAlgoritmo terminado = new ProcesoAlgoritmo(proceso.getId(), proceso.getTamanio(),
+							proceso.getCpu(), proceso.getEs(), proceso.getCpu(), proceso.getTArribo());
+					ganttCpu.add(terminado);
 				} else {
 					// Si no termino actualizo el valor de CPU1
 					procesoActual.setCpu1(cpu);
@@ -108,7 +130,7 @@ public class FCFS {
 						particion.setProceso(pNuevo.getId());
 						particion.setLibre(false);
 						nuevos.remove(i);
-						i--;
+						i--;// Para evitar ConcurrentModificationException
 						break;
 					}
 				}
@@ -143,6 +165,15 @@ public class FCFS {
 					}
 					// Luego saco el proceso
 					ejecutandoCpu1.remove(0);
+					/*
+					 * Actualizo la cola GanttCPU
+					 * 
+					 */
+					int procesoGantt = procesos.indexOf(procesoActual);
+					Proceso proceso = tablaProcesos.get(procesoGantt);
+					ProcesoAlgoritmo terminado = new ProcesoAlgoritmo(proceso.getId(), proceso.getTamanio(),
+							proceso.getCpu(), proceso.getEs(), proceso.getCpu(), proceso.getTArribo());
+					ganttCpu.add(terminado);
 				} else {
 					// Si no termino actualizo el valor de CPU1
 					procesoActual.setCpu1(cpu);
@@ -156,7 +187,7 @@ public class FCFS {
 				ProcesoAlgoritmo pListo = listos.get(i);
 				ejecutandoCpu1.add(pListo);
 				listos.remove(i);
-				i--;
+				i--; // Para evitar ConcurrentModificationException
 			}
 
 			System.out.println("PROCESOS EJECUTANDO");
@@ -169,7 +200,7 @@ public class FCFS {
 			imprimirProcesos(ejecutandoCpu1);
 			System.out.println("Estado particiones en t=" + t + ":");
 			imprimirParticiones(particiones);
-			
+
 			ejecutado = false;
 			t++;
 			System.out.println("**********************************************************");

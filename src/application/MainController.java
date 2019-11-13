@@ -1,5 +1,8 @@
 package application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import application.algorithms.FCFS;
 import application.gantt.GanttController;
 import application.memory_map.MemoryMapController;
@@ -25,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import application.algorithms.model.ProcesoAlgoritmo;
 
 public class MainController {
 
@@ -85,6 +89,8 @@ public class MainController {
 	private int mayorTamanio = 0; // Tamanio mayor particion
 
 	private int idProcesoNuevo = 1; // ID auto-generado procesos
+	
+	private ArrayList<ProcesoAlgoritmo> ganttCPU = new ArrayList<ProcesoAlgoritmo>();
 
 	@FXML
 	public void initialize() {
@@ -185,7 +191,8 @@ public class MainController {
 	@FXML
 	public void loadGantt(ActionEvent event) {
 //		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
-		GanttController.GanttDiagram();
+		ganttCPU = FCFS.FCFSGantt();
+		GanttController.GanttFCFS(ganttCPU);
 	}
 
 	// EVENTO BOTON ESTADISTICAS
@@ -257,8 +264,8 @@ public class MainController {
 	public void restriccionCantidadParticionesFijas(ActionEvent event) {
 		try {
 			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
-			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 6) {
-				alerta("Ingresar un entero entre 3 y 6.");
+			if (cantidadParticionesFijas < 1 || cantidadParticionesFijas > 6) {
+				alerta("Ingresar un entero entre 1 y 6.");
 			}
 		} catch (Exception e) {
 			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
@@ -335,8 +342,8 @@ public class MainController {
 		// RESTRICCION CANTIDAD PARTICIONES
 		try {
 			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
-			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 6) {
-				alerta("Ingresar un entero entre 3 y 6 para el campo 'Cantidad'.");
+			if (cantidadParticionesFijas < 1 || cantidadParticionesFijas > 6) {
+				alerta("Ingresar un entero entre 1 y 6 para el campo 'Cantidad'.");
 				return;
 			}
 		} catch (Exception e) {
