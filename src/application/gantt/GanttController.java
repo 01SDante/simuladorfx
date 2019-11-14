@@ -129,10 +129,10 @@ public class GanttController {
 
 		machine = machines[0];
 		XYChart.Series series1 = new XYChart.Series();
-//		series1.getData().add(new XYChart.Data(0, machine, new ExtraData(1, "status-green")));
+		series1.getData().add(new XYChart.Data(0, machine, new ExtraData(1, "status-green")));
 		series1.getData().add(new XYChart.Data(1, machine, new ExtraData(1, "status-green")));
 		series1.getData().add(new XYChart.Data(2, machine, new ExtraData(1, "status-red")));
-		series1.getData().add(new XYChart.Data(3, machine, new ExtraData(1, "status-yellow")));
+//		series1.getData().add(new XYChart.Data(3, machine, new ExtraData(1, "status-yellow")));
 
 		machine = machines[1];
 		XYChart.Series series2 = new XYChart.Series();

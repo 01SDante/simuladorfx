@@ -1,8 +1,5 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import application.algorithms.FCFS;
 import application.gantt.GanttController;
 import application.memory_map.MemoryMapController;
@@ -28,16 +25,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import application.algorithms.model.ParticionAlgoritmo;
-import application.algorithms.model.ProcesoAlgoritmo;
 
 public class MainController {
 
 	// MENU
 	@FXML
+	private MenuItem menuItemNuevo;
+	@FXML
 	private MenuItem menuItemAbrir;
 	@FXML
 	private MenuItem menuItemGuardar;
+	@FXML
+	private MenuItem menuItemSalir;
 
 	// PESTANIAS
 	@FXML
@@ -137,6 +136,33 @@ public class MainController {
 	 * 
 	 */
 
+	// EVENTO MENU NUEVO
+	@FXML
+	public void menuItemNuevo(ActionEvent event) {
+		
+		// LIMPIO LAS TABLAS
+		elementosTablaParticionesFijas.clear();
+		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+		elementosTablaProcesos.clear();
+		tablaProceso.getItems().setAll(elementosTablaProcesos);
+
+		// HABILITO Y REINICIO LOS CAMPOS MEMORIA RAM Y CANTIDAD
+		limiteMemoria.setDisable(false);
+		limiteMemoria.setText(null);
+
+		cantidadParticionesFijas.setDisable(false);
+		cantidadParticionesFijas.setText(null);
+		
+		// REINICIO LOS IDs
+		idParticionFija = 1;
+		idProcesoNuevo = 1;
+		
+		mayorTamanio = 0;
+		
+		
+		notificaciones.setText("Nuevo");
+	}
+		
 	// EVENTO MENU ABRIR -> VENTANA ABRIR ARCHIVO
 	@FXML
 	public void menuItemAbrir(ActionEvent event) {
@@ -147,6 +173,12 @@ public class MainController {
 	@FXML
 	public void menuItemGuardar(ActionEvent event) {
 		loadWindow("/application/save_load/Save.fxml", "Guardar archivo");
+	}
+	
+	// EVENTO MENU SALIR
+	@FXML
+	public void menuItemSalir(ActionEvent event) {
+		System.exit(0);
 	}
 
 	/*
@@ -191,6 +223,7 @@ public class MainController {
 	@FXML
 	public void loadGantt(ActionEvent event) {
 //		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
+//		GanttController.GanttDiagram();
 //		ganttCPU = FCFS.FCFSGantt();
 		GanttController.GanttFCFS(FCFS.FCFSGantt());
 	}

@@ -29,11 +29,11 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Archivo">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Nuevo" />
+                    <MenuItem fx:id="menuItemNuevo" mnemonicParsing="false" onAction="#menuItemNuevo" text="Nuevo" />
                         <MenuItem fx:id="menuItemAbrir" mnemonicParsing="false" onAction="#menuItemAbrir" text="Abrir..." />
                         <MenuItem fx:id="menuItemGuardar" mnemonicParsing="false" onAction="#menuItemGuardar" text="Guardar" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Salir" />
+                        <MenuItem fx:id="menuItemSalir" mnemonicParsing="false" onAction="#menuItemSalir" text="Salir" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Ayuda">

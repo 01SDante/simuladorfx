@@ -2,6 +2,7 @@ package application.algorithms;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import application.algorithms.model.ParticionAlgoritmo;
@@ -63,7 +64,7 @@ public class FCFS {
 			procesos.add(pa);
 			tIrrupcion += pa.getCpu1();
 		}
-
+		
 		// Imprimimos
 //		System.out.println("Particiones:");
 //		imprimirParticiones(particiones);
@@ -88,6 +89,7 @@ public class FCFS {
 				if (p.getTArribo() == t)
 					nuevos.add(p);
 			}
+			
 //			System.out.println("COLA NUEVOS");
 //			System.out.println("--------------------");
 //			System.out.println("Cola Nuevos en t=" + t + ": ");
