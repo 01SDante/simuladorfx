@@ -1,10 +1,11 @@
 package application.gantt;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import application.algorithms.model.ProcesoAlgoritmo;
 import application.gantt.GanttChart.ExtraData;
+import application.model.Proceso;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,7 +27,7 @@ public class GanttController {
 	public static String[] coloresLeyenda = { "", "red", "orange", "yellow", "green", "cyan", "blue", "magenta",
 			"silver", "saddlebrown", "teal" };
 
-	public static void GanttFCFS(ArrayList<ProcesoAlgoritmo> ganttCPU) {
+	public static void GanttFCFS(HashMap<Integer, Proceso> ganttCpuHM) {
 
 		Stage stage = new Stage();
 		stage.setTitle("Gantt");
@@ -61,24 +62,27 @@ public class GanttController {
 		HBox leyenda = new HBox();
 		leyenda.setAlignment(Pos.CENTER);
 
-		int inicio = 0;
-		int indiceColor = 1;
 
-		// Inicio, CPU, Cantidad, Color
-		for (ProcesoAlgoritmo p : ganttCPU) {
-			series1.getData().add(new XYChart.Data(inicio, machine, new ExtraData(p.getCpu1(), colores[indiceColor])));
-			inicio += p.getCpu1();
+		
+		for (Map.Entry<Integer, Proceso> entry: ganttCpuHM.entrySet()) {
+			
+			int t = entry.getKey();
+			Proceso p = entry.getValue();
+			
+			// Inicio, CPU, Cantidad, Color
+			series1.getData().add(new XYChart.Data(t, machine, new ExtraData(p.getCpu1(), colores[p.getId()])));
+			
 			/*
 			 * Armo la leyenda
+			 * 
 			 */
 			Label label = new Label("   " + p.getId() + "   ");
-			label.setStyle("-fx-background-color: " + coloresLeyenda[indiceColor]
+			label.setStyle("-fx-background-color: " + coloresLeyenda[p.getId()]
 					+ "; -fx-text-fill: white; -fx-font-weight: bold;");
 			leyenda.getChildren().add(label);
-
-			indiceColor++;
+			
 		}
-
+		
 		/*
 		 * 
 		 */

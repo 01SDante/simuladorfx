@@ -1,35 +1,55 @@
 package application.model;
 
-import javafx.beans.property.SimpleIntegerProperty;
-
 public class Particion {
 
-	private SimpleIntegerProperty id;
-	private SimpleIntegerProperty tamanio;
-	private SimpleIntegerProperty dirInicio;
-	private SimpleIntegerProperty dirFin;
+	int id;
+	int tamanio;
+	int proceso;
+	boolean libre;
 
-	public Particion(int id, int tamanio, int dirInicio, int dirFin) {
-		this.id = new SimpleIntegerProperty(id);
-		this.tamanio = new SimpleIntegerProperty(tamanio);
-		this.dirInicio = new SimpleIntegerProperty(dirInicio);
-		this.dirFin = new SimpleIntegerProperty(dirFin);
+	public Particion(int id, int tamanio, boolean estado) {
+		this.id = id;
+		this.tamanio = tamanio;
+		this.libre = estado;
+	}
+
+	public Particion(int id, int tamanio, int proceso, boolean libre) {
+		this.id = id;
+		this.tamanio = tamanio;
+		this.proceso = proceso;
+		this.libre = libre;
 	}
 
 	public int getId() {
-		return id.get();
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getTamanio() {
-		return tamanio.get();
+		return tamanio;
 	}
 
-	public int getDirInicio() {
-		return dirInicio.get();
+	public void setTamanio(int tamanio) {
+		this.tamanio = tamanio;
 	}
 
-	public int getDirFin() {
-		return dirFin.get();
+	public int getProceso() {
+		return proceso;
+	}
+
+	public void setProceso(int proceso) {
+		this.proceso = proceso;
+	}
+
+	public boolean getLibre() {
+		return libre;
+	}
+
+	public void setLibre(boolean estado) {
+		this.libre = estado;
 	}
 
 }

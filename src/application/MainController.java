@@ -3,8 +3,8 @@ package application;
 import application.algorithms.FCFS;
 import application.gantt.GanttController;
 import application.memory_map.MemoryMapController;
-import application.model.Particion;
-import application.model.Proceso;
+import application.model.ElementoTablaParticion;
+import application.model.ElementoTablaProceso;
 import application.statistics.StatisticsController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -119,15 +119,15 @@ public class MainController {
 		inicializarColumnasTablaProcesos();
 
 		// Cargamos las tablas cond datos de prueba
-//		elementosTablaParticionesFijas.add(new Particion(1, 120, 0, 0));
-//		elementosTablaParticionesFijas.add(new Particion(2, 200, 0, 0));
-//		elementosTablaParticionesFijas.add(new Particion(3, 80, 0, 0));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 0, 0));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 0, 0));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 0, 0));
 //		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 //
-//		elementosTablaProcesos.add(new Proceso(1, 100, 3, 2, 0));
-//		elementosTablaProcesos.add(new Proceso(2, 150, 4, 1, 2));
-//		elementosTablaProcesos.add(new Proceso(3, 90, 3, 2, 5));
-//		elementosTablaProcesos.add(new Proceso(4, 75, 2, 3, 6));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 1, 2, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 1, 1, 3));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 1, 2, 8));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 1, 3, 12));
 //		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
@@ -139,7 +139,7 @@ public class MainController {
 	// EVENTO MENU NUEVO
 	@FXML
 	public void menuItemNuevo(ActionEvent event) {
-		
+
 		// LIMPIO LAS TABLAS
 		elementosTablaParticionesFijas.clear();
 		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
@@ -152,17 +152,16 @@ public class MainController {
 
 		cantidadParticionesFijas.setDisable(false);
 		cantidadParticionesFijas.setText(null);
-		
+
 		// REINICIO LOS IDs
 		idParticionFija = 1;
 		idProcesoNuevo = 1;
-		
+
 		mayorTamanio = 0;
-		
-		
+
 		notificaciones.setText("Nuevo");
 	}
-		
+
 	// EVENTO MENU ABRIR -> VENTANA ABRIR ARCHIVO
 	@FXML
 	public void menuItemAbrir(ActionEvent event) {
@@ -174,7 +173,7 @@ public class MainController {
 	public void menuItemGuardar(ActionEvent event) {
 		loadWindow("/application/save_load/Save.fxml", "Guardar archivo");
 	}
-	
+
 	// EVENTO MENU SALIR
 	@FXML
 	public void menuItemSalir(ActionEvent event) {
@@ -209,6 +208,8 @@ public class MainController {
 			FCFS.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
+		notificaciones.setText("Ejecutado: Algoritmo " + algoritmos.getValue() + " | Particiones "
+				+ particiones.getValue() + " | Política " + politicas.getValue());
 	}
 
 	// EVENTO BOTON MAPA DE MEMORIA
@@ -225,7 +226,7 @@ public class MainController {
 //		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
 //		GanttController.GanttDiagram();
 //		ganttCPU = FCFS.FCFSGantt();
-		GanttController.GanttFCFS(FCFS.FCFSGantt());
+		GanttController.GanttFCFS(FCFS.FCFSGanttHM());
 	}
 
 	// EVENTO BOTON ESTADISTICAS
@@ -327,17 +328,17 @@ public class MainController {
 
 	// TABLA PARTICIONES FIJAS
 	@FXML
-	private TableView<Particion> tablaParticion;
+	private TableView<ElementoTablaParticion> tablaParticion;
 	@FXML
-	private TableColumn<Particion, Integer> idParticion;
+	private TableColumn<ElementoTablaParticion, Integer> idParticion;
 	@FXML
-	private TableColumn<Particion, Integer> tamanioParticion;
+	private TableColumn<ElementoTablaParticion, Integer> tamanioParticion;
 	@FXML
-	private TableColumn<Particion, Integer> dirInicio;
+	private TableColumn<ElementoTablaParticion, Integer> dirInicio;
 	@FXML
-	private TableColumn<Particion, Integer> dirFin;
+	private TableColumn<ElementoTablaParticion, Integer> dirFin;
 
-	private ObservableList<Particion> elementosTablaParticionesFijas = FXCollections.observableArrayList();
+	private ObservableList<ElementoTablaParticion> elementosTablaParticionesFijas = FXCollections.observableArrayList();
 
 	// BOTONES AGREGAR/ELIMINAR PARTICION
 	@FXML
@@ -403,7 +404,7 @@ public class MainController {
 				direccionFin = direccionInicio + tamanioNuevaParticion - 1;
 
 				// Creo la nueva particion
-				Particion particion = new Particion(idParticionFija, tamanioNuevaParticion, direccionInicio,
+				ElementoTablaParticion particion = new ElementoTablaParticion(idParticionFija, tamanioNuevaParticion, direccionInicio,
 						direccionFin);
 				elementosTablaParticionesFijas.add(particion);
 				tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
@@ -433,21 +434,21 @@ public class MainController {
 
 	// TABLA PROCESOS
 	@FXML
-	private TableView<Proceso> tablaProceso;
+	private TableView<ElementoTablaProceso> tablaProceso;
 	@FXML
-	private TableColumn<Proceso, Integer> idProceso;
+	private TableColumn<ElementoTablaProceso, Integer> idProceso;
 	@FXML
-	private TableColumn<Proceso, Integer> tamanioProceso;
+	private TableColumn<ElementoTablaProceso, Integer> tamanioProceso;
 	@FXML
-	private TableColumn<Proceso, Integer> prioridadProceso;
+	private TableColumn<ElementoTablaProceso, Integer> prioridadProceso;
 	@FXML
-	private TableColumn<Proceso, Integer> cpuProceso;
+	private TableColumn<ElementoTablaProceso, Integer> cpuProceso;
 	@FXML
-	private TableColumn<Proceso, Integer> esProceso;
+	private TableColumn<ElementoTablaProceso, Integer> esProceso;
 	@FXML
-	private TableColumn<Proceso, Integer> tArriboProceso;
+	private TableColumn<ElementoTablaProceso, Integer> tArriboProceso;
 
-	private ObservableList<Proceso> elementosTablaProcesos = FXCollections.observableArrayList();
+	private ObservableList<ElementoTablaProceso> elementosTablaProcesos = FXCollections.observableArrayList();
 
 	// BOTONES AGREGAR/ELIMINAR PROCESO
 	@FXML
@@ -490,7 +491,7 @@ public class MainController {
 					return;
 				}
 
-				Proceso proceso = new Proceso(idProcesoNuevo, tamanioNuevoProceso, cpuNuevoProceso, esNuevoProceso,
+				ElementoTablaProceso proceso = new ElementoTablaProceso(idProcesoNuevo, tamanioNuevoProceso, cpuNuevoProceso, esNuevoProceso,
 						tArriboNuevoProceso);
 				elementosTablaProcesos.add(proceso);
 				tablaProceso.getItems().setAll(elementosTablaProcesos);

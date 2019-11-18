@@ -2,7 +2,7 @@ package application.memory_map;
 
 import java.util.ArrayList;
 
-import application.algorithms.model.ParticionAlgoritmo;
+import application.model.Particion;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class MemoryMapController {
 
-	public static void MapaMemoriaFCFS(ArrayList<ArrayList<ParticionAlgoritmo>> particiones) {
+	public static void MapaMemoriaFCFS(ArrayList<ArrayList<Particion>> particiones) {
 
 		HBox hbox = new HBox();
 
@@ -36,7 +36,7 @@ public class MemoryMapController {
 
 			for (int j = 0; j < particiones.get(i).size(); j++) {
 				
-				ParticionAlgoritmo p = particiones.get(i).get(j);
+				Particion p = particiones.get(i).get(j);
 
 				if (p.getLibre()) {
 					gc.setFill(Color.GREEN);
