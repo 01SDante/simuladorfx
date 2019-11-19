@@ -77,7 +77,6 @@ public class FCFS {
 		
 		Collections.sort(procesos);
 		int idUltimoProceso = procesos.get(procesos.size() - 1).getId();
-		System.out.println("ultimo proceso: " + idUltimoProceso);
 
 		/*
 		 * ARRANCA EL ALGORITMO
@@ -103,9 +102,6 @@ public class FCFS {
 				}
 			}
 			
-			if (nuevos.isEmpty() && !llegoElUltimo) {
-				tOcioso++;
-			}
 
 			/*
 			 * SI HAY QUE EJECUTAR, EJECUTO ANTES PARA LIBERAR UNA POSIBLE PARTICION
@@ -114,6 +110,14 @@ public class FCFS {
 			if (!ejecutandoCpu1.isEmpty()) {
 				ejecutado = true; // Para no descontar 2 veces en un mismo t
 				ejecutarCPU(particiones, procesos, ejecutandoCpu1, tablaProcesos, t);
+			}
+			
+			/*
+			 * Tiempo ocioso
+			 * 
+			 */
+			if (nuevos.isEmpty() && ejecutandoCpu1.isEmpty() && !llegoElUltimo) {
+				tOcioso++;
 			}
 
 			/*
@@ -167,6 +171,9 @@ public class FCFS {
 
 		} // Fin while
 
+		System.out.println("Tiempo total: " + tIrrupcion);
+		System.out.println("Tiempo ocioso: " + tOcioso);
+		
 	}
 
 	/*
