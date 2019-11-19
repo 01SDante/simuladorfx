@@ -16,9 +16,9 @@ public class FCFS {
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
 	public static ArrayList<Proceso> ganttCpu;
-	
+
 	public static HashMap<Integer, Proceso> ganttCpuHM;
-	
+
 	/*
 	 * Devuelve el estado de las particiones para armar el mapa
 	 */
@@ -32,11 +32,10 @@ public class FCFS {
 	public static ArrayList<Proceso> FCFSGantt() {
 		return ganttCpu;
 	}
-	
+
 	public static HashMap<Integer, Proceso> FCFSGanttHM() {
 		return ganttCpuHM;
 	}
-
 
 	/*
 	 * EJECUTAR
@@ -51,14 +50,14 @@ public class FCFS {
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
 		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
 		ArrayList<Proceso> listos = new ArrayList<Proceso>();
-		ArrayList<Proceso> ejecutandoCpu1 = new ArrayList<Proceso>();
-		
+		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
+
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
 
 		// Inicializamos GanttCPU
-		ganttCpu = new ArrayList<Proceso>();
-		
+//		ganttCpu = new ArrayList<Proceso>();
+
 		ganttCpuHM = new HashMap<Integer, Proceso>();
 
 		// CARGAMOS LAS LISTAS PARTICIONES Y PROCESOS
@@ -68,13 +67,14 @@ public class FCFS {
 		}
 
 		int tIrrupcion = 0; // Para controlar el bucle principal
-		
+
 		for (ElementoTablaProceso p : tablaProcesos) {
-			Proceso pa = new Proceso(p.getId(), p.getTamanio(), p.getCpu(), p.getEs(), p.getCpu(), p.getTArribo());
+			Proceso pa = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(), p.getCpu2(),
+					p.getEs2(), p.getCpu3());
 			procesos.add(pa);
 			tIrrupcion += pa.getCpu1();
 		}
-		
+
 		Collections.sort(procesos);
 		int idUltimoProceso = procesos.get(procesos.size() - 1).getId();
 
@@ -101,22 +101,21 @@ public class FCFS {
 						llegoElUltimo = true;
 				}
 			}
-			
 
 			/*
 			 * SI HAY QUE EJECUTAR, EJECUTO ANTES PARA LIBERAR UNA POSIBLE PARTICION
 			 * 
 			 */
-			if (!ejecutandoCpu1.isEmpty()) {
+			if (!ejecutandoCpu.isEmpty()) {
 				ejecutado = true; // Para no descontar 2 veces en un mismo t
-				ejecutarCPU(particiones, procesos, ejecutandoCpu1, tablaProcesos, t);
+				ejecutarCPU(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
 			}
-			
+
 			/*
 			 * Tiempo ocioso
 			 * 
 			 */
-			if (nuevos.isEmpty() && ejecutandoCpu1.isEmpty() && !llegoElUltimo) {
+			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
 			}
 
@@ -139,19 +138,19 @@ public class FCFS {
 			}
 
 			/*
-			 * COLA EJECUTANDO CPU1
+			 * COLA EJECUTANDO CPU
 			 * 
 			 */
 
 			// Descuento 1 al primero de ejecucion y si termino lo saco
-			if (!ejecutandoCpu1.isEmpty() && !ejecutado) {
-				ejecutarCPU(particiones, procesos, ejecutandoCpu1, tablaProcesos, t);
+			if (!ejecutandoCpu.isEmpty() && !ejecutado) {
+				ejecutarCPU(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
 			}
 
 			// Añado los listos a ejecucion
 			for (int i = 0; i < listos.size(); i++) {
 				Proceso pListo = listos.get(i);
-				ejecutandoCpu1.add(pListo);
+				ejecutandoCpu.add(pListo);
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
 			}
@@ -173,7 +172,7 @@ public class FCFS {
 
 		System.out.println("Tiempo total: " + tIrrupcion);
 		System.out.println("Tiempo ocioso: " + tOcioso);
-		
+
 	}
 
 	/*
@@ -181,9 +180,9 @@ public class FCFS {
 	 * 
 	 */
 	private static void ejecutarCPU(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu1, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		Proceso procesoActual = ejecutandoCpu1.get(0);
+		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
 		if (cpu == 0) {
@@ -198,7 +197,7 @@ public class FCFS {
 			}
 
 			// Luego saco el proceso
-			ejecutandoCpu1.remove(0);
+			ejecutandoCpu.remove(0);
 
 			/*
 			 * Actualizo la cola GanttCPU
@@ -209,17 +208,17 @@ public class FCFS {
 			ElementoTablaProceso elementoTablaProceso = tablaProcesos.get(procesoGantt);
 
 			Proceso terminado = new Proceso(elementoTablaProceso.getId(), elementoTablaProceso.getTamanio(),
-					elementoTablaProceso.getCpu(), elementoTablaProceso.getEs(), elementoTablaProceso.getCpu(),
-					elementoTablaProceso.getTArribo());
+					elementoTablaProceso.getTArribo(), elementoTablaProceso.getCpu1(), elementoTablaProceso.getEs1(),
+					elementoTablaProceso.getCpu2(), elementoTablaProceso.getEs2(), elementoTablaProceso.getCpu3());
 
-			ganttCpu.add(terminado);
+//			ganttCpu.add(terminado);
 			ganttCpuHM.put(t - terminado.getCpu1(), terminado);
 
 		} else {
 			// Si no termino actualizo el valor de CPU1
 			procesoActual.setCpu1(cpu);
-			ejecutandoCpu1.remove(0);
-			ejecutandoCpu1.add(0, procesoActual);
+			ejecutandoCpu.remove(0);
+			ejecutandoCpu.add(0, procesoActual);
 		}
 
 	}
@@ -239,7 +238,7 @@ public class FCFS {
 	private static void imprimirProcesos(List<Proceso> procesos) {
 		for (Proceso p : procesos) {
 			System.out.println("ID: " + p.getId() + " Tamanio: " + p.getTamanio() + " CPU: " + p.getCpu1() + " ES: "
-					+ p.getEs() + " TArribo: " + p.getTArribo());
+					+ p.getEs1() + " TArribo: " + p.getTArribo());
 		}
 		System.out.println();
 	}

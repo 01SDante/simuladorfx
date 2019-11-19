@@ -119,16 +119,16 @@ public class MainController {
 		inicializarColumnasTablaProcesos();
 
 		// Cargamos las tablas cond datos de prueba
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 0, 0));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 0, 0));
 //		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 0, 0));
 //		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 0, 0));
-//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-//
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 1, 2, 0));
+		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 1, 2, 0,));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 1, 1, 3));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 1, 2, 8));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 1, 3, 12));
-//		tablaProceso.getItems().setAll(elementosTablaProcesos);
+		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
 	/*
@@ -404,8 +404,8 @@ public class MainController {
 				direccionFin = direccionInicio + tamanioNuevaParticion - 1;
 
 				// Creo la nueva particion
-				ElementoTablaParticion particion = new ElementoTablaParticion(idParticionFija, tamanioNuevaParticion, direccionInicio,
-						direccionFin);
+				ElementoTablaParticion particion = new ElementoTablaParticion(idParticionFija, tamanioNuevaParticion,
+						direccionInicio, direccionFin);
 				elementosTablaParticionesFijas.add(particion);
 				tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 				idParticionFija++;
@@ -440,13 +440,17 @@ public class MainController {
 	@FXML
 	private TableColumn<ElementoTablaProceso, Integer> tamanioProceso;
 	@FXML
-	private TableColumn<ElementoTablaProceso, Integer> prioridadProceso;
-	@FXML
-	private TableColumn<ElementoTablaProceso, Integer> cpuProceso;
-	@FXML
-	private TableColumn<ElementoTablaProceso, Integer> esProceso;
-	@FXML
 	private TableColumn<ElementoTablaProceso, Integer> tArriboProceso;
+	@FXML
+	private TableColumn<ElementoTablaProceso, Integer> cpu1Proceso;
+	@FXML
+	private TableColumn<ElementoTablaProceso, Integer> es1Proceso;
+	@FXML
+	private TableColumn<ElementoTablaProceso, Integer> cpu2Proceso;
+	@FXML
+	private TableColumn<ElementoTablaProceso, Integer> es2Proceso;
+	@FXML
+	private TableColumn<ElementoTablaProceso, Integer> cpu3Proceso;
 
 	private ObservableList<ElementoTablaProceso> elementosTablaProcesos = FXCollections.observableArrayList();
 
@@ -458,19 +462,28 @@ public class MainController {
 	@FXML
 	private TextField tamanioNuevoProceso;
 	@FXML
-	private TextField cpuNuevoProceso;
-	@FXML
-	private TextField esNuevoProceso;
-	@FXML
 	private TextField tArriboNuevoProceso;
+	@FXML
+	private TextField cpu1NuevoProceso;
+	@FXML
+	private TextField es1NuevoProceso;
+	@FXML
+	private TextField cpu2NuevoProceso;
+	@FXML
+	private TextField es2NuevoProceso;
+	@FXML
+	private TextField cpu3NuevoProceso;
 
 	// INICIALIZAR COLUMNAS TABLA PROCESOS
 	private void inicializarColumnasTablaProcesos() {
 		idProceso.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tamanioProceso.setCellValueFactory(new PropertyValueFactory<>("tamanio"));
-		cpuProceso.setCellValueFactory(new PropertyValueFactory<>("cpu"));
-		esProceso.setCellValueFactory(new PropertyValueFactory<>("es"));
 		tArriboProceso.setCellValueFactory(new PropertyValueFactory<>("tArribo"));
+		cpu1Proceso.setCellValueFactory(new PropertyValueFactory<>("cpu1"));
+		es1Proceso.setCellValueFactory(new PropertyValueFactory<>("es1"));
+		cpu2Proceso.setCellValueFactory(new PropertyValueFactory<>("cpu2"));
+		es2Proceso.setCellValueFactory(new PropertyValueFactory<>("es2"));
+		cpu3Proceso.setCellValueFactory(new PropertyValueFactory<>("cpu3"));
 	}
 
 	// EVENTO BOTON AGREGAR NUEVO PROCESO
@@ -479,9 +492,12 @@ public class MainController {
 
 		try {
 			int tamanioNuevoProceso = Integer.parseInt(this.tamanioNuevoProceso.getText().trim());
-			int cpuNuevoProceso = Integer.parseInt(this.cpuNuevoProceso.getText().trim());
-			int esNuevoProceso = Integer.parseInt(this.esNuevoProceso.getText().trim());
 			int tArriboNuevoProceso = Integer.parseInt(this.tArriboNuevoProceso.getText().trim());
+			int cpu1NuevoProceso = Integer.parseInt(this.cpu1NuevoProceso.getText().trim());
+			int es1NuevoProceso = Integer.parseInt(this.es1NuevoProceso.getText().trim());
+			int cpu2NuevoProceso = Integer.parseInt(this.cpu2NuevoProceso.getText().trim());
+			int es2NuevoProceso = Integer.parseInt(this.es2NuevoProceso.getText().trim());
+			int cpu3NuevoProceso = Integer.parseInt(this.cpu3NuevoProceso.getText().trim());
 
 			if (idProcesoNuevo <= 10) {
 
@@ -491,8 +507,9 @@ public class MainController {
 					return;
 				}
 
-				ElementoTablaProceso proceso = new ElementoTablaProceso(idProcesoNuevo, tamanioNuevoProceso, cpuNuevoProceso, esNuevoProceso,
-						tArriboNuevoProceso);
+				ElementoTablaProceso proceso = new ElementoTablaProceso(idProcesoNuevo, tamanioNuevoProceso,
+						tArriboNuevoProceso, cpu1NuevoProceso, es1NuevoProceso, cpu2NuevoProceso, es2NuevoProceso,
+						cpu3NuevoProceso);
 				elementosTablaProcesos.add(proceso);
 				tablaProceso.getItems().setAll(elementosTablaProcesos);
 				notificaciones.setText("Límite cantidad de procesos: 10 | Agregado proceso: " + idProcesoNuevo);
