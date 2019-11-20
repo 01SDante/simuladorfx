@@ -15,8 +15,6 @@ public class FCFS {
 
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
-	public static ArrayList<Proceso> ganttCpu;
-
 	public static HashMap<Integer, Proceso> ganttCpuHM;
 
 	/*
@@ -29,10 +27,6 @@ public class FCFS {
 	/*
 	 * Devuelve la lista de procesos para armar el Gantt
 	 */
-	public static ArrayList<Proceso> FCFSGantt() {
-		return ganttCpu;
-	}
-
 	public static HashMap<Integer, Proceso> FCFSGanttHM() {
 		return ganttCpuHM;
 	}
@@ -48,31 +42,32 @@ public class FCFS {
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
+		
 		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
 		ArrayList<Proceso> listos = new ArrayList<Proceso>();
+		
 		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
 
 		// Inicializamos GanttCPU
-//		ganttCpu = new ArrayList<Proceso>();
-
 		ganttCpuHM = new HashMap<Integer, Proceso>();
 
-		// CARGAMOS LAS LISTAS PARTICIONES Y PROCESOS
+		// Cargamos la lista de Particiones
 		for (ElementoTablaParticion p : tablaParticiones) {
-			Particion pa = new Particion(p.getId(), p.getTamanio(), true);
-			particiones.add(pa);
+			Particion particion = new Particion(p.getId(), p.getTamanio(), true);
+			particiones.add(particion);
 		}
 
+		// Cargamos la lista de Procesos
 		int tIrrupcion = 0; // Para controlar el bucle principal
 
 		for (ElementoTablaProceso p : tablaProcesos) {
-			Proceso pa = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(), p.getCpu2(),
+			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(), p.getCpu2(),
 					p.getEs2(), p.getCpu3());
-			procesos.add(pa);
-			tIrrupcion += pa.getCpu1();
+			procesos.add(proceso);
+			tIrrupcion += proceso.getCpu1();
 		}
 
 		Collections.sort(procesos);
@@ -86,7 +81,6 @@ public class FCFS {
 		int t = 0; // Reloj
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
-		boolean ejecutado = false;
 
 		while (t <= tIrrupcion + tOcioso) {
 
@@ -103,11 +97,10 @@ public class FCFS {
 			}
 
 			/*
-			 * SI HAY QUE EJECUTAR, EJECUTO ANTES PARA LIBERAR UNA POSIBLE PARTICION
+			 * COLA EJECUTANDO CPU
 			 * 
 			 */
 			if (!ejecutandoCpu.isEmpty()) {
-				ejecutado = true; // Para no descontar 2 veces en un mismo t
 				ejecutarCPU(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
 			}
 
@@ -137,15 +130,10 @@ public class FCFS {
 				}
 			}
 
-			/*
-			 * COLA EJECUTANDO CPU
-			 * 
-			 */
-
 			// Descuento 1 al primero de ejecucion y si termino lo saco
-			if (!ejecutandoCpu.isEmpty() && !ejecutado) {
-				ejecutarCPU(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
-			}
+//			if (!ejecutandoCpu.isEmpty() && !ejecutado) {
+//				ejecutarCPU(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
+//			}
 
 			// Añado los listos a ejecucion
 			for (int i = 0; i < listos.size(); i++) {
@@ -165,7 +153,6 @@ public class FCFS {
 				mapaMemoria.get(t).add(particion);
 			}
 
-			ejecutado = false;
 			t++;
 
 		} // Fin while
@@ -211,7 +198,6 @@ public class FCFS {
 					elementoTablaProceso.getTArribo(), elementoTablaProceso.getCpu1(), elementoTablaProceso.getEs1(),
 					elementoTablaProceso.getCpu2(), elementoTablaProceso.getEs2(), elementoTablaProceso.getCpu3());
 
-//			ganttCpu.add(terminado);
 			ganttCpuHM.put(t - terminado.getCpu1(), terminado);
 
 		} else {

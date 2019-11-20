@@ -119,14 +119,14 @@ public class MainController {
 		inicializarColumnasTablaProcesos();
 
 		// Cargamos las tablas cond datos de prueba
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 0, 0));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 0, 0));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 0, 0));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 100, 101, 200));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 100, 201, 300));
 		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 1, 2, 0,));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 1, 1, 3));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 1, 2, 8));
+		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 2, 1, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(2, 100, 1, 2, 3, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(3, 100, 2, 2, 2, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 1, 3, 12));
 		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
