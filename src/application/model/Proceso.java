@@ -1,6 +1,6 @@
 package application.model;
 
-public class Proceso implements Comparable<Proceso> {
+public class Proceso {
 	int id;
 	int tamanio;
 	int tArribo;
@@ -101,20 +101,6 @@ public class Proceso implements Comparable<Proceso> {
 	
 	public void setPrioridad(int prioridad) {
 		this.prioridad = prioridad;
-	}
-
-	/*
-	 * OVERRIDE
-	 * 
-	 */
-	@Override
-	public int compareTo(Proceso o) {
-		if (tArribo == o.tArribo)
-			return 0;
-		else if (tArribo > o.tArribo)
-			return 1;
-		else
-			return -1;
 	}
 
 }

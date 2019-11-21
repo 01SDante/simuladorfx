@@ -1,7 +1,8 @@
 package application;
 
 import application.algorithms.FCFSFixedFirstFit;
-import application.gantt.GanttFCFS;
+import application.algorithms.SRTFFixedFirstFit;
+import application.gantt.GanttCPU;
 import application.memory_map.MemoryMapController;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
@@ -121,25 +122,28 @@ public class MainController {
 		/*
 		 * -------- DATOS DE PRUEBA ---------
 		 */
-//		limiteMemoria.setText("445");
-//
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 1, 120));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 121, 320));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 321, 400));
-//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+		limiteMemoria.setText("445");
+		limiteMemoria.setDisable(true);
+		cantidadParticionesFijas.setText("3");
+		cantidadParticionesFijas.setDisable(true);
+
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 1, 120));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 121, 320));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 321, 400));
+		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 //
 //		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 3, 0, 0, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 2, 4, 0, 0, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 5, 3, 0, 0, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0, 0));
 
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
 
-//		tablaProceso.getItems().setAll(elementosTablaProcesos);
+		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
 	/*
@@ -213,38 +217,76 @@ public class MainController {
 	}
 
 	// EVENTO BOTON EJECUTAR
+	
+	private String algoritmoEjecutado = "";
+	
 	@FXML
 	public void execute(ActionEvent event) {
 		if (algoritmos.getValue() == "FCFS")
 			FCFSFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		
+		else if (algoritmos.getValue() == "SRTF")
+			SRTFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
 
+		// Armo la barra de notificaciones
 		notificaciones.setText("Ejecutado: Algoritmo " + algoritmos.getValue() + " | Particiones "
 				+ particiones.getValue() + " | Política " + politicas.getValue());
+		// Para armar los titulos de las salidas
+		algoritmoEjecutado = algoritmos.getValue();
 	}
 
 	// EVENTO BOTON MAPA DE MEMORIA
 	@FXML
 	public void loadMemoryMap(ActionEvent event) {
+		
+		// Calculo memoria del SO
 		int ram = Integer.parseInt(limiteMemoria.getText());
 		for (ElementoTablaParticion e : elementosTablaParticionesFijas) {
 			ram -= e.getTamanio();
 		}
-		MemoryMapController.MapaMemoriaFCFS(FCFSFixedFirstFit.getMapaMemoria(), ram);
+		
+		// Armo los mapas
+		if (algoritmoEjecutado == "FCFS")
+			MemoryMapController.MapaMemoriaFCFS(FCFSFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SRTF")
+			MemoryMapController.MapaMemoriaFCFS(SRTFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+		
+		else
+			System.out.println(algoritmos.getValue() + " not yet.");
+		
 	}
 
 	// EVENTO BOTON GANTT
 	@FXML
 	public void loadGantt(ActionEvent event) {
-		GanttFCFS.generarGanttFCFS(FCFSFixedFirstFit.getGanttCpu());
+		if (algoritmoEjecutado == "FCFS")
+			GanttCPU.generarGanttCPU(FCFSFixedFirstFit.getGanttCpu(), notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SRTF")
+			GanttCPU.generarGanttCPU(SRTFFixedFirstFit.getGanttCpu(), notificaciones.getText());
+		
+		else
+			System.out.println(algoritmos.getValue() + " not yet.");
 	}
 
 	// EVENTO BOTON ESTADISTICAS
 	@FXML
 	public void loadStatistics(ActionEvent event) {
-		StatisticsController.Statistics(FCFSFixedFirstFit.getSalida(), FCFSFixedFirstFit.getArribo(),
-				FCFSFixedFirstFit.getIrrupcion());
+
+		if (algoritmoEjecutado == "FCFS")
+			StatisticsController.Statistics(FCFSFixedFirstFit.getSalida(), FCFSFixedFirstFit.getArribo(),
+					FCFSFixedFirstFit.getIrrupcion(), notificaciones.getText());
+
+		else if (algoritmoEjecutado == "SRTF")
+			StatisticsController.Statistics(SRTFFixedFirstFit.getSalida(), SRTFFixedFirstFit.getArribo(),
+					SRTFFixedFirstFit.getIrrupcion(), notificaciones.getText());
+		else
+			System.out.println(algoritmos.getValue() + " not yet.");
+		
 	}
 
 	/*
@@ -265,6 +307,9 @@ public class MainController {
 			politicas.setItems(listaPoliticasVariables);
 		}
 		politicas.setValue("First-Fit");
+		// :v
+		if (!tablaParticion.getItems().isEmpty())
+			cantidadParticionesFijas.setDisable(true);
 	}
 
 	// EVENTO CHOICEBOX ALGORITMO PESTANIA CONDICIONES INICIALES

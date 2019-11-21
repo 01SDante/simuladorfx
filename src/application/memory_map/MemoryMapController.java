@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class MemoryMapController {
 
-	public static void MapaMemoriaFCFS(ArrayList<ArrayList<Particion>> particiones, int ram) {
+	public static void MapaMemoriaFCFS(ArrayList<ArrayList<Particion>> particiones, int ram, String titulo) {
 
 		HBox hbox = new HBox();
 
@@ -78,7 +78,7 @@ public class MemoryMapController {
 
 		Stage stage = new Stage();
 		stage.setScene(scene);
-		stage.setTitle("Mapa de Memoria");
+		stage.setTitle(titulo);
 		stage.show();
 
 	}

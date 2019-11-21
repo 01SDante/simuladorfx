@@ -97,7 +97,7 @@ public class FCFS {
 			tIrrupcion += proceso.getCpu1() + proceso.getCpu2() + proceso.getCpu3();
 		}
 
-		Collections.sort(procesos);
+		//Collections.sort(procesos);
 		int idUltimoProceso = procesos.get(procesos.size() - 1).getId();
 
 		/*

@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class GanttFCFS {
+public class GanttCPU {
 
 	public static String[] colores = { "", "status-red", "status-orange", "status-yellow", "status-green",
 			"status-cyan", "status-blue", "status-magenta", "status-silver", "status-saddlebrown", "status-teal" };
@@ -26,10 +26,10 @@ public class GanttFCFS {
 			"silver", "saddlebrown", "teal" };
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "static-access" })
-	public static void generarGanttFCFS(ArrayList<Integer> ganttCpu) {
+	public static void generarGanttCPU(ArrayList<Integer> ganttCpu, String titulo) {
 
 		Stage stage = new Stage();
-		stage.setTitle("Gantt");
+		stage.setTitle(titulo);
 
 		String[] machines = new String[] { "CPU" };
 

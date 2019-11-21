@@ -9,7 +9,7 @@ import application.model.Particion;
 import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class FCFSFixedFirstFit {
+public class SRTFFixedFirstFit {
 
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
@@ -59,7 +59,7 @@ public class FCFSFixedFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("FCFS - Particiones Fijas - FirstFit\n");
+		System.out.println("SRTF - Particiones Fijas - FirstFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -198,10 +198,8 @@ public class FCFSFixedFirstFit {
 			t++;
 
 		} // Fin While
-		
-		salida[0] = tOcioso;
 
-	} // Fin FCFS
+	} // Fin SRTF
 
 	/*
 	 * METODO EJECUTAR CPU
@@ -210,13 +208,19 @@ public class FCFSFixedFirstFit {
 	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
 			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+
 		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
 
 		// Actualizo Gantt
 		ganttCpu.add(procesoActual.getId());
-		
+
 		// Actualizo el valor de CPU1
 		procesoActual.setCpu1(cpu);
 		ejecutandoCpu.remove(0);

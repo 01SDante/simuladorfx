@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 public class StatisticsController {
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "static-access" })
-	public static void Statistics(int[] salida, int[] arribo, int[] irrupcion) {
+	public static void Statistics(int[] salida, int[] arribo, int[] irrupcion, String titulo) {
 
 		/*
 		 * PIE CHART USO CPU
@@ -93,7 +93,7 @@ public class StatisticsController {
 
 		Stage stage = new Stage();
 		stage.setScene(scene);
-		stage.setTitle("Estadísticas");
+		stage.setTitle(titulo);
 		stage.show();
 
 	}
