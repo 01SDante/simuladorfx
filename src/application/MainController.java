@@ -1,6 +1,7 @@
 package application;
 
 import application.algorithms.FCFSFixedFirstFit;
+import application.algorithms.SJFFixedFirstFit;
 import application.algorithms.SRTFFixedFirstFit;
 import application.gantt.GanttCPU;
 import application.memory_map.MemoryMapController;
@@ -225,6 +226,9 @@ public class MainController {
 		if (algoritmos.getValue() == "FCFS")
 			FCFSFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 		
+		else if (algoritmos.getValue() == "SJF")
+			SJFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
 		else if (algoritmos.getValue() == "SRTF")
 			SRTFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 		
@@ -250,10 +254,13 @@ public class MainController {
 		
 		// Armo los mapas
 		if (algoritmoEjecutado == "FCFS")
-			MemoryMapController.MapaMemoriaFCFS(FCFSFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			MemoryMapController.generarMapaMemoria(FCFSFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+		
+		else if(algoritmoEjecutado == "SJF")
+			MemoryMapController.generarMapaMemoria(SJFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 		
 		else if (algoritmoEjecutado == "SRTF")
-			MemoryMapController.MapaMemoriaFCFS(SRTFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			MemoryMapController.generarMapaMemoria(SRTFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 		
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
@@ -265,6 +272,9 @@ public class MainController {
 	public void loadGantt(ActionEvent event) {
 		if (algoritmoEjecutado == "FCFS")
 			GanttCPU.generarGanttCPU(FCFSFixedFirstFit.getGanttCpu(), notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SJF")
+			GanttCPU.generarGanttCPU(SJFFixedFirstFit.getGanttCpu(), notificaciones.getText());
 		
 		else if (algoritmoEjecutado == "SRTF")
 			GanttCPU.generarGanttCPU(SRTFFixedFirstFit.getGanttCpu(), notificaciones.getText());
@@ -280,6 +290,10 @@ public class MainController {
 		if (algoritmoEjecutado == "FCFS")
 			StatisticsController.Statistics(FCFSFixedFirstFit.getSalida(), FCFSFixedFirstFit.getArribo(),
 					FCFSFixedFirstFit.getIrrupcion(), notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SJF")
+			StatisticsController.Statistics(SJFFixedFirstFit.getSalida(), SJFFixedFirstFit.getArribo(),
+					SJFFixedFirstFit.getIrrupcion(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SRTF")
 			StatisticsController.Statistics(SRTFFixedFirstFit.getSalida(), SRTFFixedFirstFit.getArribo(),

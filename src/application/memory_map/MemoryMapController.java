@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class MemoryMapController {
 
-	public static void MapaMemoriaFCFS(ArrayList<ArrayList<Particion>> particiones, int ram, String titulo) {
+	public static void generarMapaMemoria(ArrayList<ArrayList<Particion>> particiones, int ram, String titulo) {
 
 		HBox hbox = new HBox();
 
