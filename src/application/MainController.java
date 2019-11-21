@@ -1,7 +1,9 @@
 package application;
 
 import application.algorithms.FCFS;
+import application.algorithms.FCFSFixedFirstFit;
 import application.gantt.GanttController;
+import application.gantt.GanttFCFS;
 import application.memory_map.MemoryMapController;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
@@ -119,15 +121,24 @@ public class MainController {
 		inicializarColumnasTablaProcesos();
 
 		// Cargamos las tablas cond datos de prueba
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 100, 101, 200));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 100, 201, 300));
-		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+//		limiteMemoria.setText("445");
+//
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 1, 120));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 121, 320));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 321, 400));
+//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+//
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 2, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 2, 4, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 5, 3, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0));
 
-		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 2, 1, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(2, 100, 1, 2, 3, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(3, 100, 2, 2, 2, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 1, 3, 12));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0));
+
 		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
@@ -205,9 +216,10 @@ public class MainController {
 	@FXML
 	public void execute(ActionEvent event) {
 		if (algoritmos.getValue() == "FCFS")
-			FCFS.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+			FCFSFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
+
 		notificaciones.setText("Ejecutado: Algoritmo " + algoritmos.getValue() + " | Particiones "
 				+ particiones.getValue() + " | Política " + politicas.getValue());
 	}
@@ -215,25 +227,24 @@ public class MainController {
 	// EVENTO BOTON MAPA DE MEMORIA
 	@FXML
 	public void loadMemoryMap(ActionEvent event) {
-//		loadWindow("/application/memory_map/MemoryMap.fxml", "Mapa de memoria");
-//		MemoryMapController.MemoryMap();
-		MemoryMapController.MapaMemoriaFCFS(FCFS.FCFSMapaMemoria());
+		int ram = Integer.parseInt(limiteMemoria.getText());
+		for (ElementoTablaParticion e : elementosTablaParticionesFijas) {
+			ram -= e.getTamanio();
+		}
+		MemoryMapController.MapaMemoriaFCFS(FCFSFixedFirstFit.getMapaMemoria(), ram);
 	}
 
 	// EVENTO BOTON GANTT
 	@FXML
 	public void loadGantt(ActionEvent event) {
-//		loadWindow("/application/gantt/Gantt.fxml", "Diagrama de Gantt");
-//		GanttController.GanttDiagram();
-//		ganttCPU = FCFS.FCFSGantt();
-		GanttController.GanttFCFS(FCFS.FCFSGanttHM());
+		GanttFCFS.generarGanttFCFS(FCFSFixedFirstFit.getGanttCpu());
 	}
 
 	// EVENTO BOTON ESTADISTICAS
 	@FXML
 	public void loadStatistics(ActionEvent event) {
-//		loadWindow("/application/statistics/Statistics.fxml", "Estadísticas");
-		StatisticsController.Statistics();
+		StatisticsController.Statistics(FCFSFixedFirstFit.getSalida(), FCFSFixedFirstFit.getArribo(),
+				FCFSFixedFirstFit.getIrrupcion());
 	}
 
 	/*

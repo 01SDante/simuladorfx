@@ -1,11 +1,13 @@
 package application.gantt;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import application.gantt.GanttChart.ExtraData;
 import application.model.Proceso;
+import application.model.ProcesoGantt;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -27,12 +29,14 @@ public class GanttController {
 	public static String[] coloresLeyenda = { "", "red", "orange", "yellow", "green", "cyan", "blue", "magenta",
 			"silver", "saddlebrown", "teal" };
 
-	public static void GanttFCFS(HashMap<Integer, Proceso> ganttCpuHM) {
-
+	public static void GanttFCFS(ArrayList<ProcesoGantt> ganttCpu, ArrayList<ProcesoGantt> ganttEs) {
+		
+		// HashMap<Integer, Proceso> ganttCpuHM, HashMap<Integer, Proceso> ganttEsHM
+		
 		Stage stage = new Stage();
 		stage.setTitle("Gantt");
 
-		String[] machines = new String[] { "CPU" };
+		String[] machines = new String[] { "ES", "CPU" };
 
 		final NumberAxis xAxis = new NumberAxis();
 		final CategoryAxis yAxis = new CategoryAxis();
@@ -53,40 +57,76 @@ public class GanttController {
 		String machine;
 
 		/*
+		 *  ES
 		 * 
 		 */
 		machine = machines[0];
 		XYChart.Series series1 = new XYChart.Series();
+		
+		int i = 0;
+		for (ProcesoGantt p: ganttEs) {
+			if (p.getId() != 0) {
+				// Inicio, CPU, Cantidad, Color
+				series1.getData().add(new XYChart.Data(i, machine, new ExtraData(1, colores[p.getId()])));
+			}
+			i++;
+		}
+		
+//		for (Map.Entry<Integer, Proceso> entry : ganttEsHM.entrySet()) {
+//
+//			int t = entry.getKey();
+//			Proceso p = entry.getValue();
+//
+//			// Inicio, CPU, Cantidad, Color
+//			series1.getData().add(new XYChart.Data(t, machine, new ExtraData(p.getEs1(), colores[p.getId()])));
+//
+//		}
+		
+		/*
+		 *  CPU
+		 * 
+		 */
 
-		// Leyenda
+		machine = machines[1];
+		XYChart.Series series2 = new XYChart.Series();
+
 		HBox leyenda = new HBox();
 		leyenda.setAlignment(Pos.CENTER);
-
-
 		
-		for (Map.Entry<Integer, Proceso> entry: ganttCpuHM.entrySet()) {
-			
-			int t = entry.getKey();
-			Proceso p = entry.getValue();
-			
-			// Inicio, CPU, Cantidad, Color
-			series1.getData().add(new XYChart.Data(t, machine, new ExtraData(p.getCpu1(), colores[p.getId()])));
-			
-			/*
-			 * Armo la leyenda
-			 * 
-			 */
-			Label label = new Label("   " + p.getId() + "   ");
-			label.setStyle("-fx-background-color: " + coloresLeyenda[p.getId()]
-					+ "; -fx-text-fill: white; -fx-font-weight: bold;");
-			leyenda.getChildren().add(label);
+		int j = 0;
+		for (ProcesoGantt p: ganttCpu) {
+			if (p.getId() != 0) {
+				// Inicio, CPU, Cantidad, Color
+				series2.getData().add(new XYChart.Data(j, machine, new ExtraData(1, colores[p.getId()])));
+			}
+			j++;
 			
 		}
+
+//		for (Map.Entry<Integer, Proceso> entry: ganttCpuHM.entrySet()) {
+//			
+//			int t = entry.getKey();
+//			Proceso p = entry.getValue();
+//			
+//			// Inicio, CPU, Cantidad, Color
+//			series2.getData().add(new XYChart.Data(t, machine, new ExtraData(p.getCpu1(), colores[p.getId()])));
+//			
+//			/*
+//			 * Armo la leyenda
+//			 * 
+//			 */
+//			Label label = new Label("   " + p.getId() + "   ");
+//			label.setStyle("-fx-background-color: " + coloresLeyenda[p.getId()]
+//					+ "; -fx-text-fill: white; -fx-font-weight: bold;");
+//			leyenda.getChildren().add(label);
+//			
+//		}
 		
 		/*
 		 * 
 		 */
-		chart.getData().addAll(series1);
+		chart.getData().addAll(series1, series2);
+//		chart.getData().addAll(series2);
 
 		chart.getStylesheets().add("/application/gantt/gantt.css");
 

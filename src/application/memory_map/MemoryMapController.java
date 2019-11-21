@@ -13,13 +13,13 @@ import javafx.stage.Stage;
 
 public class MemoryMapController {
 
-	public static void MapaMemoriaFCFS(ArrayList<ArrayList<Particion>> particiones) {
+	public static void MapaMemoriaFCFS(ArrayList<ArrayList<Particion>> particiones, int ram) {
 
 		HBox hbox = new HBox();
 
 		for (int i = 0; i < particiones.size(); i++) {
 
-			Canvas canvas = new Canvas(200, 800);
+			Canvas canvas = new Canvas(200, 1200);
 			GraphicsContext gc = canvas.getGraphicsContext2D();
 
 			int yRectangulo = 100; // Corner izquierdo eje y del rectangulo
@@ -32,7 +32,7 @@ public class MemoryMapController {
 			gc.strokeText("T = " + i, 110, 30);
 
 			gc.setStroke(Color.WHITE);
-			gc.strokeText("SO : 100 u.m.", 60, 75);
+			gc.strokeText("SO : " + ram + " u.m.", 60, 75);
 
 			for (int j = 0; j < particiones.get(i).size(); j++) {
 				
