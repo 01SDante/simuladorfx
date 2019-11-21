@@ -1,8 +1,6 @@
 package application;
 
-import application.algorithms.FCFS;
 import application.algorithms.FCFSFixedFirstFit;
-import application.gantt.GanttController;
 import application.gantt.GanttFCFS;
 import application.memory_map.MemoryMapController;
 import application.model.ElementoTablaParticion;
@@ -74,7 +72,7 @@ public class MainController {
 	private ChoiceBox<String> politicas;
 
 	private ObservableList<String> listaAlgoritmos = FXCollections.observableArrayList("FCFS", "SJF", "SRTF",
-			"Round-Robin", "Colas Multinivel");
+			"SRTF (c/Prioridad)", "Round-Robin", "Colas Multinivel");
 	@FXML
 	private ChoiceBox<String> algoritmos;
 
@@ -120,7 +118,9 @@ public class MainController {
 		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
 		inicializarColumnasTablaProcesos();
 
-		// Cargamos las tablas cond datos de prueba
+		/*
+		 * -------- DATOS DE PRUEBA ---------
+		 */
 //		limiteMemoria.setText("445");
 //
 //		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 1, 120));
@@ -128,18 +128,18 @@ public class MainController {
 //		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 321, 400));
 //		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 //
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 2, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 2, 4, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 5, 3, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 3, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 2, 4, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 5, 3, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0, 0));
 
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
 
-		tablaProceso.getItems().setAll(elementosTablaProcesos);
+//		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
 	/*
@@ -462,6 +462,8 @@ public class MainController {
 	private TableColumn<ElementoTablaProceso, Integer> es2Proceso;
 	@FXML
 	private TableColumn<ElementoTablaProceso, Integer> cpu3Proceso;
+	@FXML
+	private TableColumn<ElementoTablaProceso, Integer> prioridadProceso;
 
 	private ObservableList<ElementoTablaProceso> elementosTablaProcesos = FXCollections.observableArrayList();
 
@@ -484,6 +486,8 @@ public class MainController {
 	private TextField es2NuevoProceso;
 	@FXML
 	private TextField cpu3NuevoProceso;
+	@FXML
+	private TextField prioridadNuevoProceso;
 
 	// INICIALIZAR COLUMNAS TABLA PROCESOS
 	private void inicializarColumnasTablaProcesos() {
@@ -495,6 +499,7 @@ public class MainController {
 		cpu2Proceso.setCellValueFactory(new PropertyValueFactory<>("cpu2"));
 		es2Proceso.setCellValueFactory(new PropertyValueFactory<>("es2"));
 		cpu3Proceso.setCellValueFactory(new PropertyValueFactory<>("cpu3"));
+		prioridadProceso.setCellValueFactory(new PropertyValueFactory<>("prioridad"));
 	}
 
 	// EVENTO BOTON AGREGAR NUEVO PROCESO
@@ -509,6 +514,7 @@ public class MainController {
 			int cpu2NuevoProceso = Integer.parseInt(this.cpu2NuevoProceso.getText().trim());
 			int es2NuevoProceso = Integer.parseInt(this.es2NuevoProceso.getText().trim());
 			int cpu3NuevoProceso = Integer.parseInt(this.cpu3NuevoProceso.getText().trim());
+			int prioridadNuevoProceso = Integer.parseInt(this.prioridadNuevoProceso.getText().trim());
 
 			if (idProcesoNuevo <= 10) {
 
@@ -520,7 +526,7 @@ public class MainController {
 
 				ElementoTablaProceso proceso = new ElementoTablaProceso(idProcesoNuevo, tamanioNuevoProceso,
 						tArriboNuevoProceso, cpu1NuevoProceso, es1NuevoProceso, cpu2NuevoProceso, es2NuevoProceso,
-						cpu3NuevoProceso);
+						cpu3NuevoProceso, prioridadNuevoProceso);
 				elementosTablaProcesos.add(proceso);
 				tablaProceso.getItems().setAll(elementosTablaProcesos);
 				notificaciones.setText("Límite cantidad de procesos: 10 | Agregado proceso: " + idProcesoNuevo);

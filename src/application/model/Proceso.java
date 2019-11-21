@@ -9,8 +9,13 @@ public class Proceso implements Comparable<Proceso> {
 	int cpu2;
 	int es2;
 	int cpu3;
+	int prioridad;
 
-	public Proceso(int id, int tamanio, int tArribo, int cpu1, int es1, int cpu2, int es2, int cpu3) {
+	/*
+	 * CONSTRUCTOR
+	 * 
+	 */
+	public Proceso(int id, int tamanio, int tArribo, int cpu1, int es1, int cpu2, int es2, int cpu3, int prioridad) {
 		this.id = id;
 		this.tamanio = tamanio;
 		this.tArribo = tArribo;
@@ -19,8 +24,13 @@ public class Proceso implements Comparable<Proceso> {
 		this.cpu2 = cpu2;
 		this.es2 = es2;
 		this.cpu3 = cpu3;
+		this.prioridad = prioridad;
 	}
 
+	/*
+	 * GETTERS SETTERS
+	 * 
+	 */
 	public int getId() {
 		return id;
 	}
@@ -84,7 +94,19 @@ public class Proceso implements Comparable<Proceso> {
 	public void setCpu3(int cpu3) {
 		this.cpu3 = cpu3;
 	}
+	
+	public int getPrioridad() {
+		return prioridad;
+	}
+	
+	public void setPrioridad(int prioridad) {
+		this.prioridad = prioridad;
+	}
 
+	/*
+	 * OVERRIDE
+	 * 
+	 */
 	@Override
 	public int compareTo(Proceso o) {
 		if (tArribo == o.tArribo)

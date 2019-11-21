@@ -184,6 +184,7 @@
                                     <TableColumn fx:id="cpu2Proceso" prefWidth="75.0" text="CPU" />
                                     <TableColumn fx:id="es2Proceso" prefWidth="75.0" text="E/S" />
                                     <TableColumn fx:id="cpu3Proceso" prefWidth="75.0" text="CPU" />
+                                    <TableColumn fx:id="prioridadProceso" prefWidth="75.0" text="Prior." />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -191,7 +192,7 @@
                               </TableView>
                            </center>
                            <right>
-                              <VBox spacing="10.0" BorderPane.alignment="CENTER">
+                              <VBox spacing="6.0" BorderPane.alignment="CENTER">
                                  <children>
                                     <Label text="Tamaño: ">
                                        <opaqueInsets>
@@ -263,6 +264,8 @@
                                           <Insets />
                                        </opaqueInsets>
                                     </TextField>
+                                    <Label text="Prioridad:" />
+                                    <TextField fx:id="prioridadNuevoProceso" maxWidth="75.0" minWidth="120.0" text="0" />
                                     <Button fx:id="agregarProceso" minWidth="120.0" mnemonicParsing="false" onAction="#botonAgregarProceso" text="Agregar">
                                        <VBox.margin>
                                           <Insets top="20.0" />

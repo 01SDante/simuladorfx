@@ -92,7 +92,7 @@ public class FCFS {
 
 		for (ElementoTablaProceso p : tablaProcesos) {
 			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(), p.getCpu2(),
-					p.getEs2(), p.getCpu3());
+					p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
 			tIrrupcion += proceso.getCpu1() + proceso.getCpu2() + proceso.getCpu3();
 		}

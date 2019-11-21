@@ -12,8 +12,10 @@ public class ElementoTablaProceso {
 	private SimpleIntegerProperty cpu2;
 	private SimpleIntegerProperty es2;
 	private SimpleIntegerProperty cpu3;
+	private SimpleIntegerProperty prioridad;
 
-	public ElementoTablaProceso(int id, int tamanio, int tArribo, int cpu1, int es1, int cpu2, int es2, int cpu3) {
+	public ElementoTablaProceso(int id, int tamanio, int tArribo, int cpu1, int es1, int cpu2, int es2, int cpu3,
+			int prioridad) {
 		this.id = new SimpleIntegerProperty(id);
 		this.tamanio = new SimpleIntegerProperty(tamanio);
 		this.tArribo = new SimpleIntegerProperty(tArribo);
@@ -22,6 +24,7 @@ public class ElementoTablaProceso {
 		this.cpu2 = new SimpleIntegerProperty(cpu2);
 		this.es2 = new SimpleIntegerProperty(es2);
 		this.cpu3 = new SimpleIntegerProperty(cpu3);
+		this.prioridad = new SimpleIntegerProperty(prioridad);
 	}
 
 	public int getId() {
@@ -54,6 +57,10 @@ public class ElementoTablaProceso {
 
 	public int getCpu3() {
 		return cpu3.get();
+	}
+
+	public int getPrioridad() {
+		return prioridad.get();
 	}
 
 }
