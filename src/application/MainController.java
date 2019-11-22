@@ -4,6 +4,7 @@ import application.algorithms.FCFSFixedFirstFit;
 import application.algorithms.RRFixedFirstFit;
 import application.algorithms.SJFFixedFirstFit;
 import application.algorithms.SRTFFixedFirstFit;
+import application.algorithms.SRTFwPriorFixedFirstFit;
 import application.gantt.GanttCPU;
 import application.memory_map.MemoryMapController;
 import application.model.ElementoTablaParticion;
@@ -135,17 +136,27 @@ public class MainController {
 		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
 		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
 		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-//
+		
+		// ejercicio particiones fijas
 //		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 3, 0, 0, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 2, 4, 0, 0, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 5, 3, 0, 0, 0, 0, 0));
 //		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0, 0));
-
-		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
+		
+		// ejercicio 2
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
+		
+		// c/prioridad
+		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
+		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
+		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
+		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
+		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
+		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
 
 		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
@@ -234,6 +245,9 @@ public class MainController {
 
 		else if (algoritmos.getValue() == "SRTF")
 			SRTFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		
+		else if (algoritmos.getValue() == "SRTF (c/Prioridad)")
+			SRTFwPriorFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 
 		else if (algoritmos.getValue() == "Round-Robin")
 			RRFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
@@ -268,6 +282,9 @@ public class MainController {
 
 		else if (algoritmoEjecutado == "SRTF")
 			MemoryMapController.generarMapaMemoria(SRTFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
+			MemoryMapController.generarMapaMemoria(SRTFwPriorFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 
 		else if (algoritmoEjecutado == "Round-Robin")
 			MemoryMapController.generarMapaMemoria(RRFixedFirstFit.getMapaMemoria(), ram,
@@ -289,6 +306,9 @@ public class MainController {
 
 		else if (algoritmoEjecutado == "SRTF")
 			GanttCPU.generarGanttCPU(SRTFFixedFirstFit.getGanttCpu(), notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
+			GanttCPU.generarGanttCPU(SRTFwPriorFixedFirstFit.getGanttCpu(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "Round-Robin")
 			GanttCPU.generarGanttCPU(RRFixedFirstFit.getGanttCpu(),
@@ -313,6 +333,10 @@ public class MainController {
 		else if (algoritmoEjecutado == "SRTF")
 			StatisticsController.Statistics(SRTFFixedFirstFit.getSalida(), SRTFFixedFirstFit.getArribo(),
 					SRTFFixedFirstFit.getIrrupcion(), notificaciones.getText());
+		
+		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
+			StatisticsController.Statistics(SRTFwPriorFixedFirstFit.getSalida(), SRTFwPriorFixedFirstFit.getArribo(),
+					SRTFwPriorFixedFirstFit.getIrrupcion(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "Round-Robin")
 			StatisticsController.Statistics(RRFixedFirstFit.getSalida(), RRFixedFirstFit.getArribo(),

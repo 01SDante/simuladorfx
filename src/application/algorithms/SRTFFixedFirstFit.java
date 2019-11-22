@@ -198,6 +198,8 @@ public class SRTFFixedFirstFit {
 			t++;
 
 		} // Fin While
+		
+		salida[0] = tOcioso;
 
 	} // Fin SRTF
 
