@@ -1,6 +1,7 @@
 package application;
 
 import application.algorithms.FCFSFixedFirstFit;
+import application.algorithms.RRFixedFirstFit;
 import application.algorithms.SJFFixedFirstFit;
 import application.algorithms.SRTFFixedFirstFit;
 import application.gantt.GanttCPU;
@@ -123,14 +124,16 @@ public class MainController {
 		/*
 		 * -------- DATOS DE PRUEBA ---------
 		 */
-		limiteMemoria.setText("445");
+		limiteMemoria.setText("639");
 		limiteMemoria.setDisable(true);
-		cantidadParticionesFijas.setText("3");
+		cantidadParticionesFijas.setText("5");
 		cantidadParticionesFijas.setDisable(true);
 
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 120, 1, 120));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 200, 121, 320));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 80, 321, 400));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
 		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 //
 //		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 3, 0, 0, 0, 0, 0));
@@ -218,20 +221,24 @@ public class MainController {
 	}
 
 	// EVENTO BOTON EJECUTAR
-	
+
 	private String algoritmoEjecutado = "";
-	
+
 	@FXML
 	public void execute(ActionEvent event) {
 		if (algoritmos.getValue() == "FCFS")
 			FCFSFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-		
+
 		else if (algoritmos.getValue() == "SJF")
 			SJFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 
 		else if (algoritmos.getValue() == "SRTF")
 			SRTFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-		
+
+		else if (algoritmos.getValue() == "Round-Robin")
+			RRFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+					Integer.parseInt(quantum.getText()));
+
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
 
@@ -245,26 +252,30 @@ public class MainController {
 	// EVENTO BOTON MAPA DE MEMORIA
 	@FXML
 	public void loadMemoryMap(ActionEvent event) {
-		
+
 		// Calculo memoria del SO
 		int ram = Integer.parseInt(limiteMemoria.getText());
 		for (ElementoTablaParticion e : elementosTablaParticionesFijas) {
 			ram -= e.getTamanio();
 		}
-		
+
 		// Armo los mapas
 		if (algoritmoEjecutado == "FCFS")
 			MemoryMapController.generarMapaMemoria(FCFSFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
-		
-		else if(algoritmoEjecutado == "SJF")
+
+		else if (algoritmoEjecutado == "SJF")
 			MemoryMapController.generarMapaMemoria(SJFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
-		
+
 		else if (algoritmoEjecutado == "SRTF")
 			MemoryMapController.generarMapaMemoria(SRTFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
-		
+
+		else if (algoritmoEjecutado == "Round-Robin")
+			MemoryMapController.generarMapaMemoria(RRFixedFirstFit.getMapaMemoria(), ram,
+					notificaciones.getText() + " | Quantum = " + quantum.getText());
+
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
-		
+
 	}
 
 	// EVENTO BOTON GANTT
@@ -272,13 +283,17 @@ public class MainController {
 	public void loadGantt(ActionEvent event) {
 		if (algoritmoEjecutado == "FCFS")
 			GanttCPU.generarGanttCPU(FCFSFixedFirstFit.getGanttCpu(), notificaciones.getText());
-		
+
 		else if (algoritmoEjecutado == "SJF")
 			GanttCPU.generarGanttCPU(SJFFixedFirstFit.getGanttCpu(), notificaciones.getText());
-		
+
 		else if (algoritmoEjecutado == "SRTF")
 			GanttCPU.generarGanttCPU(SRTFFixedFirstFit.getGanttCpu(), notificaciones.getText());
-		
+
+		else if (algoritmoEjecutado == "Round-Robin")
+			GanttCPU.generarGanttCPU(RRFixedFirstFit.getGanttCpu(),
+					notificaciones.getText() + " | Quantum = " + quantum.getText());
+
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
 	}
@@ -290,7 +305,7 @@ public class MainController {
 		if (algoritmoEjecutado == "FCFS")
 			StatisticsController.Statistics(FCFSFixedFirstFit.getSalida(), FCFSFixedFirstFit.getArribo(),
 					FCFSFixedFirstFit.getIrrupcion(), notificaciones.getText());
-		
+
 		else if (algoritmoEjecutado == "SJF")
 			StatisticsController.Statistics(SJFFixedFirstFit.getSalida(), SJFFixedFirstFit.getArribo(),
 					SJFFixedFirstFit.getIrrupcion(), notificaciones.getText());
@@ -298,9 +313,14 @@ public class MainController {
 		else if (algoritmoEjecutado == "SRTF")
 			StatisticsController.Statistics(SRTFFixedFirstFit.getSalida(), SRTFFixedFirstFit.getArribo(),
 					SRTFFixedFirstFit.getIrrupcion(), notificaciones.getText());
+
+		else if (algoritmoEjecutado == "Round-Robin")
+			StatisticsController.Statistics(RRFixedFirstFit.getSalida(), RRFixedFirstFit.getArribo(),
+					RRFixedFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
-		
+
 	}
 
 	/*
@@ -382,8 +402,8 @@ public class MainController {
 	public void restriccionQuantum(ActionEvent event) {
 		try {
 			int quantum = Integer.parseInt(this.quantum.getText().trim());
-			if (quantum < 1 || quantum > 5) {
-				alerta("Ingresar un entero entre 3 y 5.");
+			if (quantum < 1 || quantum > 8) {
+				alerta("Ingresar un entero entre 1 y 8.");
 			}
 		} catch (Exception e) {
 			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
