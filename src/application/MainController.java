@@ -65,13 +65,16 @@ public class MainController {
 	private TextField quantum;
 
 	// CHOICEBOX
+	
 	private ObservableList<String> listaParticiones = FXCollections.observableArrayList("Fijas", "Variables");
+	
 	@FXML
 	private ChoiceBox<String> particiones;
 
 	private ObservableList<String> listaPoliticasFijas = FXCollections.observableArrayList("First-Fit", "Best-Fit");
 	private ObservableList<String> listaPoliticasVariables = FXCollections.observableArrayList("First-Fit",
 			"Worst-fit");
+	
 	@FXML
 	private ChoiceBox<String> politicas;
 
@@ -79,6 +82,11 @@ public class MainController {
 			"SRTF (c/Prioridad)", "Round-Robin", "Colas Multinivel");
 	@FXML
 	private ChoiceBox<String> algoritmos;
+	
+	private ObservableList<String> listaEs = FXCollections.observableArrayList(" 0 ", " 1 ", " 2 ");
+	
+	@FXML
+	private ChoiceBox<String> es;
 
 	// BARRA NOTIFICACIONES
 	@FXML
@@ -103,6 +111,9 @@ public class MainController {
 
 		algoritmos.setValue("FCFS");
 		algoritmos.setItems(listaAlgoritmos);
+		
+		es.setValue(" 0 ");
+		es.setItems(listaEs);
 
 		// EVENTO QUE DESCUENTA 0.10 A LA MEMORIA RAM INGRESADA
 		limiteMemoria.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -144,19 +155,19 @@ public class MainController {
 //		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0, 0));
 		
 		// ejercicio 2
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
+		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
 		
 		// c/prioridad
-		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
-		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
-		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
-		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
-		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
-		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
 
 		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
@@ -249,9 +260,15 @@ public class MainController {
 		else if (algoritmos.getValue() == "SRTF (c/Prioridad)")
 			SRTFwPriorFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 
-		else if (algoritmos.getValue() == "Round-Robin")
-			RRFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
-					Integer.parseInt(quantum.getText()));
+		else if (algoritmos.getValue() == "Round-Robin") {
+			try {
+				RRFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+						Integer.parseInt(quantum.getText()));
+			} catch (Exception e) {
+				System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+				alerta("Ingresar un entero para el campo 'Quantum'.");
+			}
+		}
 
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
@@ -377,6 +394,32 @@ public class MainController {
 			quantum.setDisable(false);
 		else
 			quantum.setDisable(true);
+		
+		if (algoritmos.getValue() == "SRTF (c/Prioridad)")
+			prioridadNuevoProceso.setDisable(false);
+		else
+			prioridadNuevoProceso.setDisable(true);
+	}
+	
+	// EVENTO CHOICEBOX RAFAGAS DE E/S
+	@FXML
+	public void rafagasEs(ActionEvent event) {
+		if (es.getValue() == " 1 ") {
+			es1NuevoProceso.setDisable(false);
+			cpu2NuevoProceso.setDisable(false);
+			es2NuevoProceso.setDisable(true);
+			cpu3NuevoProceso.setDisable(true);
+		} else if (es.getValue() == " 2 ") {
+			es1NuevoProceso.setDisable(false);
+			cpu2NuevoProceso.setDisable(false);
+			es2NuevoProceso.setDisable(false);
+			cpu3NuevoProceso.setDisable(false);
+		} else {
+			es1NuevoProceso.setDisable(true);
+			cpu2NuevoProceso.setDisable(true);
+			es2NuevoProceso.setDisable(true);
+			cpu3NuevoProceso.setDisable(true);
+		}
 	}
 
 	/*
@@ -412,8 +455,8 @@ public class MainController {
 	public void restriccionCantidadParticionesFijas(ActionEvent event) {
 		try {
 			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
-			if (cantidadParticionesFijas < 1 || cantidadParticionesFijas > 6) {
-				alerta("Ingresar un entero entre 1 y 6.");
+			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 10) {
+				alerta("Ingresar un entero entre 3 y 10.");
 			}
 		} catch (Exception e) {
 			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
@@ -490,8 +533,8 @@ public class MainController {
 		// RESTRICCION CANTIDAD PARTICIONES
 		try {
 			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
-			if (cantidadParticionesFijas < 1 || cantidadParticionesFijas > 6) {
-				alerta("Ingresar un entero entre 1 y 6 para el campo 'Cantidad'.");
+			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 10) {
+				alerta("Ingresar un entero entre 3 y 10 para el campo 'Cantidad'.");
 				return;
 			}
 		} catch (Exception e) {
