@@ -1,9 +1,14 @@
 package application;
 
+import application.algorithms.FCFSFijasBestFit;
 import application.algorithms.FCFSFijasFirstFit;
+import application.algorithms.RRFijasBestFit;
 import application.algorithms.RRFijasFirstFit;
+import application.algorithms.SJFFijasBestFit;
 import application.algorithms.SJFFijasFirstFit;
+import application.algorithms.SRTFFijasBestFit;
 import application.algorithms.SRTFFijasFirstFit;
+import application.algorithms.SRTFcPrioridadFijasBestFit;
 import application.algorithms.SRTFcPrioridadFijasFirstFit;
 import application.gantt.GanttCPU;
 import application.memory_map.MemoryMapController;
@@ -155,19 +160,19 @@ public class MainController {
 //		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0, 0));
 		
 		// ejercicio 2
-		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
-		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
 		
 		// c/prioridad
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
+		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
+		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
+		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
+		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
+		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
+		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
 
 		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
@@ -244,6 +249,8 @@ public class MainController {
 
 	// EVENTO BOTON EJECUTAR
 	private String algoritmoEjecutado = "";
+	private String particionesEjecutado = "";
+	private String politicaEjecutado = "";
 
 	@FXML
 	public void execute(ActionEvent event) {
@@ -251,51 +258,91 @@ public class MainController {
 		 * FCFS
 		 * 
 		 */
-		
-		// Particiones Fijas - First-Fit
-		if (algoritmos.getValue() == "FCFS" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
-			FCFSFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-		
-		// Particiones Fijas - Best-Fit
-		else if (algoritmos.getValue() == "FCFS" && particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
-			System.out.println("hola");
+		if (algoritmos.getValue() == "FCFS") {
+
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+				FCFSFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+			// Particiones Fijas - Best-Fit
+			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
+				FCFSFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		}
 
 		/*
 		 * SJF
 		 * 
 		 */
-		else if (algoritmos.getValue() == "SJF" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
-			SJFFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		else if (algoritmos.getValue() == "SJF") {
+
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+				SJFFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+			// Particiones Fijas - Best-Fit
+			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
+				SJFFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		}
 
 		/*
 		 * SRTF
 		 * 
 		 */
-		else if (algoritmos.getValue() == "SRTF" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
-			SRTFFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		else if (algoritmos.getValue() == "SRTF") {
+
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+				SRTFFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+			// Particiones Fijas - Best-Fit
+			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
+				SRTFFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		}
 		
 		/*
 		 * SRTF c/Prioridad
 		 * 
 		 */
-		else if (algoritmos.getValue() == "SRTF (c/Prioridad)" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+		else if (algoritmos.getValue() == "SRTF (c/Prioridad)") {
+				
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
 			SRTFcPrioridadFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		
+			// Particiones Fijas - Best-Fit
+			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
+				SRTFcPrioridadFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		}
 
 		/*
 		 * Round-Robin
 		 * 
 		 */
-		else if (algoritmos.getValue() == "Round-Robin" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
-			try {
-				RRFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
-						Integer.parseInt(quantum.getText()));
-			} catch (Exception e) {
-				System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
-				alerta("Ingresar un entero para el campo 'Quantum'.");
+		else if (algoritmos.getValue() == "Round-Robin") {
+			
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
+				try {
+					RRFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+							Integer.parseInt(quantum.getText()));
+				} catch (Exception e) {
+					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+					alerta("Ingresar un entero para el campo 'Quantum'.");
+				}
 			}
-		}
+			
+			// Particiones Fijas - Best-Fit
+			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit") {
+				try {
+					RRFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+							Integer.parseInt(quantum.getText()));
+				} catch (Exception e) {
+					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+					alerta("Ingresar un entero para el campo 'Quantum'.");
+				}
+			}
 
-		else
+		} else
 			System.out.println(algoritmos.getValue() + " not yet.");
 
 		// Armo la barra de notificaciones
@@ -303,6 +350,8 @@ public class MainController {
 				+ particiones.getValue() + " | Política " + politicas.getValue());
 		// Para armar los titulos de las salidas
 		algoritmoEjecutado = algoritmos.getValue();
+		particionesEjecutado = particiones.getValue();
+		politicaEjecutado = politicas.getValue();
 	}
 
 	// EVENTO BOTON MAPA DE MEMORIA
@@ -316,21 +365,61 @@ public class MainController {
 		}
 
 		// Armo los mapas
-		if (algoritmoEjecutado == "FCFS")
-			MemoryMapController.generarMapaMemoria(FCFSFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
-
-		else if (algoritmoEjecutado == "SJF")
-			MemoryMapController.generarMapaMemoria(SJFFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
-
-		else if (algoritmoEjecutado == "SRTF")
-			MemoryMapController.generarMapaMemoria(SRTFFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 		
-		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
-			MemoryMapController.generarMapaMemoria(SRTFcPrioridadFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+		/*
+		 * FCFS
+		 * 
+		 */
+		if (algoritmoEjecutado == "FCFS") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoria(FCFSFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				MemoryMapController.generarMapaMemoria(FCFSFijasBestFit.getMapaMemoria(), ram, notificaciones.getText());
+		}
 
-		else if (algoritmoEjecutado == "Round-Robin")
-			MemoryMapController.generarMapaMemoria(RRFijasFirstFit.getMapaMemoria(), ram,
-					notificaciones.getText() + " | Quantum = " + quantum.getText());
+		/*
+		 * SJF
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SJF") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoria(SJFFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				MemoryMapController.generarMapaMemoria(SJFFijasBestFit.getMapaMemoria(), ram, notificaciones.getText());
+		}
+
+		/*
+		 * SRTF
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SRTF") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoria(SRTFFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				MemoryMapController.generarMapaMemoria(SRTFFijasBestFit.getMapaMemoria(), ram, notificaciones.getText());
+		}
+		
+		/*
+		 * SRTF c/Prioridad
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SRTF (c/Prioridad)") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoria(SRTFcPrioridadFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				MemoryMapController.generarMapaMemoria(SRTFcPrioridadFijasBestFit.getMapaMemoria(), ram, notificaciones.getText());
+		}
+
+		/*
+		 * Round-Robin
+		 * 
+		 */
+		else if (algoritmoEjecutado == "Round-Robin") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoria(RRFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText() + " | Quantum = " + quantum.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				MemoryMapController.generarMapaMemoria(RRFijasBestFit.getMapaMemoria(), ram, notificaciones.getText() + " | Quantum = " + quantum.getText());
+		}
 
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
@@ -340,21 +429,61 @@ public class MainController {
 	// EVENTO BOTON GANTT
 	@FXML
 	public void loadGantt(ActionEvent event) {
-		if (algoritmoEjecutado == "FCFS")
-			GanttCPU.generarGanttCPU(FCFSFijasFirstFit.getGanttCpu(), notificaciones.getText());
-
-		else if (algoritmoEjecutado == "SJF")
-			GanttCPU.generarGanttCPU(SJFFijasFirstFit.getGanttCpu(), notificaciones.getText());
-
-		else if (algoritmoEjecutado == "SRTF")
-			GanttCPU.generarGanttCPU(SRTFFijasFirstFit.getGanttCpu(), notificaciones.getText());
 		
-		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
-			GanttCPU.generarGanttCPU(SRTFcPrioridadFijasFirstFit.getGanttCpu(), notificaciones.getText());
+		/*
+		 * FCFS
+		 * 
+		 */
+		if (algoritmoEjecutado == "FCFS") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(FCFSFijasFirstFit.getGanttCpu(), notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				GanttCPU.generarGanttCPU(FCFSFijasBestFit.getGanttCpu(), notificaciones.getText());
+		}
 
-		else if (algoritmoEjecutado == "Round-Robin")
-			GanttCPU.generarGanttCPU(RRFijasFirstFit.getGanttCpu(),
-					notificaciones.getText() + " | Quantum = " + quantum.getText());
+		/*
+		 * SJF
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SJF") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(SJFFijasFirstFit.getGanttCpu(), notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				GanttCPU.generarGanttCPU(SJFFijasBestFit.getGanttCpu(), notificaciones.getText());
+		}
+
+		/*
+		 * SRTF
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SRTF") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(SRTFFijasFirstFit.getGanttCpu(), notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				GanttCPU.generarGanttCPU(SRTFFijasBestFit.getGanttCpu(), notificaciones.getText());
+		}
+		
+		/*
+		 * SRTF c/Prioridad
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SRTF (c/Prioridad)") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(SRTFcPrioridadFijasFirstFit.getGanttCpu(), notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				GanttCPU.generarGanttCPU(SRTFcPrioridadFijasBestFit.getGanttCpu(), notificaciones.getText());
+		}
+
+		/*
+		 * Round-Robin
+		 * 
+		 */
+		else if (algoritmoEjecutado == "Round-Robin") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(RRFijasFirstFit.getGanttCpu(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				GanttCPU.generarGanttCPU(RRFijasBestFit.getGanttCpu(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+		}
 
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");
@@ -364,25 +493,94 @@ public class MainController {
 	@FXML
 	public void loadStatistics(ActionEvent event) {
 
-		if (algoritmoEjecutado == "FCFS")
-			StatisticsController.Statistics(FCFSFijasFirstFit.getSalida(), FCFSFijasFirstFit.getArribo(),
-					FCFSFijasFirstFit.getIrrupcion(), notificaciones.getText());
-
-		else if (algoritmoEjecutado == "SJF")
-			StatisticsController.Statistics(SJFFijasFirstFit.getSalida(), SJFFijasFirstFit.getArribo(),
-					SJFFijasFirstFit.getIrrupcion(), notificaciones.getText());
-
-		else if (algoritmoEjecutado == "SRTF")
-			StatisticsController.Statistics(SRTFFijasFirstFit.getSalida(), SRTFFijasFirstFit.getArribo(),
-					SRTFFijasFirstFit.getIrrupcion(), notificaciones.getText());
+		/*
+		 * FCFS
+		 * 
+		 */
+		if (algoritmoEjecutado == "FCFS") {
+			
+			// Particiones Fijas - First-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(FCFSFijasFirstFit.getSalida(), FCFSFijasFirstFit.getArribo(),
+						FCFSFijasFirstFit.getIrrupcion(), notificaciones.getText());
+			
+			// Particiones Fijas - Best-Fit
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				StatisticsController.Statistics(FCFSFijasBestFit.getSalida(), FCFSFijasBestFit.getArribo(),
+						FCFSFijasBestFit.getIrrupcion(), notificaciones.getText());
+		}
 		
-		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
-			StatisticsController.Statistics(SRTFcPrioridadFijasFirstFit.getSalida(), SRTFcPrioridadFijasFirstFit.getArribo(),
-					SRTFcPrioridadFijasFirstFit.getIrrupcion(), notificaciones.getText());
 
-		else if (algoritmoEjecutado == "Round-Robin")
-			StatisticsController.Statistics(RRFijasFirstFit.getSalida(), RRFijasFirstFit.getArribo(),
-					RRFijasFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+		/*
+		 * SJF
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SJF") {
+
+			// Particiones Fijas - First-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(SJFFijasFirstFit.getSalida(), SJFFijasFirstFit.getArribo(),
+						SJFFijasFirstFit.getIrrupcion(), notificaciones.getText());
+
+			// Particiones Fijas - Best-Fit
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				StatisticsController.Statistics(SJFFijasBestFit.getSalida(), SJFFijasBestFit.getArribo(),
+						SJFFijasBestFit.getIrrupcion(), notificaciones.getText());
+
+		}
+
+		/*
+		 * SRTF
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SRTF") {
+			
+			// Particiones Fijas - First-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(SRTFFijasFirstFit.getSalida(), SRTFFijasFirstFit.getArribo(),
+						SRTFFijasFirstFit.getIrrupcion(), notificaciones.getText());
+
+			// Particiones Fijas - Best-Fit
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				StatisticsController.Statistics(SRTFFijasBestFit.getSalida(), SRTFFijasBestFit.getArribo(),
+						SRTFFijasBestFit.getIrrupcion(), notificaciones.getText());
+		}
+		
+		/*
+		 * SRTF c/Prioridad
+		 * 
+		 */
+		else if (algoritmoEjecutado == "SRTF (c/Prioridad)") {
+
+			// Particiones Fijas - First-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(SRTFcPrioridadFijasFirstFit.getSalida(),
+						SRTFcPrioridadFijasFirstFit.getArribo(), SRTFcPrioridadFijasFirstFit.getIrrupcion(),
+						notificaciones.getText());
+
+			// Particiones Fijas - Best-Fit
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				StatisticsController.Statistics(SRTFcPrioridadFijasBestFit.getSalida(),
+						SRTFcPrioridadFijasBestFit.getArribo(), SRTFcPrioridadFijasBestFit.getIrrupcion(),
+						notificaciones.getText());
+		}
+
+		/*
+		 * Round-Robin
+		 * 
+		 */
+		else if (algoritmoEjecutado == "Round-Robin") {
+			
+			// Particiones Fijas - First-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(RRFijasFirstFit.getSalida(), RRFijasFirstFit.getArribo(),
+						RRFijasFirstFit.getIrrupcion(), notificaciones.getText());
+
+			// Particiones Fijas - Best-Fit
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				StatisticsController.Statistics(RRFijasBestFit.getSalida(), RRFijasBestFit.getArribo(),
+						RRFijasBestFit.getIrrupcion(), notificaciones.getText());
+		}
 
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");

@@ -6,10 +6,10 @@ import java.util.Collections;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
 import application.model.Particion;
-import application.model.ProcesoSJF;
+import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class SJFFijasFirstFit {
+public class SRTFcPrioridadFijasBestFit {
 
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
@@ -59,15 +59,15 @@ public class SJFFijasFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SJF - Particiones Fijas - FirstFit\n");
+		System.out.println("SRTF c/Prioridad - Particiones Fijas - BestFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
-		ArrayList<ProcesoSJF> procesos = new ArrayList<ProcesoSJF>();
+		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
 
-		ArrayList<ProcesoSJF> nuevos = new ArrayList<ProcesoSJF>();
-		ArrayList<ProcesoSJF> listos = new ArrayList<ProcesoSJF>();
+		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
+		ArrayList<Proceso> listos = new ArrayList<Proceso>();
 
-		ArrayList<ProcesoSJF> ejecutandoCpu = new ArrayList<ProcesoSJF>();
+		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
@@ -89,7 +89,7 @@ public class SJFFijasFirstFit {
 		int tIrrupcion = 0; // Para controlar el bucle principal
 
 		for (ElementoTablaProceso p : tablaProcesos) {
-			ProcesoSJF proceso = new ProcesoSJF(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
+			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
 			tIrrupcion += proceso.getCpu1();
@@ -125,7 +125,7 @@ public class SJFFijasFirstFit {
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
 			 */
-			for (ProcesoSJF p : procesos) {
+			for (Proceso p : procesos) {
 				if (p.getTArribo() == t) {
 					nuevos.add(p);
 					if (p.getId() == idUltimoProceso)
@@ -154,17 +154,33 @@ public class SJFFijasFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
-				ProcesoSJF pNuevo = nuevos.get(i);
+				Proceso pNuevo = nuevos.get(i);
+				
+				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
+				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
+				
+				// Recorro la lista de particiones para encontrar el mejor ajuste
 				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
-						listos.add(pNuevo);
-						particion.setProceso(pNuevo.getId());
-						particion.setLibre(false);
-						nuevos.remove(i);
-						i--;// Para evitar ConcurrentModificationException
-						break;
+					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
+						tamanioBestFit = particion.getTamanio();
+						posicionBestFit = particion.getId();
 					}
 				}
+				
+				// Si la encuentro, le asigno el proceso nuevo
+				if (posicionBestFit != 0) {
+					for (Particion particion: particiones) {
+						if (particion.getId() == posicionBestFit) {
+							listos.add(pNuevo);
+							particion.setProceso(pNuevo.getId());
+							particion.setLibre(false);
+							nuevos.remove(i);
+							i--;// Para evitar ConcurrentModificationException
+							break;
+						}
+					}
+				}
+				
 			}
 
 			/*
@@ -172,7 +188,7 @@ public class SJFFijasFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < listos.size(); i++) {
-				ProcesoSJF pListo = listos.get(i);
+				Proceso pListo = listos.get(i);
 				ejecutandoCpu.add(pListo);
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
@@ -201,33 +217,47 @@ public class SJFFijasFirstFit {
 
 		salida[0] = tOcioso;
 
-	} // Fin SJF
+	} // Fin SRTF
 
 	/*
 	 * METODO EJECUTAR CPU
 	 * 
 	 */
-	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<ProcesoSJF> procesos,
-			ArrayList<ProcesoSJF> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		/*
-		 * Veo si el primero se esta ejcutando, si es asi lo saco momentaneamente y
-		 * ordeno el resto de los procesos segun menor tiempo remanente
-		 * 
-		 * Sino ordeno directamente
-		 * 
-		 */
-		if (ejecutandoCpu.get(0).getEstaEjecutando()) {
-			ProcesoSJF temporal = ejecutandoCpu.get(0);
-			ejecutandoCpu.remove(0);
-			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
-			ejecutandoCpu.add(0, temporal);
-		} else {
-			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
-			ejecutandoCpu.get(0).setEstaEjecutando(true);
+		// Ordeno por menor tiempo remanente
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+
+		// Guardo el primero
+		Proceso procesoActual = ejecutandoCpu.get(0);
+
+		// Luego me fijo si hay tiempos remanentes iguales
+		ArrayList<Proceso> aux = new ArrayList<Proceso>();
+
+		if (ejecutandoCpu.size() > 1) {
+			for (int i = 1; i < ejecutandoCpu.size(); i++) {
+				if (procesoActual.getTArribo() == ejecutandoCpu.get(i).getTArribo())
+					aux.add(ejecutandoCpu.get(i)); // Si hay los agrego a una lista auxiliar
+			}
 		}
 
-		ProcesoSJF procesoActual = ejecutandoCpu.get(0);
+		// Ordeno la lista por prioridad de menor a mayor
+		if (!aux.isEmpty()) { // Si hay ocurrencias
+			// Agrego al actual
+			aux.add(procesoActual);
+			// Y ordeno por prioridad de menor a mayor
+			Collections.sort(aux, new OrdenarPorPrioridad());
+			// Y los agrego a ejecutandoCpu desde el menor al mayor
+			while (!aux.isEmpty()) {
+				Proceso ProcesoAux = aux.get(0);
+				ejecutandoCpu.add(0, ProcesoAux);
+				aux.remove(0);
+			}
+			// Actualizo procesoActual
+			procesoActual = ejecutandoCpu.get(0);
+		}
+
 		int cpu = procesoActual.getCpu1();
 		cpu--;
 

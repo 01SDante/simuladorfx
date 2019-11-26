@@ -59,7 +59,7 @@ public class SRTFcPrioridadFijasFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SRTF - Particiones Fijas - FirstFit\n");
+		System.out.println("SRTF c/Prioridad - Particiones Fijas - FirstFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -273,6 +273,5 @@ public class SRTFcPrioridadFijasFirstFit {
 		}
 
 	}
-
 
 }

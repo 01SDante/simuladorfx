@@ -9,7 +9,7 @@ import application.model.Particion;
 import application.model.ProcesoSJF;
 import javafx.collections.ObservableList;
 
-public class SJFFijasFirstFit {
+public class SJFFijasBestFit {
 
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
@@ -59,7 +59,7 @@ public class SJFFijasFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SJF - Particiones Fijas - FirstFit\n");
+		System.out.println("SJF - Particiones Fijas - BestFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<ProcesoSJF> procesos = new ArrayList<ProcesoSJF>();
@@ -153,18 +153,35 @@ public class SJFFijasFirstFit {
 			 * ARMO LA COLA DE LISTOS EN INSTANTE t
 			 * 
 			 */
+			
 			for (int i = 0; i < nuevos.size(); i++) {
 				ProcesoSJF pNuevo = nuevos.get(i);
+				
+				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
+				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
+				
+				// Recorro la lista de particiones para encontrar el mejor ajuste
 				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
-						listos.add(pNuevo);
-						particion.setProceso(pNuevo.getId());
-						particion.setLibre(false);
-						nuevos.remove(i);
-						i--;// Para evitar ConcurrentModificationException
-						break;
+					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
+						tamanioBestFit = particion.getTamanio();
+						posicionBestFit = particion.getId();
 					}
 				}
+				
+				// Si la encuentro, le asigno el proceso nuevo
+				if (posicionBestFit != 0) {
+					for (Particion particion: particiones) {
+						if (particion.getId() == posicionBestFit) {
+							listos.add(pNuevo);
+							particion.setProceso(pNuevo.getId());
+							particion.setLibre(false);
+							nuevos.remove(i);
+							i--;// Para evitar ConcurrentModificationException
+							break;
+						}
+					}
+				}
+				
 			}
 
 			/*
