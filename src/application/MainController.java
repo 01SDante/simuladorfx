@@ -1,10 +1,10 @@
 package application;
 
-import application.algorithms.FCFSFixedFirstFit;
-import application.algorithms.RRFixedFirstFit;
-import application.algorithms.SJFFixedFirstFit;
-import application.algorithms.SRTFFixedFirstFit;
-import application.algorithms.SRTFwPriorFixedFirstFit;
+import application.algorithms.FCFSFijasFirstFit;
+import application.algorithms.RRFijasFirstFit;
+import application.algorithms.SJFFijasFirstFit;
+import application.algorithms.SRTFFijasFirstFit;
+import application.algorithms.SRTFcPrioridadFijasFirstFit;
 import application.gantt.GanttCPU;
 import application.memory_map.MemoryMapController;
 import application.model.ElementoTablaParticion;
@@ -243,26 +243,51 @@ public class MainController {
 	}
 
 	// EVENTO BOTON EJECUTAR
-
 	private String algoritmoEjecutado = "";
 
 	@FXML
 	public void execute(ActionEvent event) {
-		if (algoritmos.getValue() == "FCFS")
-			FCFSFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-
-		else if (algoritmos.getValue() == "SJF")
-			SJFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-
-		else if (algoritmos.getValue() == "SRTF")
-			SRTFFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		/*
+		 * FCFS
+		 * 
+		 */
 		
-		else if (algoritmos.getValue() == "SRTF (c/Prioridad)")
-			SRTFwPriorFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		// Particiones Fijas - First-Fit
+		if (algoritmos.getValue() == "FCFS" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+			FCFSFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		
+		// Particiones Fijas - Best-Fit
+		else if (algoritmos.getValue() == "FCFS" && particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
+			System.out.println("hola");
 
-		else if (algoritmos.getValue() == "Round-Robin") {
+		/*
+		 * SJF
+		 * 
+		 */
+		else if (algoritmos.getValue() == "SJF" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+			SJFFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+		/*
+		 * SRTF
+		 * 
+		 */
+		else if (algoritmos.getValue() == "SRTF" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+			SRTFFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+		
+		/*
+		 * SRTF c/Prioridad
+		 * 
+		 */
+		else if (algoritmos.getValue() == "SRTF (c/Prioridad)" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+			SRTFcPrioridadFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+		/*
+		 * Round-Robin
+		 * 
+		 */
+		else if (algoritmos.getValue() == "Round-Robin" && particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
 			try {
-				RRFixedFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+				RRFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
 						Integer.parseInt(quantum.getText()));
 			} catch (Exception e) {
 				System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
@@ -292,19 +317,19 @@ public class MainController {
 
 		// Armo los mapas
 		if (algoritmoEjecutado == "FCFS")
-			MemoryMapController.generarMapaMemoria(FCFSFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			MemoryMapController.generarMapaMemoria(FCFSFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SJF")
-			MemoryMapController.generarMapaMemoria(SJFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			MemoryMapController.generarMapaMemoria(SJFFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SRTF")
-			MemoryMapController.generarMapaMemoria(SRTFFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			MemoryMapController.generarMapaMemoria(SRTFFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 		
 		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
-			MemoryMapController.generarMapaMemoria(SRTFwPriorFixedFirstFit.getMapaMemoria(), ram, notificaciones.getText());
+			MemoryMapController.generarMapaMemoria(SRTFcPrioridadFijasFirstFit.getMapaMemoria(), ram, notificaciones.getText());
 
 		else if (algoritmoEjecutado == "Round-Robin")
-			MemoryMapController.generarMapaMemoria(RRFixedFirstFit.getMapaMemoria(), ram,
+			MemoryMapController.generarMapaMemoria(RRFijasFirstFit.getMapaMemoria(), ram,
 					notificaciones.getText() + " | Quantum = " + quantum.getText());
 
 		else
@@ -316,19 +341,19 @@ public class MainController {
 	@FXML
 	public void loadGantt(ActionEvent event) {
 		if (algoritmoEjecutado == "FCFS")
-			GanttCPU.generarGanttCPU(FCFSFixedFirstFit.getGanttCpu(), notificaciones.getText());
+			GanttCPU.generarGanttCPU(FCFSFijasFirstFit.getGanttCpu(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SJF")
-			GanttCPU.generarGanttCPU(SJFFixedFirstFit.getGanttCpu(), notificaciones.getText());
+			GanttCPU.generarGanttCPU(SJFFijasFirstFit.getGanttCpu(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SRTF")
-			GanttCPU.generarGanttCPU(SRTFFixedFirstFit.getGanttCpu(), notificaciones.getText());
+			GanttCPU.generarGanttCPU(SRTFFijasFirstFit.getGanttCpu(), notificaciones.getText());
 		
 		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
-			GanttCPU.generarGanttCPU(SRTFwPriorFixedFirstFit.getGanttCpu(), notificaciones.getText());
+			GanttCPU.generarGanttCPU(SRTFcPrioridadFijasFirstFit.getGanttCpu(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "Round-Robin")
-			GanttCPU.generarGanttCPU(RRFixedFirstFit.getGanttCpu(),
+			GanttCPU.generarGanttCPU(RRFijasFirstFit.getGanttCpu(),
 					notificaciones.getText() + " | Quantum = " + quantum.getText());
 
 		else
@@ -340,24 +365,24 @@ public class MainController {
 	public void loadStatistics(ActionEvent event) {
 
 		if (algoritmoEjecutado == "FCFS")
-			StatisticsController.Statistics(FCFSFixedFirstFit.getSalida(), FCFSFixedFirstFit.getArribo(),
-					FCFSFixedFirstFit.getIrrupcion(), notificaciones.getText());
+			StatisticsController.Statistics(FCFSFijasFirstFit.getSalida(), FCFSFijasFirstFit.getArribo(),
+					FCFSFijasFirstFit.getIrrupcion(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SJF")
-			StatisticsController.Statistics(SJFFixedFirstFit.getSalida(), SJFFixedFirstFit.getArribo(),
-					SJFFixedFirstFit.getIrrupcion(), notificaciones.getText());
+			StatisticsController.Statistics(SJFFijasFirstFit.getSalida(), SJFFijasFirstFit.getArribo(),
+					SJFFijasFirstFit.getIrrupcion(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "SRTF")
-			StatisticsController.Statistics(SRTFFixedFirstFit.getSalida(), SRTFFixedFirstFit.getArribo(),
-					SRTFFixedFirstFit.getIrrupcion(), notificaciones.getText());
+			StatisticsController.Statistics(SRTFFijasFirstFit.getSalida(), SRTFFijasFirstFit.getArribo(),
+					SRTFFijasFirstFit.getIrrupcion(), notificaciones.getText());
 		
 		else if (algoritmoEjecutado == "SRTF (c/Prioridad)")
-			StatisticsController.Statistics(SRTFwPriorFixedFirstFit.getSalida(), SRTFwPriorFixedFirstFit.getArribo(),
-					SRTFwPriorFixedFirstFit.getIrrupcion(), notificaciones.getText());
+			StatisticsController.Statistics(SRTFcPrioridadFijasFirstFit.getSalida(), SRTFcPrioridadFijasFirstFit.getArribo(),
+					SRTFcPrioridadFijasFirstFit.getIrrupcion(), notificaciones.getText());
 
 		else if (algoritmoEjecutado == "Round-Robin")
-			StatisticsController.Statistics(RRFixedFirstFit.getSalida(), RRFixedFirstFit.getArribo(),
-					RRFixedFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+			StatisticsController.Statistics(RRFijasFirstFit.getSalida(), RRFijasFirstFit.getArribo(),
+					RRFijasFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
 
 		else
 			System.out.println(algoritmos.getValue() + " not yet.");

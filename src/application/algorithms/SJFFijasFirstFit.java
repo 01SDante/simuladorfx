@@ -6,10 +6,10 @@ import java.util.Collections;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
 import application.model.Particion;
-import application.model.Proceso;
+import application.model.ProcesoSJF;
 import javafx.collections.ObservableList;
 
-public class SRTFFixedFirstFit {
+public class SJFFijasFirstFit {
 
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
@@ -59,15 +59,15 @@ public class SRTFFixedFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SRTF - Particiones Fijas - FirstFit\n");
+		System.out.println("SJF - Particiones Fijas - FirstFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
-		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
+		ArrayList<ProcesoSJF> procesos = new ArrayList<ProcesoSJF>();
 
-		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
-		ArrayList<Proceso> listos = new ArrayList<Proceso>();
+		ArrayList<ProcesoSJF> nuevos = new ArrayList<ProcesoSJF>();
+		ArrayList<ProcesoSJF> listos = new ArrayList<ProcesoSJF>();
 
-		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
+		ArrayList<ProcesoSJF> ejecutandoCpu = new ArrayList<ProcesoSJF>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
@@ -89,7 +89,7 @@ public class SRTFFixedFirstFit {
 		int tIrrupcion = 0; // Para controlar el bucle principal
 
 		for (ElementoTablaProceso p : tablaProcesos) {
-			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
+			ProcesoSJF proceso = new ProcesoSJF(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
 			tIrrupcion += proceso.getCpu1();
@@ -125,7 +125,7 @@ public class SRTFFixedFirstFit {
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
 			 */
-			for (Proceso p : procesos) {
+			for (ProcesoSJF p : procesos) {
 				if (p.getTArribo() == t) {
 					nuevos.add(p);
 					if (p.getId() == idUltimoProceso)
@@ -154,7 +154,7 @@ public class SRTFFixedFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
-				Proceso pNuevo = nuevos.get(i);
+				ProcesoSJF pNuevo = nuevos.get(i);
 				for (Particion particion : particiones) {
 					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
 						listos.add(pNuevo);
@@ -172,7 +172,7 @@ public class SRTFFixedFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < listos.size(); i++) {
-				Proceso pListo = listos.get(i);
+				ProcesoSJF pListo = listos.get(i);
 				ejecutandoCpu.add(pListo);
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
@@ -201,22 +201,33 @@ public class SRTFFixedFirstFit {
 		
 		salida[0] = tOcioso;
 
-	} // Fin SRTF
+	} // Fin SJF
 
 	/*
 	 * METODO EJECUTAR CPU
 	 * 
 	 */
-	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<ProcesoSJF> procesos,
+			ArrayList<ProcesoSJF> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
 		/*
-		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * Veo si el primero se esta ejcutando, si es asi lo saco momentaneamente y
+		 * ordeno el resto de los procesos segun menor tiempo remanente
+		 * 
+		 * Sino ordeno directamente
 		 * 
 		 */
-		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+		if (ejecutandoCpu.get(0).getEstaEjecutando()) {
+			ProcesoSJF temporal = ejecutandoCpu.get(0);
+			ejecutandoCpu.remove(0);
+			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+			ejecutandoCpu.add(0, temporal);
+		} else {
+			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+			ejecutandoCpu.get(0).setEstaEjecutando(true);
+		}
 
-		Proceso procesoActual = ejecutandoCpu.get(0);
+		ProcesoSJF procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
 
@@ -248,5 +259,4 @@ public class SRTFFixedFirstFit {
 		}
 
 	}
-
 }

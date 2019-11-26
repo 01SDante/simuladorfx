@@ -9,7 +9,7 @@ import application.model.Particion;
 import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class RRFixedFirstFit {
+public class RRFijasFirstFit {
 
 	private static ArrayList<ArrayList<Particion>> mapaMemoria;
 

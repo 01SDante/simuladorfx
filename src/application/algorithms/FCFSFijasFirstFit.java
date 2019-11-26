@@ -9,8 +9,8 @@ import application.model.Particion;
 import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class SRTFwPriorFixedFirstFit {
-	
+public class FCFSFijasFirstFit {
+
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
 	public static ArrayList<Integer> ganttCpu;
@@ -59,7 +59,7 @@ public class SRTFwPriorFixedFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SRTF - Particiones Fijas - FirstFit\n");
+		System.out.println("FCFS - Particiones Fijas - FirstFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -201,7 +201,7 @@ public class SRTFwPriorFixedFirstFit {
 		
 		salida[0] = tOcioso;
 
-	} // Fin SRTF
+	} // Fin FCFS
 
 	/*
 	 * METODO EJECUTAR CPU
@@ -210,44 +210,13 @@ public class SRTFwPriorFixedFirstFit {
 	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
 			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		// Ordeno por menor tiempo remanente
-		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
-		
-		// Guardo el primero
 		Proceso procesoActual = ejecutandoCpu.get(0);
-
-		// Luego me fijo si hay tiempos remanentes iguales
-		ArrayList<Proceso> aux = new ArrayList<Proceso>();
-		
-		if (ejecutandoCpu.size() > 1) {
-			for (int i=1; i < ejecutandoCpu.size(); i++) {
-				if (procesoActual.getTArribo() == ejecutandoCpu.get(i).getTArribo())
-					aux.add(ejecutandoCpu.get(i)); // Si hay los agrego a una lista auxiliar
-			}
-		}
-		
-		// Ordeno la lista por prioridad de menor a mayor
-		if (!aux.isEmpty()) { // Si hay ocurrencias
-			// Agrego al actual
-			aux.add(procesoActual);
-			// Y ordeno por prioridad de menor a mayor
-			Collections.sort(aux, new OrdenarPorPrioridad());
-			// Y los agrego a ejecutandoCpu desde el menor al mayor
-			while (!aux.isEmpty()) {
-				Proceso ProcesoAux = aux.get(0);
-				ejecutandoCpu.add(0, ProcesoAux);
-				aux.remove(0);
-			}
-			// Actualizo procesoActual
-			procesoActual = ejecutandoCpu.get(0);
-		}
-		
 		int cpu = procesoActual.getCpu1();
 		cpu--;
 
 		// Actualizo Gantt
 		ganttCpu.add(procesoActual.getId());
-
+		
 		// Actualizo el valor de CPU1
 		procesoActual.setCpu1(cpu);
 		ejecutandoCpu.remove(0);
@@ -273,6 +242,5 @@ public class SRTFwPriorFixedFirstFit {
 		}
 
 	}
-
 
 }
