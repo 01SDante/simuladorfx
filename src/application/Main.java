@@ -15,12 +15,14 @@ public class Main extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws IOException {
+	public void start(Stage ventanaPrincipal) throws IOException {
 		Parent root = (Parent) FXMLLoader.load(getClass().getResource("Main.fxml"));
 		Scene scene = new Scene(root);
-		primaryStage.setScene(scene);
-		primaryStage.setResizable(false);
-		primaryStage.show();
+		ventanaPrincipal.setScene(scene);
+		ventanaPrincipal.setTitle("Simulador FX");
+		ventanaPrincipal.setResizable(false);
+		ventanaPrincipal.setOnCloseRequest(e -> System.exit(0));
+		ventanaPrincipal.show();
 	}
 
 }

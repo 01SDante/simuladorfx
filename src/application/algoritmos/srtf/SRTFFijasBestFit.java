@@ -1,23 +1,25 @@
-package application.algorithms;
+package application.algoritmos.srtf;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import application.algoritmos.util.OrdenarPorCPU1;
+import application.algoritmos.util.OrdenarPorTArribo;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
 import application.model.Particion;
 import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class RRFijasBestFit {
+public class SRTFFijasBestFit {
 
-	private static ArrayList<ArrayList<Particion>> mapaMemoria;
+	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
-	private static ArrayList<Integer> ganttCpu;
+	public static ArrayList<Integer> ganttCpu;
 
-	private static int[] salida;
-	private static int[] arribo;
-	private static int[] irrupcion;
+	public static int[] salida;
+	public static int[] arribo;
+	public static int[] irrupcion;
 
 	/*
 	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
@@ -52,36 +54,14 @@ public class RRFijasBestFit {
 		return irrupcion;
 	}
 
-	// quantum
-	private static int q;
-
-	public static int getQ() {
-		return q;
-	}
-
-	public static void setQ(int quantum) {
-		q = quantum;
-	}
-
-	// Proceso auxiliar
-	private static Proceso procesoAux;
-
-	public static Proceso getProcesoAux() {
-		return procesoAux;
-	}
-
-	public static void setProcesoAux(Proceso p) {
-		procesoAux = p;
-	}
-
 	/*
 	 * EJECUTAR
 	 * 
 	 */
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
-			ObservableList<ElementoTablaProceso> tablaProcesos, int quantum) {
+			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("RR con quantum = " + quantum + " - Particiones Fijas - BestFit\n");
+		System.out.println("SRTF - Particiones Fijas - BestFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -141,9 +121,6 @@ public class RRFijasBestFit {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
-		q = quantum;
-		procesoAux = null;
-
 		while (t <= tIrrupcion + tOcioso) {
 
 			/*
@@ -163,7 +140,7 @@ public class RRFijasBestFit {
 			 * 
 			 */
 			if (!ejecutandoCpu.isEmpty()) {
-				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t, quantum);
+				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
 			}
 
 			/*
@@ -186,7 +163,7 @@ public class RRFijasBestFit {
 				
 				// Recorro la lista de particiones para encontrar el mejor ajuste
 				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
+					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
 						tamanioBestFit = particion.getTamanio();
 						posicionBestFit = particion.getId();
 					}
@@ -219,11 +196,6 @@ public class RRFijasBestFit {
 				i--; // Para evitar ConcurrentModificationException
 			}
 
-			if (procesoAux != null) { // Agrego el que termino el quantum
-				ejecutandoCpu.add(procesoAux);
-				procesoAux = null;
-			}
-
 			/*
 			 * TIEMPO OCIOSO EN GANTT
 			 * 
@@ -237,7 +209,7 @@ public class RRFijasBestFit {
 			 */
 			mapaMemoria.add(t, new ArrayList<Particion>());
 			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.getLibre());
+				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -247,19 +219,24 @@ public class RRFijasBestFit {
 
 		salida[0] = tOcioso;
 
-	} // Fin FCFS
+	} // Fin SRTF
 
 	/*
 	 * METODO EJECUTAR CPU
 	 * 
 	 */
 	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t, int quantum) {
+			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
 
 		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
-		q--; // Descuento el quantum
 
 		// Actualizo Gantt
 		ganttCpu.add(procesoActual.getId());
@@ -269,7 +246,7 @@ public class RRFijasBestFit {
 		ejecutandoCpu.remove(0);
 		ejecutandoCpu.add(0, procesoActual);
 
-		if (cpu == 0) { // Si termino lo saco
+		if (cpu == 0) {
 
 			// Libero la particion
 			for (Particion particion : particiones) {
@@ -285,22 +262,6 @@ public class RRFijasBestFit {
 
 			// Luego saco el proceso
 			ejecutandoCpu.remove(0);
-
-			// Por ultimo reinicio el quantum
-			q = quantum;
-
-		} else if (q == 0) { // Si termino el quantum
-
-			// Reinicio el quantum
-			q = quantum;
-
-			/*
-			 * Saco el proceso y lo guardo en una variable auxiliar para que no anteponga a
-			 * los listos que se agregan en este instante t, luego de actualizar los listos
-			 * lo agrego a ejecucion
-			 */
-			ejecutandoCpu.remove(0);
-			procesoAux = procesoActual;
 
 		}
 

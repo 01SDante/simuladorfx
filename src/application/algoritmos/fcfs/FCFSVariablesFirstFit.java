@@ -1,17 +1,17 @@
-package application.algorithms;
+package application.algoritmos.fcfs;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import application.model.ElementoTablaParticion;
+import application.algoritmos.util.OrdenarPorTArribo;
 import application.model.ElementoTablaProceso;
-import application.model.Particion;
+import application.model.ParticionVariable;
 import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class SRTFFijasBestFit {
+public class FCFSVariablesFirstFit {
 
-	public static ArrayList<ArrayList<Particion>> mapaMemoria;
+	public static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
 	public static ArrayList<Integer> ganttCpu;
 
@@ -20,9 +20,9 @@ public class SRTFFijasBestFit {
 	public static int[] irrupcion;
 
 	/*
-	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
+	 * Devuelve el estado de las particiones para armar el mapa de memoria
 	 */
-	public static ArrayList<ArrayList<Particion>> getMapaMemoria() {
+	public static ArrayList<ArrayList<ParticionVariable>> getMapaMemoria() {
 		return mapaMemoria;
 	}
 
@@ -56,12 +56,11 @@ public class SRTFFijasBestFit {
 	 * EJECUTAR
 	 * 
 	 */
-	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
-			ObservableList<ElementoTablaProceso> tablaProcesos) {
+	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SRTF - Particiones Fijas - BestFit\n");
+		System.out.println("FCFS - Particiones Variables - FirstFit\n");
 
-		ArrayList<Particion> particiones = new ArrayList<Particion>();
+		ArrayList<ParticionVariable> particiones = new ArrayList<ParticionVariable>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
 
 		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
@@ -70,18 +69,16 @@ public class SRTFFijasBestFit {
 		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
-		mapaMemoria = new ArrayList<ArrayList<Particion>>();
+		mapaMemoria = new ArrayList<ArrayList<ParticionVariable>>();
 
 		// Inicializamos ganttCpu
 		ganttCpu = new ArrayList<Integer>();
 
 		/*
-		 * Cargamos la lista de Particiones
+		 * Inicializamos la lista de Particiones
 		 */
-		for (ElementoTablaParticion p : tablaParticiones) {
-			Particion particion = new Particion(p.getId(), p.getTamanio(), true);
-			particiones.add(particion);
-		}
+			ParticionVariable particionInicial = new ParticionVariable(1, memoriaDisponible, true);
+			particiones.add(particionInicial);
 
 		/*
 		 * Cargamos la lista de Procesos
@@ -155,32 +152,17 @@ public class SRTFFijasBestFit {
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
 				Proceso pNuevo = nuevos.get(i);
-				
-				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
-				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
-				
-				// Recorro la lista de particiones para encontrar el mejor ajuste
-				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
-						tamanioBestFit = particion.getTamanio();
-						posicionBestFit = particion.getId();
+				for (ParticionVariable particion : particiones) {
+					int tamanio = particion.getDirFin() - particion.getDirInicio();
+					if (particion.isLibre() && pNuevo.getTamanio() <= tamanio) {
+						listos.add(pNuevo);
+						particion.setProceso(pNuevo.getId());
+						particion.setLibre(false);
+						nuevos.remove(i);
+						i--;// Para evitar ConcurrentModificationException
+						break;
 					}
 				}
-				
-				// Si la encuentro, le asigno el proceso nuevo
-				if (posicionBestFit != 0) {
-					for (Particion particion: particiones) {
-						if (particion.getId() == posicionBestFit) {
-							listos.add(pNuevo);
-							particion.setProceso(pNuevo.getId());
-							particion.setLibre(false);
-							nuevos.remove(i);
-							i--;// Para evitar ConcurrentModificationException
-							break;
-						}
-					}
-				}
-				
 			}
 
 			/*
@@ -205,9 +187,9 @@ public class SRTFFijasBestFit {
 			 * GUARDO EL ESTADO DE LAS PARTICIONES
 			 * 
 			 */
-			mapaMemoria.add(t, new ArrayList<Particion>());
-			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.getLibre());
+			mapaMemoria.add(t, new ArrayList<ParticionVariable>());
+			for (ParticionVariable p : particiones) {
+				ParticionVariable particion = new ParticionVariable(p.getDirInicio(), p.getDirFin(), p.getProceso(), p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -217,20 +199,14 @@ public class SRTFFijasBestFit {
 
 		salida[0] = tOcioso;
 
-	} // Fin SRTF
+	} // Fin FCFS
 
 	/*
 	 * METODO EJECUTAR CPU
 	 * 
 	 */
-	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+	private static void ejecutarCpu(ArrayList<ParticionVariable> particiones, ArrayList<Proceso> procesos,
 			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
-
-		/*
-		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
-		 * 
-		 */
-		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
 
 		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
@@ -247,7 +223,7 @@ public class SRTFFijasBestFit {
 		if (cpu == 0) {
 
 			// Libero la particion
-			for (Particion particion : particiones) {
+			for (ParticionVariable particion : particiones) {
 				if (particion.getProceso() == procesoActual.getId()) {
 					particion.setProceso(0);
 					particion.setLibre(true);
@@ -264,5 +240,4 @@ public class SRTFFijasBestFit {
 		}
 
 	}
-
 }

@@ -2,15 +2,16 @@ package application.model;
 
 public class Particion {
 
-	int id;
-	int tamanio;
-	int proceso;
-	boolean libre;
+	private int id;
+	private int tamanio;
+	private int proceso;
+	private boolean libre;
 
-	public Particion(int id, int tamanio, boolean estado) {
+	// CONSTRUCTORES
+	public Particion(int id, int tamanio, boolean libre) {
 		this.id = id;
 		this.tamanio = tamanio;
-		this.libre = estado;
+		this.libre = libre;
 	}
 
 	public Particion(int id, int tamanio, int proceso, boolean libre) {
@@ -20,6 +21,7 @@ public class Particion {
 		this.libre = libre;
 	}
 
+	// GETTERS SETTERS
 	public int getId() {
 		return id;
 	}
@@ -44,12 +46,12 @@ public class Particion {
 		this.proceso = proceso;
 	}
 
-	public boolean getLibre() {
+	public boolean isLibre() {
 		return libre;
 	}
 
-	public void setLibre(boolean estado) {
-		this.libre = estado;
+	public void setLibre(boolean libre) {
+		this.libre = libre;
 	}
 
 }

@@ -1,4 +1,4 @@
-package application.algorithms;
+package application.algoritmos.util;
 
 import java.util.Comparator;
 

@@ -1,4 +1,4 @@
-package application.algorithms;
+package application.algoritmos.fcfs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -158,7 +158,7 @@ public class FCFS {
 			for (int i = 0; i < nuevos.size(); i++) {
 				Proceso pNuevo = nuevos.get(i);
 				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
+					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
 						listos.add(pNuevo);
 						particion.setProceso(pNuevo.getId());
 						particion.setLibre(false);
@@ -191,7 +191,7 @@ public class FCFS {
 			 */
 			mapaMemoria.add(t, new ArrayList<Particion>());
 			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.getLibre());
+				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -372,7 +372,7 @@ public class FCFS {
 	private static void imprimirParticiones(List<Particion> particiones) {
 		for (Particion p : particiones) {
 			System.out.println("ID: " + p.getId() + " Tamanio: " + p.getTamanio() + " Proceso: " + p.getProceso()
-					+ " Libre: " + p.getLibre());
+					+ " Libre: " + p.isLibre());
 		}
 		System.out.println();
 	}

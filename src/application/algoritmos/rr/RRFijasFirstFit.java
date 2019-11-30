@@ -1,23 +1,24 @@
-package application.algorithms;
+package application.algoritmos.rr;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import application.algoritmos.util.OrdenarPorTArribo;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
 import application.model.Particion;
-import application.model.ProcesoSJF;
+import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class SJFFijasFirstFit {
+public class RRFijasFirstFit {
 
-	public static ArrayList<ArrayList<Particion>> mapaMemoria;
+	private static ArrayList<ArrayList<Particion>> mapaMemoria;
 
-	public static ArrayList<Integer> ganttCpu;
+	private static ArrayList<Integer> ganttCpu;
 
-	public static int[] salida;
-	public static int[] arribo;
-	public static int[] irrupcion;
+	private static int[] salida;
+	private static int[] arribo;
+	private static int[] irrupcion;
 
 	/*
 	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
@@ -52,22 +53,44 @@ public class SJFFijasFirstFit {
 		return irrupcion;
 	}
 
+	// quantum
+	private static int q;
+
+	public static int getQ() {
+		return q;
+	}
+
+	public static void setQ(int quantum) {
+		q = quantum;
+	}
+
+	// Proceso auxiliar
+	private static Proceso procesoAux;
+
+	public static Proceso getProcesoAux() {
+		return procesoAux;
+	}
+
+	public static void setProcesoAux(Proceso p) {
+		procesoAux = p;
+	}
+
 	/*
 	 * EJECUTAR
 	 * 
 	 */
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
-			ObservableList<ElementoTablaProceso> tablaProcesos) {
+			ObservableList<ElementoTablaProceso> tablaProcesos, int quantum) {
 
-		System.out.println("SJF - Particiones Fijas - FirstFit\n");
+		System.out.println("RR con quantum = " + quantum + " - Particiones Fijas - FirstFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
-		ArrayList<ProcesoSJF> procesos = new ArrayList<ProcesoSJF>();
+		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
 
-		ArrayList<ProcesoSJF> nuevos = new ArrayList<ProcesoSJF>();
-		ArrayList<ProcesoSJF> listos = new ArrayList<ProcesoSJF>();
+		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
+		ArrayList<Proceso> listos = new ArrayList<Proceso>();
 
-		ArrayList<ProcesoSJF> ejecutandoCpu = new ArrayList<ProcesoSJF>();
+		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
@@ -89,7 +112,7 @@ public class SJFFijasFirstFit {
 		int tIrrupcion = 0; // Para controlar el bucle principal
 
 		for (ElementoTablaProceso p : tablaProcesos) {
-			ProcesoSJF proceso = new ProcesoSJF(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
+			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
 			tIrrupcion += proceso.getCpu1();
@@ -119,13 +142,16 @@ public class SJFFijasFirstFit {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
+		q = quantum;
+		procesoAux = null;
+
 		while (t <= tIrrupcion + tOcioso) {
 
 			/*
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
 			 */
-			for (ProcesoSJF p : procesos) {
+			for (Proceso p : procesos) {
 				if (p.getTArribo() == t) {
 					nuevos.add(p);
 					if (p.getId() == idUltimoProceso)
@@ -138,7 +164,7 @@ public class SJFFijasFirstFit {
 			 * 
 			 */
 			if (!ejecutandoCpu.isEmpty()) {
-				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
+				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t, quantum);
 			}
 
 			/*
@@ -154,9 +180,9 @@ public class SJFFijasFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
-				ProcesoSJF pNuevo = nuevos.get(i);
+				Proceso pNuevo = nuevos.get(i);
 				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
+					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
 						listos.add(pNuevo);
 						particion.setProceso(pNuevo.getId());
 						particion.setLibre(false);
@@ -172,10 +198,15 @@ public class SJFFijasFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < listos.size(); i++) {
-				ProcesoSJF pListo = listos.get(i);
+				Proceso pListo = listos.get(i);
 				ejecutandoCpu.add(pListo);
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
+			}
+
+			if (procesoAux != null) { // Agrego el que termino el quantum
+				ejecutandoCpu.add(procesoAux);
+				procesoAux = null;
 			}
 
 			/*
@@ -191,7 +222,7 @@ public class SJFFijasFirstFit {
 			 */
 			mapaMemoria.add(t, new ArrayList<Particion>());
 			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.getLibre());
+				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -201,35 +232,19 @@ public class SJFFijasFirstFit {
 
 		salida[0] = tOcioso;
 
-	} // Fin SJF
+	} // Fin FCFS
 
 	/*
 	 * METODO EJECUTAR CPU
 	 * 
 	 */
-	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<ProcesoSJF> procesos,
-			ArrayList<ProcesoSJF> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t, int quantum) {
 
-		/*
-		 * Veo si el primero se esta ejcutando, si es asi lo saco momentaneamente y
-		 * ordeno el resto de los procesos segun menor tiempo remanente
-		 * 
-		 * Sino ordeno directamente
-		 * 
-		 */
-		if (ejecutandoCpu.get(0).getEstaEjecutando()) {
-			ProcesoSJF temporal = ejecutandoCpu.get(0);
-			ejecutandoCpu.remove(0);
-			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
-			ejecutandoCpu.add(0, temporal);
-		} else {
-			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
-			ejecutandoCpu.get(0).setEstaEjecutando(true);
-		}
-
-		ProcesoSJF procesoActual = ejecutandoCpu.get(0);
+		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
+		q--; // Descuento el quantum
 
 		// Actualizo Gantt
 		ganttCpu.add(procesoActual.getId());
@@ -239,7 +254,7 @@ public class SJFFijasFirstFit {
 		ejecutandoCpu.remove(0);
 		ejecutandoCpu.add(0, procesoActual);
 
-		if (cpu == 0) {
+		if (cpu == 0) { // Si termino lo saco
 
 			// Libero la particion
 			for (Particion particion : particiones) {
@@ -255,6 +270,22 @@ public class SJFFijasFirstFit {
 
 			// Luego saco el proceso
 			ejecutandoCpu.remove(0);
+
+			// Por ultimo reinicio el quantum
+			q = quantum;
+
+		} else if (q == 0) { // Si termino el quantum
+
+			// Reinicio el quantum
+			q = quantum;
+
+			/*
+			 * Saco el proceso y lo guardo en una variable auxiliar para que no anteponga a
+			 * los listos que se agregan en este instante t, luego de actualizar los listos
+			 * lo agrego a ejecucion
+			 */
+			ejecutandoCpu.remove(0);
+			procesoAux = procesoActual;
 
 		}
 

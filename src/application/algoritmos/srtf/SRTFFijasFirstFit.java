@@ -1,8 +1,10 @@
-package application.algorithms;
+package application.algoritmos.srtf;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import application.algoritmos.util.OrdenarPorCPU1;
+import application.algoritmos.util.OrdenarPorTArribo;
 import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
 import application.model.Particion;
@@ -156,7 +158,7 @@ public class SRTFFijasFirstFit {
 			for (int i = 0; i < nuevos.size(); i++) {
 				Proceso pNuevo = nuevos.get(i);
 				for (Particion particion : particiones) {
-					if (particion.getLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
+					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
 						listos.add(pNuevo);
 						particion.setProceso(pNuevo.getId());
 						particion.setLibre(false);
@@ -191,7 +193,7 @@ public class SRTFFijasFirstFit {
 			 */
 			mapaMemoria.add(t, new ArrayList<Particion>());
 			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.getLibre());
+				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 

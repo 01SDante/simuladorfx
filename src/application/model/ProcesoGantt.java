@@ -5,11 +5,13 @@ public class ProcesoGantt {
 	private int id;
 	private int t;
 
+	// CONSTRUCTOR
 	public ProcesoGantt(int id, int t) {
 		this.id = id;
 		this.t = t;
 	}
 
+	// GETTERS SETTERS
 	public int getId() {
 		return id;
 	}

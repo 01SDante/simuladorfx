@@ -1,15 +1,15 @@
 package application.model;
 
 public class Proceso {
-	int id;
-	int tamanio;
-	int tArribo;
-	int cpu1;
-	int es1;
-	int cpu2;
-	int es2;
-	int cpu3;
-	int prioridad;
+	private int id;
+	private int tamanio;
+	private int tArribo;
+	private int cpu1;
+	private int es1;
+	private int cpu2;
+	private int es2;
+	private int cpu3;
+	private int prioridad;
 
 	/*
 	 * CONSTRUCTOR
