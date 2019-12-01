@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import application.algoritmos.util.OrdenarPorCPU1;
+import application.algoritmos.util.OrdenarPorDirInicio;
 import application.algoritmos.util.OrdenarPorTArribo;
-import application.model.ElementoTablaParticion;
 import application.model.ElementoTablaProceso;
-import application.model.Particion;
+import application.model.ParticionVariable;
 import application.model.ProcesoSJF;
 import javafx.collections.ObservableList;
 
-public class SJFFijasBestFit {
+public class SJFVariablesWorstFit {
 
-	private static ArrayList<ArrayList<Particion>> mapaMemoria;
+	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
 	private static ArrayList<Integer> ganttCpu;
 
@@ -24,7 +24,7 @@ public class SJFFijasBestFit {
 	/*
 	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
 	 */
-	public static ArrayList<ArrayList<Particion>> getMapaMemoria() {
+	public static ArrayList<ArrayList<ParticionVariable>> getMapaMemoria() {
 		return mapaMemoria;
 	}
 
@@ -58,12 +58,11 @@ public class SJFFijasBestFit {
 	 * EJECUTAR
 	 * 
 	 */
-	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
-			ObservableList<ElementoTablaProceso> tablaProcesos) {
+	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SJF - Particiones Fijas - BestFit\n");
+		System.out.println("SJF - Particiones Variables - FirstFit\n");
 
-		ArrayList<Particion> particiones = new ArrayList<Particion>();
+		ArrayList<ParticionVariable> particiones = new ArrayList<ParticionVariable>();
 		ArrayList<ProcesoSJF> procesos = new ArrayList<ProcesoSJF>();
 
 		ArrayList<ProcesoSJF> nuevos = new ArrayList<ProcesoSJF>();
@@ -72,18 +71,16 @@ public class SJFFijasBestFit {
 		ArrayList<ProcesoSJF> ejecutandoCpu = new ArrayList<ProcesoSJF>();
 
 		// Inicializamos mapaMemoria
-		mapaMemoria = new ArrayList<ArrayList<Particion>>();
+		mapaMemoria = new ArrayList<ArrayList<ParticionVariable>>();
 
 		// Inicializamos ganttCpu
 		ganttCpu = new ArrayList<Integer>();
 
 		/*
-		 * Cargamos la lista de Particiones
+		 * Inicializamos la lista de Particiones
 		 */
-		for (ElementoTablaParticion p : tablaParticiones) {
-			Particion particion = new Particion(p.getId(), p.getTamanio(), true);
-			particiones.add(particion);
-		}
+		ParticionVariable particionInicial = new ParticionVariable(1, memoriaDisponible, true);
+		particiones.add(particionInicial);
 
 		/*
 		 * Cargamos la lista de Procesos
@@ -155,36 +152,53 @@ public class SJFFijasBestFit {
 			 * ARMO LA COLA DE LISTOS EN INSTANTE t
 			 * 
 			 */
-			
 			for (int i = 0; i < nuevos.size(); i++) {
+
 				ProcesoSJF pNuevo = nuevos.get(i);
+
+				int tamanioWorstFit = Integer.MIN_VALUE; // Para guardar el tamanio del peor ajuste
+				int posicionWorstFit = -1; // Para guardar la posicion de la particion con peor ajuste
 				
-				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
-				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
-				
-				// Recorro la lista de particiones para encontrar el mejor ajuste
-				for (Particion particion : particiones) {
-					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
-						tamanioBestFit = particion.getTamanio();
-						posicionBestFit = particion.getId();
+				// Recorro la lista de particiones para encontrar el peor ajuste
+				for (int j = 0; j < particiones.size(); j++) {
+					ParticionVariable p = particiones.get(j);
+					int tamanio = p.getDirFin() - p.getDirInicio() + 1;
+					if (p.isLibre() && pNuevo.getTamanio() <= tamanio && tamanio > tamanioWorstFit) {
+						tamanioWorstFit = tamanio;
+						posicionWorstFit = j;
 					}
 				}
 				
-				// Si la encuentro, le asigno el proceso nuevo
-				if (posicionBestFit != 0) {
-					for (Particion particion: particiones) {
-						if (particion.getId() == posicionBestFit) {
-							listos.add(pNuevo);
-							particion.setProceso(pNuevo.getId());
-							particion.setLibre(false);
-							nuevos.remove(i);
-							i--;// Para evitar ConcurrentModificationException
-							break;
-						}
+				// Si lo encuentro, le asigno el proceso nuevo
+				if (posicionWorstFit != -1) {
+					
+					// Obtengo la particion con worst-fit
+					ParticionVariable particion = particiones.get(posicionWorstFit);
+					int tamanio = particion.getDirFin() - particion.getDirInicio() + 1;
+					
+					// Agrego el proceso a la cola de listos
+					listos.add(pNuevo);
+					
+					// Saco la particion
+					particiones.remove(posicionWorstFit);
+					
+					// Divido la particion y hago dos nuevas
+					ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
+							particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
+					ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
+					particiones.add(p1);
+
+					if (pNuevo.getTamanio() < tamanio) {
+						particiones.add(p2);
 					}
+
+					// Ordeno las particiones
+					Collections.sort(particiones, new OrdenarPorDirInicio());
+
+					nuevos.remove(i);
 				}
-				
-			}
+
+			} // Fin para nuevos
 
 			/*
 			 * AGREGO LOS LISTOS A EJECUCION
@@ -208,9 +222,10 @@ public class SJFFijasBestFit {
 			 * GUARDO EL ESTADO DE LAS PARTICIONES
 			 * 
 			 */
-			mapaMemoria.add(t, new ArrayList<Particion>());
-			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.isLibre());
+			mapaMemoria.add(t, new ArrayList<ParticionVariable>());
+			for (ParticionVariable p : particiones) {
+				ParticionVariable particion = new ParticionVariable(p.getDirInicio(), p.getDirFin(), p.getProceso(),
+						p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -226,7 +241,7 @@ public class SJFFijasBestFit {
 	 * METODO EJECUTAR CPU
 	 * 
 	 */
-	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<ProcesoSJF> procesos,
+	private static void ejecutarCpu(ArrayList<ParticionVariable> particiones, ArrayList<ProcesoSJF> procesos,
 			ArrayList<ProcesoSJF> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
 		/*
@@ -261,11 +276,28 @@ public class SJFFijasBestFit {
 		if (cpu == 0) {
 
 			// Libero la particion
-			for (Particion particion : particiones) {
+			for (ParticionVariable particion : particiones) {
 				if (particion.getProceso() == procesoActual.getId()) {
 					particion.setProceso(0);
 					particion.setLibre(true);
 					break;
+				}
+			}
+
+			// Junto las particiones libres contiguas
+			if (particiones.size() > 1) {
+				for (int i = 1; i < particiones.size(); i++) {
+					if (particiones.get(i - 1).isLibre() && particiones.get(i).isLibre()) {
+						ParticionVariable anterior = particiones.get(i - 1);
+						ParticionVariable actual = particiones.get(i);
+						ParticionVariable nueva = new ParticionVariable(anterior.getDirInicio(), actual.getDirFin(),
+								true);
+						particiones.add(nueva);
+						particiones.remove(i - 1);
+						particiones.remove(i - 1);
+						Collections.sort(particiones, new OrdenarPorDirInicio());
+						i = 0;
+					}
 				}
 			}
 
