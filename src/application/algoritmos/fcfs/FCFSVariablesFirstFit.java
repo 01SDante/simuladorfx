@@ -1,6 +1,7 @@
 package application.algoritmos.fcfs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -259,7 +260,20 @@ public class FCFSVariablesFirstFit {
 			}
 			
 			// Junto las particiones libres contiguas
-			
+			if (particiones.size() > 1) {
+				for (int i = 1; i < particiones.size(); i++) {
+					if (particiones.get(i - 1).isLibre() && particiones.get(i).isLibre()) {
+						ParticionVariable anterior = particiones.get(i - 1);
+						ParticionVariable actual = particiones.get(i);
+						ParticionVariable nueva = new ParticionVariable(anterior.getDirInicio(), actual.getDirFin(), true);
+						particiones.add(nueva);
+						particiones.remove(i - 1);
+						particiones.remove(i - 1);
+						Collections.sort(particiones, new OrdenarPorDirInicio());
+						i = 0;
+					}
+				}
+			}
 
 			// Guardo el t de salida
 			salida[procesoActual.getId()] = t;
