@@ -1,4 +1,4 @@
-package application.algoritmos.fcfs;
+package application.algoritmos.rr;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import application.model.ParticionVariable;
 import application.model.Proceso;
 import javafx.collections.ObservableList;
 
-public class FCFSVariablesWorstFit {
+public class RRVariablesWorstFit {
 
 	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
@@ -21,7 +21,7 @@ public class FCFSVariablesWorstFit {
 	private static int[] irrupcion;
 
 	/*
-	 * Devuelve el estado de las particiones para armar el mapa de memoria
+	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
 	 */
 	public static ArrayList<ArrayList<ParticionVariable>> getMapaMemoria() {
 		return mapaMemoria;
@@ -53,13 +53,36 @@ public class FCFSVariablesWorstFit {
 		return irrupcion;
 	}
 
+	// quantum
+	private static int q;
+
+	public static int getQ() {
+		return q;
+	}
+
+	public static void setQ(int quantum) {
+		q = quantum;
+	}
+
+	// Proceso auxiliar
+	private static Proceso procesoAux;
+
+	public static Proceso getProcesoAux() {
+		return procesoAux;
+	}
+
+	public static void setProcesoAux(Proceso p) {
+		procesoAux = p;
+	}
+
 	/*
 	 * EJECUTAR
 	 * 
 	 */
-	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos) {
+	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos,
+			int quantum) {
 
-		System.out.println("FCFS - Particiones Variables - WorstFit\n");
+		System.out.println("RR con quantum = " + quantum + " - Particiones Variables - FirstFit\n");
 
 		ArrayList<ParticionVariable> particiones = new ArrayList<ParticionVariable>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -117,6 +140,9 @@ public class FCFSVariablesWorstFit {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
+		q = quantum;
+		procesoAux = null;
+
 		while (t <= tIrrupcion + tOcioso) {
 
 			/*
@@ -136,7 +162,7 @@ public class FCFSVariablesWorstFit {
 			 * 
 			 */
 			if (!ejecutandoCpu.isEmpty()) {
-				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
+				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t, quantum);
 			}
 
 			/*
@@ -210,6 +236,11 @@ public class FCFSVariablesWorstFit {
 				i--; // Para evitar ConcurrentModificationException
 			}
 
+			if (procesoAux != null) { // Agrego el que termino el quantum
+				ejecutandoCpu.add(procesoAux);
+				procesoAux = null;
+			}
+
 			/*
 			 * TIEMPO OCIOSO EN GANTT
 			 * 
@@ -241,11 +272,12 @@ public class FCFSVariablesWorstFit {
 	 * 
 	 */
 	private static void ejecutarCpu(ArrayList<ParticionVariable> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t, int quantum) {
 
 		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
+		q--; // Descuento el quantum
 
 		// Actualizo Gantt
 		ganttCpu.add(procesoActual.getId());
@@ -255,7 +287,7 @@ public class FCFSVariablesWorstFit {
 		ejecutandoCpu.remove(0);
 		ejecutandoCpu.add(0, procesoActual);
 
-		if (cpu == 0) {
+		if (cpu == 0) { // Si termino lo saco
 
 			// Libero la particion
 			for (ParticionVariable particion : particiones) {
@@ -288,6 +320,22 @@ public class FCFSVariablesWorstFit {
 
 			// Luego saco el proceso
 			ejecutandoCpu.remove(0);
+
+			// Por ultimo reinicio el quantum
+			q = quantum;
+
+		} else if (q == 0) { // Si termino el quantum
+
+			// Reinicio el quantum
+			q = quantum;
+
+			/*
+			 * Saco el proceso y lo guardo en una variable auxiliar para que no anteponga a
+			 * los listos que se agregan en este instante t, luego de actualizar los listos
+			 * lo agrego a ejecucion
+			 */
+			ejecutandoCpu.remove(0);
+			procesoAux = procesoActual;
 
 		}
 

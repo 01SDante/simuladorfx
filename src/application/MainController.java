@@ -6,6 +6,8 @@ import application.algoritmos.fcfs.FCFSVariablesFirstFit;
 import application.algoritmos.fcfs.FCFSVariablesWorstFit;
 import application.algoritmos.rr.RRFijasBestFit;
 import application.algoritmos.rr.RRFijasFirstFit;
+import application.algoritmos.rr.RRVariablesFirstFit;
+import application.algoritmos.rr.RRVariablesWorstFit;
 import application.algoritmos.sjf.SJFFijasBestFit;
 import application.algoritmos.sjf.SJFFijasFirstFit;
 import application.algoritmos.srtf.SRTFFijasBestFit;
@@ -273,7 +275,7 @@ public class MainController {
 			// Particiones Variables - First-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
 				FCFSVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
-			
+
 			// Particiones Variables - Worst-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
 				FCFSVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
@@ -345,6 +347,28 @@ public class MainController {
 			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit") {
 				try {
 					RRFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+							Integer.parseInt(quantum.getText()));
+				} catch (Exception e) {
+					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+					alerta("Ingresar un entero para el campo 'Quantum'.");
+				}
+			}
+
+			// Particiones Variables - First-Fit
+			if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit") {
+				try {
+					RRVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos,
+							Integer.parseInt(quantum.getText()));
+				} catch (Exception e) {
+					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+					alerta("Ingresar un entero para el campo 'Quantum'.");
+				}
+			}
+
+			// Particiones Variables - Worst-Fit
+			if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit") {
+				try {
+					RRVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos,
 							Integer.parseInt(quantum.getText()));
 				} catch (Exception e) {
 					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
@@ -445,6 +469,12 @@ public class MainController {
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit.getMapaMemoria(), ram,
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesFirstFit.getMapaMemoria(), ram,
+						notificaciones.getText() + " | Quantum = " + quantum.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesWorstFit.getMapaMemoria(), ram,
+						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
 		else
@@ -515,6 +545,12 @@ public class MainController {
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 				GanttCPU.generarGanttCPU(RRFijasBestFit.getGanttCpu(),
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(RRVariablesFirstFit.getGanttCpu(),
+						notificaciones.getText() + " | Quantum = " + quantum.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+				GanttCPU.generarGanttCPU(RRVariablesWorstFit.getGanttCpu(),
+						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
 		else
@@ -545,7 +581,7 @@ public class MainController {
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
 				StatisticsController.Statistics(FCFSVariablesFirstFit.getSalida(), FCFSVariablesFirstFit.getArribo(),
 						FCFSVariablesFirstFit.getIrrupcion(), notificaciones.getText());
-			
+
 			// Particiones Variables - First-Fit
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
 				StatisticsController.Statistics(FCFSVariablesWorstFit.getSalida(), FCFSVariablesWorstFit.getArribo(),
@@ -615,12 +651,24 @@ public class MainController {
 			// Particiones Fijas - First-Fit
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 				StatisticsController.Statistics(RRFijasFirstFit.getSalida(), RRFijasFirstFit.getArribo(),
-						RRFijasFirstFit.getIrrupcion(), notificaciones.getText());
+						RRFijasFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
 
 			// Particiones Fijas - Best-Fit
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 				StatisticsController.Statistics(RRFijasBestFit.getSalida(), RRFijasBestFit.getArribo(),
-						RRFijasBestFit.getIrrupcion(), notificaciones.getText());
+						RRFijasBestFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+
+			// Particiones Variables - First-Fit
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(RRVariablesFirstFit.getSalida(), RRVariablesFirstFit.getArribo(),
+						RRVariablesFirstFit.getIrrupcion(),
+						notificaciones.getText() + " | Quantum = " + quantum.getText());
+
+			// Particiones Variables - Worst-Fit
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+				StatisticsController.Statistics(RRVariablesWorstFit.getSalida(), RRVariablesWorstFit.getArribo(),
+						RRVariablesWorstFit.getIrrupcion(),
+						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
 		else
@@ -947,7 +995,7 @@ public class MainController {
 				}
 
 				/*
-				 *  Agrego el proceso
+				 * Agrego el proceso
 				 */
 				ElementoTablaProceso proceso = new ElementoTablaProceso(idProcesoNuevo, tamanioNuevoProceso,
 						tArriboNuevoProceso, cpu1NuevoProceso, es1NuevoProceso, cpu2NuevoProceso, es2NuevoProceso,

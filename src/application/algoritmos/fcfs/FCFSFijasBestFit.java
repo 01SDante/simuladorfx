@@ -12,13 +12,13 @@ import javafx.collections.ObservableList;
 
 public class FCFSFijasBestFit {
 
-	public static ArrayList<ArrayList<Particion>> mapaMemoria;
+	private static ArrayList<ArrayList<Particion>> mapaMemoria;
 
-	public static ArrayList<Integer> ganttCpu;
+	private static ArrayList<Integer> ganttCpu;
 
-	public static int[] salida;
-	public static int[] arribo;
-	public static int[] irrupcion;
+	private static int[] salida;
+	private static int[] arribo;
+	private static int[] irrupcion;
 
 	/*
 	 * Devuelve el estado de las aprticiones para armar el mapa de memoria

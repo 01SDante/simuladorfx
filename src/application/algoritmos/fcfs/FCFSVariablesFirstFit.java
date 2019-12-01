@@ -12,13 +12,13 @@ import javafx.collections.ObservableList;
 
 public class FCFSVariablesFirstFit {
 
-	public static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
+	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
-	public static ArrayList<Integer> ganttCpu;
+	private static ArrayList<Integer> ganttCpu;
 
-	public static int[] salida;
-	public static int[] arribo;
-	public static int[] irrupcion;
+	private static int[] salida;
+	private static int[] arribo;
+	private static int[] irrupcion;
 
 	/*
 	 * Devuelve el estado de las particiones para armar el mapa de memoria
