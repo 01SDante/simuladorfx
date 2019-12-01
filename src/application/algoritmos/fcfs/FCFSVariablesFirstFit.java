@@ -2,7 +2,9 @@ package application.algoritmos.fcfs;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
+import application.algoritmos.util.OrdenarPorDirInicio;
 import application.algoritmos.util.OrdenarPorTArribo;
 import application.model.ElementoTablaProceso;
 import application.model.ParticionVariable;
@@ -77,8 +79,8 @@ public class FCFSVariablesFirstFit {
 		/*
 		 * Inicializamos la lista de Particiones
 		 */
-			ParticionVariable particionInicial = new ParticionVariable(1, memoriaDisponible, true);
-			particiones.add(particionInicial);
+		ParticionVariable particionInicial = new ParticionVariable(1, memoriaDisponible, true);
+		particiones.add(particionInicial);
 
 		/*
 		 * Cargamos la lista de Procesos
@@ -151,19 +153,43 @@ public class FCFSVariablesFirstFit {
 			 * 
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
+
 				Proceso pNuevo = nuevos.get(i);
-				for (ParticionVariable particion : particiones) {
-					int tamanio = particion.getDirFin() - particion.getDirInicio();
+
+				for (int j = 0; j < particiones.size(); j++) {
+
+					ParticionVariable particion = particiones.get(j);
+					int tamanio = particion.getDirFin() - particion.getDirInicio() + 1;
+
 					if (particion.isLibre() && pNuevo.getTamanio() <= tamanio) {
+
+						// Agrego el proceso a la cola de listos
 						listos.add(pNuevo);
-						particion.setProceso(pNuevo.getId());
-						particion.setLibre(false);
+
+						// Saco la particion
+						particiones.remove(j);
+
+						// Divido la particion y hago dos nuevas
+						ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
+								particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
+						ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
+						particiones.add(p1);
+
+						if (pNuevo.getTamanio() < tamanio) {
+							particiones.add(p2);
+						}
+
+						// Ordeno las particiones
+						Collections.sort(particiones, new OrdenarPorDirInicio());
+
 						nuevos.remove(i);
 						i--;// Para evitar ConcurrentModificationException
 						break;
 					}
-				}
-			}
+
+				} // Fin para particiones
+
+			} // Fin para nuevos
 
 			/*
 			 * AGREGO LOS LISTOS A EJECUCION
@@ -189,7 +215,8 @@ public class FCFSVariablesFirstFit {
 			 */
 			mapaMemoria.add(t, new ArrayList<ParticionVariable>());
 			for (ParticionVariable p : particiones) {
-				ParticionVariable particion = new ParticionVariable(p.getDirInicio(), p.getDirFin(), p.getProceso(), p.isLibre());
+				ParticionVariable particion = new ParticionVariable(p.getDirInicio(), p.getDirFin(), p.getProceso(),
+						p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -230,6 +257,9 @@ public class FCFSVariablesFirstFit {
 					break;
 				}
 			}
+			
+			// Junto las particiones libres contiguas
+			
 
 			// Guardo el t de salida
 			salida[procesoActual.getId()] = t;

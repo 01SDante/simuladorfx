@@ -123,7 +123,7 @@ public class MemoryMapController {
 
 					gc.strokeText("Dir. Inicio: " + p.getDirInicio(), 60, yTexto);
 					yTexto += 20;
-					gc.strokeText("Dir. Fin: " + p.getDirInicio() + " u.m.", 60, yTexto);
+					gc.strokeText("Dir. Fin: " + p.getDirFin(), 60, yTexto);
 					yTexto += 20;
 					gc.strokeText("Proceso: - ", 60, yTexto);
 					yTexto += 20;
@@ -135,7 +135,7 @@ public class MemoryMapController {
 					
 					gc.strokeText("Dir. Inicio: " + p.getDirInicio(), 60, yTexto);
 					yTexto += 20;
-					gc.strokeText("Dir. Fin: " + p.getDirFin() + " u.m.", 60, yTexto);
+					gc.strokeText("Dir. Fin: " + p.getDirFin(), 60, yTexto);
 					yTexto += 20;
 					gc.strokeText("Proceso: " + p.getProceso(), 60, yTexto);
 					yTexto += 20;

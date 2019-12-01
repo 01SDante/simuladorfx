@@ -21,6 +21,10 @@ public class ParticionVariable {
 		this.libre = libre;
 	}
 
+	public ParticionVariable() {
+		
+	}
+
 	// GETTERS SETTERS
 	public int getDirInicio() {
 		return dirInicio;
