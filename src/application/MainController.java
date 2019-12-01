@@ -14,6 +14,8 @@ import application.algoritmos.sjf.SJFVariablesFirstFit;
 import application.algoritmos.sjf.SJFVariablesWorstFit;
 import application.algoritmos.srtf.SRTFFijasBestFit;
 import application.algoritmos.srtf.SRTFFijasFirstFit;
+import application.algoritmos.srtf.SRTFVariablesFirstFit;
+import application.algoritmos.srtf.SRTFVariablesWorstFit;
 import application.algoritmos.srtf.SRTFcPrioridadFijasBestFit;
 import application.algoritmos.srtf.SRTFcPrioridadFijasFirstFit;
 import application.gantt.GanttCPU;
@@ -319,6 +321,15 @@ public class MainController {
 			// Particiones Fijas - Best-Fit
 			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
 				SRTFFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+			// Particiones Variables - First-Fit
+			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
+				SRTFVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+
+			// Particiones Variables - Worst-Fit
+			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
+				SRTFVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+
 		}
 
 		/*
@@ -459,6 +470,12 @@ public class MainController {
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 				MemoryMapController.generarMapaMemoriaPartFijas(SRTFFijasBestFit.getMapaMemoria(), ram,
 						notificaciones.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoriaPartVariables(SRTFVariablesFirstFit.getMapaMemoria(), ram,
+						notificaciones.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+				MemoryMapController.generarMapaMemoriaPartVariables(SRTFVariablesWorstFit.getMapaMemoria(), ram,
+						notificaciones.getText());
 		}
 
 		/*
@@ -541,6 +558,10 @@ public class MainController {
 				GanttCPU.generarGanttCPU(SRTFFijasFirstFit.getGanttCpu(), notificaciones.getText());
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 				GanttCPU.generarGanttCPU(SRTFFijasBestFit.getGanttCpu(), notificaciones.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(SRTFVariablesFirstFit.getGanttCpu(), notificaciones.getText());
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+				GanttCPU.generarGanttCPU(SRTFVariablesWorstFit.getGanttCpu(), notificaciones.getText());
 		}
 
 		/*
@@ -651,6 +672,11 @@ public class MainController {
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 				StatisticsController.Statistics(SRTFFijasBestFit.getSalida(), SRTFFijasBestFit.getArribo(),
 						SRTFFijasBestFit.getIrrupcion(), notificaciones.getText());
+
+			// Particiones Variables - First-Fit
+			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+				StatisticsController.Statistics(SRTFVariablesFirstFit.getSalida(), SRTFVariablesFirstFit.getArribo(),
+						SRTFVariablesFirstFit.getIrrupcion(), notificaciones.getText());
 		}
 
 		/*
