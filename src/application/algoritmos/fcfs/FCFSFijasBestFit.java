@@ -158,20 +158,20 @@ public class FCFSFijasBestFit {
 				Proceso pNuevo = nuevos.get(i);
 				
 				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
-				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
+				int idParticionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
 				
 				// Recorro la lista de particiones para encontrar el mejor ajuste
 				for (Particion particion : particiones) {
 					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
 						tamanioBestFit = particion.getTamanio();
-						posicionBestFit = particion.getId();
+						idParticionBestFit = particion.getId();
 					}
 				}
 				
 				// Si la encuentro, le asigno el proceso nuevo
-				if (posicionBestFit != 0) {
+				if (idParticionBestFit != 0) {
 					for (Particion particion: particiones) {
-						if (particion.getId() == posicionBestFit) {
+						if (particion.getId() == idParticionBestFit) {
 							listos.add(pNuevo);
 							particion.setProceso(pNuevo.getId());
 							particion.setLibre(false);
