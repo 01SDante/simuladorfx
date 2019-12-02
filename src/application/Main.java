@@ -2,6 +2,7 @@ package application;
 
 import java.io.IOException;
 
+import application.bd.BD;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,7 @@ public class Main extends Application {
 		ventanaPrincipal.setResizable(false);
 		ventanaPrincipal.setOnCloseRequest(e -> System.exit(0));
 		ventanaPrincipal.show();
+		BD.getInstance();
 	}
 
 }

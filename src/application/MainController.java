@@ -20,6 +20,7 @@ import application.algoritmos.srtf.SRTFcPrioridadFijasBestFit;
 import application.algoritmos.srtf.SRTFcPrioridadFijasFirstFit;
 import application.algoritmos.srtf.SRTFcPrioridadVariablesFirstFit;
 import application.algoritmos.srtf.SRTFcPrioridadVariablesWorstFit;
+import application.bd.BD;
 import application.gantt.GanttCPU;
 import application.memory_map.MemoryMapController;
 import application.model.ElementoTablaParticion;
@@ -56,7 +57,7 @@ public class MainController {
 	private MenuItem menuItemGuardar;
 	@FXML
 	private MenuItem menuItemSalir;
-
+	
 	// PESTANIAS
 	@FXML
 	private Tab particionesFijas;
@@ -81,25 +82,26 @@ public class MainController {
 
 	// CHOICEBOX
 
+	// Particiones
 	private ObservableList<String> listaParticiones = FXCollections.observableArrayList("Fijas", "Variables");
-
 	@FXML
 	private ChoiceBox<String> particiones;
 
+	// Politicas
 	private ObservableList<String> listaPoliticasFijas = FXCollections.observableArrayList("First-Fit", "Best-Fit");
 	private ObservableList<String> listaPoliticasVariables = FXCollections.observableArrayList("First-Fit",
 			"Worst-Fit");
-
 	@FXML
 	private ChoiceBox<String> politicas;
 
+	// Algoritmos
 	private ObservableList<String> listaAlgoritmos = FXCollections.observableArrayList("FCFS", "SJF", "SRTF",
 			"SRTF (c/Prioridad)", "Round-Robin", "Colas Multinivel");
 	@FXML
 	private ChoiceBox<String> algoritmos;
 
+	// E/S
 	private ObservableList<String> listaEs = FXCollections.observableArrayList(" 0 ", " 1 ", " 2 ");
-
 	@FXML
 	private ChoiceBox<String> es;
 
@@ -129,6 +131,9 @@ public class MainController {
 
 		es.setValue(" 0 ");
 		es.setItems(listaEs);
+		
+		guardados.setValue("       -  Seleccione CT  -");
+		guardados.setItems(listaGuardados);
 
 		// EVENTO QUE DESCUENTA 0.10 A LA MEMORIA RAM INGRESADA
 		limiteMemoria.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -147,21 +152,21 @@ public class MainController {
 
 		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
 		inicializarColumnasTablaProcesos();
-
+		
 		/*
 		 * -------- DATOS DE PRUEBA ---------
 		 */
-		limiteMemoria.setText("639");
-		limiteMemoria.setDisable(true);
-		cantidadParticionesFijas.setText("5");
-		cantidadParticionesFijas.setDisable(true);
-
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+//		limiteMemoria.setText("639");
+//		limiteMemoria.setDisable(true);
+//		cantidadParticionesFijas.setText("5");
+//		cantidadParticionesFijas.setDisable(true);
+//
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
+//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 
 		// ejercicio particiones fijas
 //		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 3, 0, 0, 0, 0, 0));
@@ -177,14 +182,14 @@ public class MainController {
 //		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
 
 		// c/prioridad
-		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
-		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
-		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
-		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
-		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
-		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
-
-		tablaProceso.getItems().setAll(elementosTablaProcesos);
+//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
+//		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
+//
+//		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
 	/*
@@ -221,13 +226,13 @@ public class MainController {
 	// EVENTO MENU ABRIR -> VENTANA ABRIR ARCHIVO
 	@FXML
 	public void menuItemAbrir(ActionEvent event) {
-		loadWindow("/application/save_load/Load.fxml", "Abrir archivo");
+		abrirVentana("/application/bd/Abrir.fxml", "Abrir archivo");
 	}
 
 	// EVENTO MENU GUARDAR -> VENTANA GUARDAR ARCHIVO
 	@FXML
 	public void menuItemGuardar(ActionEvent event) {
-		loadWindow("/application/save_load/Save.fxml", "Guardar archivo");
+		abrirVentana("/application/bd/Guardar.fxml", "Guardar archivo");
 	}
 
 	// EVENTO MENU SALIR
@@ -242,7 +247,7 @@ public class MainController {
 	 */
 
 	// METODO PARA CARGAR LAS VISTAS
-	public void loadWindow(String location, String title) {
+	public void abrirVentana(String location, String title) {
 		try {
 			Parent parent = FXMLLoader.load(getClass().getResource(location));
 			Scene scene = new Scene(parent);
@@ -254,9 +259,10 @@ public class MainController {
 
 		} catch (Exception e) {
 			System.out.println("Error cargando vista: '" + title + "'. ERROR: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
-
+	
 	// EVENTO BOTON EJECUTAR
 	private String algoritmoEjecutado = "";
 	private String particionesEjecutado = "";
@@ -836,47 +842,47 @@ public class MainController {
 		alert.showAndWait();
 	}
 
-	// RESTRICCION CAMPO LIMITE DE MEMORIA
-	@FXML
-	public void restriccionMemoria(ActionEvent event) {
-		try {
-			int limiteMemoria = Integer.parseInt(this.limiteMemoria.getText().trim());
-			if (limiteMemoria < 100 || limiteMemoria > 1000) {
-				alerta("Ingresar un entero entre 100 y 1000");
-			}
-		} catch (Exception e) {
-			System.out.println("Error en ingreso de datos en campo 'Límite Memoria'. ERROR: " + e.getMessage());
-			alerta("Ingresar un entero para el campo 'Tamaño de memoria'.");
-		}
-	}
-
-	// RESTRICCION CAMPO CANTIDAD PARTICIONES FIJAS
-	@FXML
-	public void restriccionCantidadParticionesFijas(ActionEvent event) {
-		try {
-			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
-			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 10) {
-				alerta("Ingresar un entero entre 3 y 10.");
-			}
-		} catch (Exception e) {
-			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
-			alerta("Ingresar un entero para el campo 'Cantidad'.");
-		}
-	}
-
-	// RESTRICCION CAMPO QUANTUM
-	@FXML
-	public void restriccionQuantum(ActionEvent event) {
-		try {
-			int quantum = Integer.parseInt(this.quantum.getText().trim());
-			if (quantum < 1 || quantum > 8) {
-				alerta("Ingresar un entero entre 1 y 8.");
-			}
-		} catch (Exception e) {
-			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
-			alerta("Ingresar un entero para el campo 'Quantum'.");
-		}
-	}
+//	// RESTRICCION CAMPO LIMITE DE MEMORIA
+//	@FXML
+//	public void restriccionMemoria(ActionEvent event) {
+//		try {
+//			int limiteMemoria = Integer.parseInt(this.limiteMemoria.getText().trim());
+//			if (limiteMemoria < 100 || limiteMemoria > 1000) {
+//				alerta("Ingresar un entero entre 100 y 1000");
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Error en ingreso de datos en campo 'Límite Memoria'. ERROR: " + e.getMessage());
+//			alerta("Ingresar un entero para el campo 'Tamaño de memoria'.");
+//		}
+//	}
+//
+//	// RESTRICCION CAMPO CANTIDAD PARTICIONES FIJAS
+//	@FXML
+//	public void restriccionCantidadParticionesFijas(ActionEvent event) {
+//		try {
+//			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
+//			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 10) {
+//				alerta("Ingresar un entero entre 3 y 10.");
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
+//			alerta("Ingresar un entero para el campo 'Cantidad'.");
+//		}
+//	}
+//
+//	// RESTRICCION CAMPO QUANTUM
+//	@FXML
+//	public void restriccionQuantum(ActionEvent event) {
+//		try {
+//			int quantum = Integer.parseInt(this.quantum.getText().trim());
+//			if (quantum < 1 || quantum > 8) {
+//				alerta("Ingresar un entero entre 1 y 8.");
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
+//			alerta("Ingresar un entero para el campo 'Quantum'.");
+//		}
+//	}
 
 	/*
 	 * ------------------------ PESTANIA PARTICIONES FIJAS ------------------------
@@ -988,7 +994,57 @@ public class MainController {
 	 * ----------------------------- PESTANIA PROCESOS -----------------------------
 	 * 
 	 */
+	
+	// ABRIR/GUARDAR
+	@FXML
+	private TextField nombreCT;
+	@FXML
+	private Button guardarCT;
 
+	private ObservableList<String> listaGuardados = FXCollections.observableArrayList("       -  Seleccione CT  -");
+	@FXML
+	private ChoiceBox<String> guardados;
+	@FXML
+	private Button cargarCT;
+
+	// EVENTO BOTON GUARDAR CT
+	@FXML
+	public void botonGuardarCT(ActionEvent event) {
+		BD bd = BD.getInstance();
+		
+		if (nombreCT.getText().isEmpty()) {
+			alerta("Ingresar un nombre para la carga de trabajo.");
+			return;
+		}
+		String nombre = nombreCT.getText();
+		
+		for (ElementoTablaProceso p: elementosTablaProcesos) {
+			String query = "INSERT INTO PROCESO(NOMBRE, IDPROCESO, TAMANIO, TARRIBO, CPU1, ES1, CPU2, ES2, CPU3, PRIORIDAD) VALUES ("
+	                + "'" + nombre + "',"
+	                + "'" + p.getId() + "',"
+	                + "'" + p.getTamanio() + "',"
+	                + "'" + p.getTArribo() + "',"
+	                + "'" + p.getCpu1() + "',"
+	                + "'" + p.getEs1() + "',"
+	                + "'" + p.getCpu2() + "',"
+	                + "'" + p.getEs2() + "',"
+	                + "'" + p.getCpu3() + "',"
+	                + "'" + p.getPrioridad() + "'"
+	                + ")";
+			
+			System.out.println(query); // Imprimimos por consola
+			
+			// INSERT
+			if (!bd.insert(query)) return;
+		}
+		
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText("Carga de trabajo guardada.");
+        alert.showAndWait();
+		
+	}
+	
 	// TABLA PROCESOS
 	@FXML
 	private TableView<ElementoTablaProceso> tablaProceso;
@@ -1012,10 +1068,11 @@ public class MainController {
 	private TableColumn<ElementoTablaProceso, Integer> prioridadProceso;
 
 	private ObservableList<ElementoTablaProceso> elementosTablaProcesos = FXCollections.observableArrayList();
-
+	
 	// BOTONES AGREGAR/ELIMINAR PROCESO
 	@FXML
 	private Button agregarProceso;
+
 
 	// CAMPOS NUEVO PROCESO
 	@FXML

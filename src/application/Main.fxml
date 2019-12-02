@@ -57,7 +57,7 @@
                                        <HBox.margin>
                                           <Insets left="10.0" right="10.0" top="20.0" />
                                        </HBox.margin></Label>
-                                    <TextField fx:id="limiteMemoria" alignment="TOP_LEFT" onAction="#restriccionMemoria">
+                                    <TextField fx:id="limiteMemoria" alignment="TOP_LEFT">
                                        <HBox.margin>
                                           <Insets left="10.0" right="10.0" top="20.0" />
                                        </HBox.margin></TextField>
@@ -88,7 +88,7 @@
                                           <Insets />
                                        </HBox.margin>
                                     </Label>
-                                    <TextField fx:id="cantidadParticionesFijas" maxWidth="80.0" onAction="#restriccionCantidadParticionesFijas" prefHeight="26.0" prefWidth="80.0">
+                                    <TextField fx:id="cantidadParticionesFijas" maxWidth="80.0" prefHeight="26.0" prefWidth="80.0">
                                        <HBox.margin>
                                           <Insets left="10.0" right="50.0" />
                                        </HBox.margin></TextField>
@@ -110,7 +110,7 @@
                                           <Insets />
                                        </HBox.margin>
                                     </Label>
-                                    <TextField fx:id="quantum" maxWidth="80.0" onAction="#restriccionQuantum" prefHeight="26.0" prefWidth="80.0">
+                                    <TextField fx:id="quantum" maxWidth="80.0" prefHeight="26.0" prefWidth="80.0">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
@@ -172,7 +172,7 @@
                      <content>
                         <BorderPane prefHeight="200.0" prefWidth="200.0">
                            <center>
-                              <TableView fx:id="tablaProceso" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                              <TableView fx:id="tablaProceso" BorderPane.alignment="CENTER">
                                 <columns>
                                   <TableColumn fx:id="idProceso" prefWidth="75.0" text="ID" />
                                   <TableColumn fx:id="tamanioProceso" prefWidth="75.0" text="Tamaño" />
@@ -266,7 +266,7 @@
                                     <TextField fx:id="prioridadNuevoProceso" maxWidth="75.0" minWidth="120.0" text="0" />
                                     <Button fx:id="agregarProceso" minWidth="120.0" mnemonicParsing="false" onAction="#botonAgregarProceso" text="Agregar">
                                        <VBox.margin>
-                                          <Insets top="20.0" />
+                                          <Insets />
                                        </VBox.margin></Button>
                                  </children>
                                  <padding>
@@ -274,6 +274,22 @@
                                  </padding>
                               </VBox>
                            </right>
+                           <bottom>
+                              <HBox spacing="10.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <TextField fx:id="nombreCT" minWidth="173.0" promptText="Nombre" />
+                                    <Button fx:id="guardarCT" mnemonicParsing="false" onAction="#botonGuardarCT" text="Guardar CT" />
+                                    <ChoiceBox fx:id="guardados" minWidth="165.0" prefWidth="150.0" />
+                                    <Button fx:id="cargarCT" mnemonicParsing="false" text="Cargar CT" />
+                                 </children>
+                                 <BorderPane.margin>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </BorderPane.margin>
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </HBox>
+                           </bottom>
                         </BorderPane>
                      </content>
                   </Tab>
