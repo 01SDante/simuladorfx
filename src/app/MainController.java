@@ -53,61 +53,53 @@ import javafx.stage.Stage;
 public class MainController {
 
 	// MENU
-	@FXML
-	private MenuItem menuItemNuevo;
-	@FXML
-	private MenuItem menuItemSalir;
+	@FXML private MenuItem menuItemNuevo;
+	@FXML private MenuItem menuItemSalir;
 	
 	// PESTANIAS
-	@FXML
-	private Tab particionesFijas;
+	@FXML private Tab particionesFijas;
 
 	// BOTONES
-	@FXML
-	private Button executeButton;
-	@FXML
-	private Button memoryMapButton;
-	@FXML
-	private Button ganttButton;
-	@FXML
-	private Button statisticsButton;
+	@FXML private Button botonEjecutar;
+	@FXML private Button botonMapaMemoria;
+	@FXML private Button botonGantt;
+	@FXML private Button botonEstadisticas;
 
 	// CAMPOS
-	@FXML
-	private TextField limiteMemoria;
-	@FXML
-	private TextField cantidadParticionesFijas;
-	@FXML
-	private TextField quantum;
+	@FXML private TextField limiteMemoria;
+	@FXML private TextField cantidadParticionesFijas;
+	@FXML private TextField quantum;
 
 	// CHOICEBOX
 
-	// Particiones
+	/*
+	 * Particiones
+	 */
 	private ObservableList<String> listaParticiones = FXCollections.observableArrayList("Fijas", "Variables");
-	@FXML
-	private ChoiceBox<String> particiones;
+	@FXML private ChoiceBox<String> particiones;
 
-	// Politicas
+	/*
+	 * Politicas
+	 */
 	private ObservableList<String> listaPoliticasFijas = FXCollections.observableArrayList("First-Fit", "Best-Fit");
-	private ObservableList<String> listaPoliticasVariables = FXCollections.observableArrayList("First-Fit",
-			"Worst-Fit");
-	@FXML
-	private ChoiceBox<String> politicas;
+	private ObservableList<String> listaPoliticasVariables = FXCollections.observableArrayList("First-Fit", "Worst-Fit");
+	@FXML private ChoiceBox<String> politicas;
 
-	// Algoritmos
+	/*
+	 * Algoritmos
+	 */
 	private ObservableList<String> listaAlgoritmos = FXCollections.observableArrayList("FCFS", "SJF", "SRTF",
 			"SRTF (c/Prioridad)", "Round-Robin", "Colas Multinivel");
-	@FXML
-	private ChoiceBox<String> algoritmos;
+	@FXML private ChoiceBox<String> algoritmos;
 
-	// E/S
+	/*
+	 * E/S
+	 */
 	private ObservableList<String> listaEs = FXCollections.observableArrayList(" 0 ", " 1 ", " 2 ");
-	@FXML
-	private ChoiceBox<String> es;
+	@FXML private ChoiceBox<String> es;
 
 	// BARRA NOTIFICACIONES
-	@FXML
-	private Label notificaciones;
+	@FXML private Label notificaciones;
 
 	// VARIABLES AUXILIARES
 
@@ -115,7 +107,8 @@ public class MainController {
 	private int memoriaDisponible; // Memoria disponible para particiones fijas o variables
 	private int direccionInicio; // Direccion inicio tabla particiones fijas
 	private int direccionFin = 0; // Direccion fin tabla particiones fijas
-	private int mayorTamanio = 0; // Tamanio mayor particion
+	private int mayorTamanioProceso = 0; // Tamanio mayor proceso
+	private int mayorTamanioParticion = 0; // Tamanio mayor particion
 
 	private int idProcesoNuevo = 1; // ID auto-generado procesos
 
@@ -132,6 +125,7 @@ public class MainController {
 		es.setValue(" 0 ");
 		es.setItems(listaEs);
 		
+		// CARGAMOS LAS CT GUARDADAS
 		leerCT();
 		guardados.setValue(" - Seleccione una CT - ");
 		guardados.setItems(listaGuardados);
@@ -154,43 +148,6 @@ public class MainController {
 		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
 		inicializarColumnasTablaProcesos();
 		
-		/*
-		 * -------- DATOS DE PRUEBA ---------
-		 */
-//		limiteMemoria.setText("639");
-//		limiteMemoria.setDisable(true);
-//		cantidadParticionesFijas.setText("5");
-//		cantidadParticionesFijas.setDisable(true);
-//
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-
-		// ejercicio particiones fijas
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 100, 0, 3, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 150, 2, 4, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 90, 5, 3, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 75, 6, 2, 0, 0, 0, 0, 0));
-
-		// ejercicio 2
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 10, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 0, 6, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 1, 2, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 2, 1, 0, 0, 0, 0, 0));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 2, 8, 0, 0, 0, 0, 0));
-
-		// c/prioridad
-//		elementosTablaProcesos.add(new ElementoTablaProceso(1, 10, 0, 8, 0, 0, 0, 0, 5));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(2, 10, 3, 4, 0, 0, 0, 0, 7));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(3, 10, 6, 2, 0, 0, 0, 0, 9));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(4, 10, 10, 3, 0, 0, 0, 0, 8));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(5, 10, 15, 6, 0, 0, 0, 0, 1));
-//		elementosTablaProcesos.add(new ElementoTablaProceso(6, 10, 24, 4, 0, 0, 0, 0, 5));
-//
-//		tablaProceso.getItems().setAll(elementosTablaProcesos);
 	}
 
 	/*
@@ -219,7 +176,10 @@ public class MainController {
 		idParticionFija = 1;
 		idProcesoNuevo = 1;
 
-		mayorTamanio = 0;
+		// REINICIO LAS VARIABLES AUXILIARES
+		mayorTamanioProceso = 0;
+		mayorTamanioParticion = 0;
+		ejecutado = false;
 
 		notificaciones.setText("Nuevo");
 	}
@@ -256,9 +216,40 @@ public class MainController {
 	private String algoritmoEjecutado = "";
 	private String particionesEjecutado = "";
 	private String politicaEjecutado = "";
+	private boolean ejecutado = false;
 
 	@FXML
-	public void execute(ActionEvent event) {
+	public void ejecutar(ActionEvent event) {
+		
+		// ------------------ RESTRICCIONES ------------------
+		
+		/*
+		 * Veo si hay al menos un proceso cargado
+		 * 
+		 */
+		if (elementosTablaProcesos.isEmpty()) {
+			alerta("Cargar procesos antes de ejecutar");
+			return;
+		}
+		
+		/*
+		 * Veo si el proceso mas grande entra con particiones variables
+		 * 
+		 */
+		if (particiones.getValue() == "Variables" && memoriaDisponible < mayorTamanioProceso) {
+			alerta("La memoria RAM ingresada es insuficiente para los procesos cargados.");
+			return;
+			/*
+			 * Sino veo si entra con particiones fijas
+			 */
+		} else if (particiones.getValue() == "Fijas" && mayorTamanioParticion < mayorTamanioProceso) {
+			alerta("Al menos una partición debe poder almacenar al proceso más grande de tamaño: " + mayorTamanioProceso
+					+ " u.m.");
+			return;
+		}
+		
+		// ------------------- ALGORITMOS --------------------
+		
 		/*
 		 * FCFS
 		 * 
@@ -412,12 +403,19 @@ public class MainController {
 		algoritmoEjecutado = algoritmos.getValue();
 		particionesEjecutado = particiones.getValue();
 		politicaEjecutado = politicas.getValue();
+		// Habilito las salidas
+		ejecutado = true;
 	}
 
 	// EVENTO BOTON MAPA DE MEMORIA
 	@FXML
-	public void loadMemoryMap(ActionEvent event) {
+	public void mapaMemoria(ActionEvent event) {
 
+		if (!ejecutado) {
+			alerta("Ejecutar un algoritmo primero.");
+			return;
+		}
+		
 		// Calculo memoria del SO
 		int ram = Integer.parseInt(limiteMemoria.getText());
 		for (ElementoTablaParticion e : elementosTablaParticionesFijas) {
@@ -528,7 +526,12 @@ public class MainController {
 
 	// EVENTO BOTON GANTT
 	@FXML
-	public void loadGantt(ActionEvent event) {
+	public void gantt(ActionEvent event) {
+		
+		if (!ejecutado) {
+			alerta("Ejecutar un algoritmo primero.");
+			return;
+		}
 
 		/*
 		 * FCFS
@@ -615,7 +618,12 @@ public class MainController {
 
 	// EVENTO BOTON ESTADISTICAS
 	@FXML
-	public void loadStatistics(ActionEvent event) {
+	public void estadisticas(ActionEvent event) {
+		
+		if (!ejecutado) {
+			alerta("Ejecutar un algoritmo primero.");
+			return;
+		}
 
 		/*
 		 * FCFS
@@ -968,10 +976,11 @@ public class MainController {
 				cantidadRestante--;
 				notificaciones.setText("Memoria disponible: " + memoriaDisponible
 						+ " u.m. | Cantidad de particiones restantes: " + cantidadRestante);
-
+				
 				// Resguardo mayor particion
-				if (tamanioNuevaParticion > mayorTamanio)
-					mayorTamanio = tamanioNuevaParticion;
+				if (tamanioNuevaParticion > mayorTamanioParticion)
+					mayorTamanioParticion = tamanioNuevaParticion;
+
 			}
 		} catch (Exception e) {
 			System.out.println("Error en ingreso de datos en campo 'Tamaño Partición'. ERROR: " + e.getMessage());
@@ -1168,25 +1177,18 @@ public class MainController {
 			int prioridadNuevoProceso = Integer.parseInt(this.prioridadNuevoProceso.getText().trim());
 
 			if (idProcesoNuevo <= 10) {
-
+				
 				/*
-				 * En caso de particiones fijas, compruebo que el tamanio del nuevo proceso sea
-				 * menor o igual a la mayor particion
+				 * 900 u.m. es el tamanio maximo de un proceso
 				 */
-				if (particiones.getValue() == "Fijas" && tamanioNuevoProceso > mayorTamanio) {
-					alerta("El tamaño del proceso debe ser menor a igual a la máxima partición: " + mayorTamanio
-							+ " u.m.");
+				if (tamanioNuevoProceso > 900) {
+					alerta("El tamaño máximo de un proceso es 900 u.m.");
 					return;
-					/*
-					 * Para particiones variables compruebo que el tamanio del nuevo proceso sea
-					 * menor o igual a la memoria disponible
-					 */
-				} else if (particiones.getValue() == "Variables" && tamanioNuevoProceso > memoriaDisponible) {
-					alerta("El tamaño del proceso debe ser menor a igual a la memoria disponible: " + memoriaDisponible
-							+ " u.m.");
-					return;
+				} else if (tamanioNuevoProceso > mayorTamanioProceso) {
+					// Actualizo el proceso de mayor tamanio
+					mayorTamanioProceso = tamanioNuevoProceso;
 				}
-
+				
 				/*
 				 * Agrego el proceso
 				 */

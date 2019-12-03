@@ -297,7 +297,7 @@
          <right>
             <VBox prefHeight="600.0" prefWidth="150.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="executeButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#execute" prefHeight="220.0" prefWidth="150.0" text="Ejecutar">
+                  <Button fx:id="botonEjecutar" contentDisplay="TOP" mnemonicParsing="false" onAction="#ejecutar" prefHeight="220.0" prefWidth="150.0" text="Ejecutar">
                      <graphic>
                         <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -305,7 +305,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button fx:id="memoryMapButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#loadMemoryMap" prefHeight="220.0" prefWidth="150.0" text="Mapa de Memoria">
+                  <Button fx:id="botonMapaMemoria" contentDisplay="TOP" mnemonicParsing="false" onAction="#mapaMemoria" prefHeight="220.0" prefWidth="150.0" text="Mapa de Memoria">
                      <graphic>
                         <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -319,7 +319,7 @@
                      <padding>
                         <Insets bottom="15.0" top="5.0" />
                      </padding></Button>
-                  <Button fx:id="ganttButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#loadGantt" prefHeight="220.0" prefWidth="150.0" text="Gantt">
+                  <Button fx:id="botonGantt" contentDisplay="TOP" mnemonicParsing="false" onAction="#gantt" prefHeight="220.0" prefWidth="150.0" text="Gantt">
                      <graphic>
                         <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -327,7 +327,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button fx:id="statisticsButton" contentDisplay="TOP" layoutX="10.0" layoutY="393.0" mnemonicParsing="false" onAction="#loadStatistics" prefHeight="220.0" prefWidth="150.0" text="Estadísticas">
+                  <Button fx:id="botonEstadisticas" contentDisplay="TOP" layoutX="10.0" layoutY="393.0" mnemonicParsing="false" onAction="#estadisticas" prefHeight="220.0" prefWidth="150.0" text="Estadísticas">
                      <graphic>
                         <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
                            <image>
