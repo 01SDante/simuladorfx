@@ -10,7 +10,7 @@
 
 - Agregar el .jar para la base de datos H2: click derecho en el proyecto --> Build Path --> Configure Build Path --> Java Build Path --> Classpath --> Add external jars --> h2-1.4.199.jar
 
-- Agregar las librerias de JavaFX 11 (pasos 2, 3 y 4): https://openjfx.io/openjfx-docs/#IDE-Eclipse
+- Agregar las librerias de JavaFX 11: https://openjfx.io/openjfx-docs/#IDE-Eclipse
 
 #
 
