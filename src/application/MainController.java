@@ -1,5 +1,9 @@
 package application;
 
+import java.sql.ResultSet;
+import java.util.HashSet;
+import java.util.Iterator;
+
 import application.algoritmos.fcfs.FCFSFijasBestFit;
 import application.algoritmos.fcfs.FCFSFijasFirstFit;
 import application.algoritmos.fcfs.FCFSVariablesFirstFit;
@@ -51,10 +55,6 @@ public class MainController {
 	// MENU
 	@FXML
 	private MenuItem menuItemNuevo;
-	@FXML
-	private MenuItem menuItemAbrir;
-	@FXML
-	private MenuItem menuItemGuardar;
 	@FXML
 	private MenuItem menuItemSalir;
 	
@@ -132,7 +132,8 @@ public class MainController {
 		es.setValue(" 0 ");
 		es.setItems(listaEs);
 		
-		guardados.setValue("       -  Seleccione CT  -");
+		leerCT();
+		guardados.setValue(" - Seleccione una CT - ");
 		guardados.setItems(listaGuardados);
 
 		// EVENTO QUE DESCUENTA 0.10 A LA MEMORIA RAM INGRESADA
@@ -221,18 +222,6 @@ public class MainController {
 		mayorTamanio = 0;
 
 		notificaciones.setText("Nuevo");
-	}
-
-	// EVENTO MENU ABRIR -> VENTANA ABRIR ARCHIVO
-	@FXML
-	public void menuItemAbrir(ActionEvent event) {
-		abrirVentana("/application/bd/Abrir.fxml", "Abrir archivo");
-	}
-
-	// EVENTO MENU GUARDAR -> VENTANA GUARDAR ARCHIVO
-	@FXML
-	public void menuItemGuardar(ActionEvent event) {
-		abrirVentana("/application/bd/Guardar.fxml", "Guardar archivo");
 	}
 
 	// EVENTO MENU SALIR
@@ -995,13 +984,13 @@ public class MainController {
 	 * 
 	 */
 	
-	// ABRIR/GUARDAR
+	// GUARDAR/CARGAR
 	@FXML
 	private TextField nombreCT;
 	@FXML
 	private Button guardarCT;
 
-	private ObservableList<String> listaGuardados = FXCollections.observableArrayList("       -  Seleccione CT  -");
+	private ObservableList<String> listaGuardados = FXCollections.observableArrayList();
 	@FXML
 	private ChoiceBox<String> guardados;
 	@FXML
@@ -1042,7 +1031,66 @@ public class MainController {
         alert.setHeaderText(null);
         alert.setContentText("Carga de trabajo guardada.");
         alert.showAndWait();
-		
+        
+        leerCT(); // Actualizo el choicebox de CT
+        guardados.setValue(" - Seleccione una CT - ");
+	}
+	
+	// LISTADO CT
+	private void leerCT() {
+		BD bd = BD.getInstance();
+		String query = "SELECT * FROM PROCESO";
+		HashSet<String> cargasDeTrabajo = new HashSet<String>();
+		try {
+			ResultSet rs = bd.select(query);
+			while (rs.next()) {
+				String nombre = rs.getString("nombre");
+				cargasDeTrabajo.add(nombre);
+			}
+		} catch (Exception e) {
+			System.out.println("ERROR al cargar las cargas de trabajo.");
+		}
+		listaGuardados.clear();
+		listaGuardados.add(" - Seleccione una CT - ");
+		Iterator<String> nombre = cargasDeTrabajo.iterator();
+		while (nombre.hasNext()) {
+			listaGuardados.add(nombre.next());
+		}
+	}
+	
+	// EVENTO BOTON CARGAR CT
+	@FXML
+	public void botonCargarCT(ActionEvent event) {
+		BD bd = BD.getInstance();
+		String ejercicio = guardados.getValue();
+		String query = "SELECT * FROM PROCESO WHERE nombre = '" + ejercicio + "'";
+		try {
+			if (ejercicio != " - Seleccione una CT - ") {
+				// Ejecuto el query
+				ResultSet rs = bd.select(query);
+				
+				// Limpio la tabla de procesos
+				elementosTablaProcesos.clear();
+				
+				while (rs.next()) {
+					int id = Integer.parseInt(rs.getString("idproceso"));
+					int tamanio = Integer.parseInt(rs.getString("tamanio"));
+					int tArribo = Integer.parseInt(rs.getString("tarribo"));
+					int cpu1 = Integer.parseInt(rs.getString("cpu1"));
+					int es1 = Integer.parseInt(rs.getString("es1"));
+					int cpu2 = Integer.parseInt(rs.getString("cpu2"));
+					int es2 = Integer.parseInt(rs.getString("es2"));
+					int cpu3 = Integer.parseInt(rs.getString("cpu3"));
+					int prioridad = Integer.parseInt(rs.getString("prioridad"));
+					elementosTablaProcesos.add(new ElementoTablaProceso(id, tamanio, tArribo, cpu1, es1, cpu2, es2, cpu3, prioridad));
+				}
+				tablaProceso.getItems().setAll(elementosTablaProcesos);
+				notificaciones.setText("Cargada CT: '" + ejercicio + "'.");
+			}
+			
+		} catch (Exception e) {
+			System.out.println("ERROR al cargar la carga de trabajo '" + ejercicio + "'.");
+		}
 	}
 	
 	// TABLA PROCESOS
@@ -1069,7 +1117,7 @@ public class MainController {
 
 	private ObservableList<ElementoTablaProceso> elementosTablaProcesos = FXCollections.observableArrayList();
 	
-	// BOTONES AGREGAR/ELIMINAR PROCESO
+	// BOTON AGREGAR PROCESO
 	@FXML
 	private Button agregarProceso;
 

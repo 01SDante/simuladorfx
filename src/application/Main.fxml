@@ -30,8 +30,6 @@
                 <Menu mnemonicParsing="false" text="Archivo">
                   <items>
                     <MenuItem fx:id="menuItemNuevo" mnemonicParsing="false" onAction="#menuItemNuevo" text="Nuevo" />
-                        <MenuItem fx:id="menuItemAbrir" mnemonicParsing="false" onAction="#menuItemAbrir" text="Abrir..." />
-                        <MenuItem fx:id="menuItemGuardar" mnemonicParsing="false" onAction="#menuItemGuardar" text="Guardar" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="menuItemSalir" mnemonicParsing="false" onAction="#menuItemSalir" text="Salir" />
                   </items>
@@ -280,7 +278,7 @@
                                     <TextField fx:id="nombreCT" minWidth="173.0" promptText="Nombre" />
                                     <Button fx:id="guardarCT" mnemonicParsing="false" onAction="#botonGuardarCT" text="Guardar CT" />
                                     <ChoiceBox fx:id="guardados" minWidth="165.0" prefWidth="150.0" />
-                                    <Button fx:id="cargarCT" mnemonicParsing="false" text="Cargar CT" />
+                                    <Button fx:id="cargarCT" mnemonicParsing="false" onAction="#botonCargarCT" text="Cargar CT" />
                                  </children>
                                  <BorderPane.margin>
                                     <Insets bottom="5.0" top="5.0" />
