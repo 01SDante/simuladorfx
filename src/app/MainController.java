@@ -103,14 +103,14 @@ public class MainController {
 
 	// VARIABLES AUXILIARES
 
+	private int idProcesoNuevo = 1; // ID auto-generado procesos
 	private int idParticionFija = 1; // ID auto-generado particiones fijas
+	private int cantidadRestante = 0; // Cantidad de particiones restantes
 	private int memoriaDisponible; // Memoria disponible para particiones fijas o variables
 	private int direccionInicio; // Direccion inicio tabla particiones fijas
 	private int direccionFin = 0; // Direccion fin tabla particiones fijas
 	private int mayorTamanioProceso = 0; // Tamanio mayor proceso
 	private int mayorTamanioParticion = 0; // Tamanio mayor particion
-
-	private int idProcesoNuevo = 1; // ID auto-generado procesos
 
 	@FXML
 	public void initialize() {
@@ -179,6 +179,7 @@ public class MainController {
 		// REINICIO LAS VARIABLES AUXILIARES
 		mayorTamanioProceso = 0;
 		mayorTamanioParticion = 0;
+		cantidadRestante = 0;
 		ejecutado = false;
 
 		notificaciones.setText("Nuevo");
@@ -229,6 +230,22 @@ public class MainController {
 		 */
 		if (elementosTablaProcesos.isEmpty()) {
 			alerta("Cargar procesos antes de ejecutar");
+			return;
+		}
+		
+		/*
+		 * Veo si no se supera el limite de memoria RAM
+		 * 
+		 */
+		try {
+			int limiteMemoria = Integer.parseInt(this.limiteMemoria.getText().trim());
+			if (limiteMemoria < 100 || limiteMemoria > 1000) {
+				alerta("Ingresar un entero entre 100 y 1000 para el campo 'Tamaño de memoria RAM'.");
+				return;
+			}
+		} catch (Exception e) {
+			System.out.println("Error en ingreso de datos en campo 'Límite Memoria'. ERROR: " + e.getMessage());
+			alerta("Ingresar un entero para el campo 'Tamaño de memoria RAM'.");
 			return;
 		}
 		
@@ -952,7 +969,7 @@ public class MainController {
 
 		try {
 			int tamanioNuevaParticion = Integer.parseInt(this.tamanioNuevaParticion.getText().trim());
-			int cantidadRestante = Integer.parseInt(cantidadParticionesFijas.getText()) - idParticionFija + 1;
+			cantidadRestante = Integer.parseInt(cantidadParticionesFijas.getText()) - idParticionFija + 1;
 
 			if (cantidadRestante == 0) {
 				alerta("No hay particiones disponibles");
@@ -1095,6 +1112,15 @@ public class MainController {
 				}
 				tablaProceso.getItems().setAll(elementosTablaProcesos);
 				notificaciones.setText("Cargada CT: '" + ejercicio + "'.");
+				
+				// Actualizo el proceso de mayor tamanio
+				for (ElementoTablaProceso p: elementosTablaProcesos) {
+					if (p.getTamanio() > mayorTamanioProceso)
+						mayorTamanioProceso = p.getTamanio();
+				}
+				
+				// Y el ID de proceso
+				idProcesoNuevo = elementosTablaProcesos.size() + 1;
 			}
 			
 		} catch (Exception e) {
