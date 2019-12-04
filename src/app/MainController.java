@@ -50,6 +50,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainController {
@@ -57,6 +58,7 @@ public class MainController {
 	// MENU
 	@FXML private MenuItem menuItemNuevo;
 	@FXML private MenuItem menuItemSalir;
+	@FXML private MenuItem menuItemAyuda;
 	
 	// PESTANIAS
 	@FXML private Tab particionesFijas;
@@ -168,13 +170,6 @@ public class MainController {
 		elementosTablaProcesos.clear();
 		tablaProceso.getItems().setAll(elementosTablaProcesos);
 
-		// HABILITO Y REINICIO LOS CAMPOS MEMORIA RAM Y CANTIDAD
-		limiteMemoria.setDisable(false);
-		limiteMemoria.setText(null);
-
-		cantidadParticionesFijas.setDisable(false);
-		cantidadParticionesFijas.setText(null);
-
 		// REINICIO LOS IDs
 		idParticionFija = 1;
 		idProcesoNuevo = 1;
@@ -193,6 +188,23 @@ public class MainController {
 	@FXML
 	public void menuItemSalir(ActionEvent event) {
 		System.exit(0);
+	}
+	
+	// EVENTO MENU AYUDA
+	@FXML
+	public void menuItemAyuda(ActionEvent event) {
+		Label label = new Label("Si se rompe: Menu --> Nuevo");
+
+		StackPane stackPane = new StackPane();
+		stackPane.getChildren().add(label);
+		
+		Scene scene = new Scene(stackPane, 300, 100);
+		
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.setTitle("Acerca de");
+		stage.setResizable(false);
+		stage.showAndWait();
 	}
 
 	/*
@@ -808,18 +820,11 @@ public class MainController {
 	@FXML
 	public void particionFijaVariable(ActionEvent event) {
 		if (particiones.getValue().equals("Fijas")) {
-			particionesFijas.setDisable(false);
-			cantidadParticionesFijas.setDisable(false);
 			politicas.setItems(listaPoliticasFijas);
 		} else {
-			particionesFijas.setDisable(true);
-			cantidadParticionesFijas.setDisable(true);
 			politicas.setItems(listaPoliticasVariables);
 		}
 		politicas.setValue("First-Fit");
-		// :v
-		if (!tablaParticion.getItems().isEmpty())
-			cantidadParticionesFijas.setDisable(true);
 	}
 
 	// EVENTO CHOICEBOX ALGORITMO PESTANIA CONDICIONES INICIALES
@@ -973,13 +978,6 @@ public class MainController {
 				elementosTablaParticionesFijas.clear();
 				tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
 
-				// HABILITO Y REINICIO LOS CAMPOS MEMORIA RAM Y CANTIDAD
-				limiteMemoria.setDisable(false);
-				limiteMemoria.setText(null);
-
-				cantidadParticionesFijas.setDisable(false);
-				cantidadParticionesFijas.setText(null);
-
 				// REINICIO LOS IDs
 				idParticionFija = 1;
 
@@ -1039,9 +1037,6 @@ public class MainController {
 		}
 
 		// PARTICION NUEVA
-		limiteMemoria.setDisable(true); // Bloqueo los campos de la pestania condiciones iniciales
-		cantidadParticionesFijas.setDisable(true);
-
 		try {
 			int tamanioNuevaParticion = Integer.parseInt(this.tamanioNuevaParticion.getText().trim());
 			
