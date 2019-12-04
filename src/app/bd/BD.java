@@ -45,7 +45,7 @@ public class BD {
 		}
 	}
 	
-	// CREAR TABLA 'PROCESO'
+	// CREAR TABLA 'PROCESO' EN CASO DE QUE NO EXISTA
 	public void crearTablaProceso() {
 		String NOMBRE_TABLA = "PROCESO";
 		try {

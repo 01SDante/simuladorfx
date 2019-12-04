@@ -78,7 +78,7 @@ public class EstadisticasController {
 		int n = salida.length - 1;
 		double tRetornoPromedio = (double) tRetornoTotal / n;
 		double tEsperaPromedio = (double) tEsperaTotal / n;
-		bar.setTitle("TRP = " + tRetornoPromedio + " seg. - TEP = " + tEsperaPromedio + " seg.");
+		bar.setTitle("TRP = " + String.format("%.2f", tRetornoPromedio) + " seg. - TEP = " + String.format("%.2f", tEsperaPromedio) + " seg.");
 
 		/*
 		 * LAYOUT

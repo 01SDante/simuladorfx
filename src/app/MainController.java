@@ -3,6 +3,7 @@ package app;
 import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 
 import app.algoritmos.fcfs.FCFSFijasBestFit;
 import app.algoritmos.fcfs.FCFSFijasFirstFit;
@@ -40,6 +41,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -102,18 +104,19 @@ public class MainController {
 	@FXML private Label notificaciones;
 
 	// VARIABLES AUXILIARES
-
 	private int idProcesoNuevo = 1; // ID auto-generado procesos
 	private int idParticionFija = 1; // ID auto-generado particiones fijas
 	private int cantidadRestante = 0; // Cantidad de particiones restantes
-	private int memoriaDisponible; // Memoria disponible para particiones fijas o variables
+	private int memoriaDisponible; // Memoria disponible para particiones fijas
 	private int direccionInicio; // Direccion inicio tabla particiones fijas
 	private int direccionFin = 0; // Direccion fin tabla particiones fijas
 	private int mayorTamanioProceso = 0; // Tamanio mayor proceso
 	private int mayorTamanioParticion = 0; // Tamanio mayor particion
+	// Almacena los tamanios de las particiones que se van ingresando para evitar repetidas
+	private HashSet<Integer> tamaniosParticiones = new HashSet<Integer>();
 
 	@FXML
-	public void initialize() {
+	public void initialize() { // Metodo propio de JavaFX, se ejecuta cuando se carga la ventana Main
 
 		// INICIALIZAMOS LOS CHOICEBOX
 		particiones.setValue("Fijas");
@@ -181,6 +184,7 @@ public class MainController {
 		mayorTamanioParticion = 0;
 		cantidadRestante = 0;
 		ejecutado = false;
+		tamaniosParticiones.clear();
 
 		notificaciones.setText("Nuevo");
 	}
@@ -253,7 +257,9 @@ public class MainController {
 		 * Veo si el proceso mas grande entra con particiones variables
 		 * 
 		 */
-		if (particiones.getValue() == "Variables" && memoriaDisponible < mayorTamanioProceso) {
+		int ram = Integer.parseInt(limiteMemoria.getText());
+		int memoriaDisponibleParticionVariable = (int) (ram - (ram * 0.10));
+		if (particiones.getValue() == "Variables" && memoriaDisponibleParticionVariable < mayorTamanioProceso) {
 			alerta("La memoria RAM ingresada es insuficiente para los procesos cargados.");
 			return;
 			/*
@@ -283,11 +289,11 @@ public class MainController {
 
 			// Particiones Variables - First-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
-				FCFSVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				FCFSVariablesFirstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 
 			// Particiones Variables - Worst-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
-				FCFSVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				FCFSVariablesWorstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 		}
 
 		/*
@@ -306,11 +312,11 @@ public class MainController {
 
 			// Particiones Variables - First-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
-				SJFVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				SJFVariablesFirstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 
 			// Particiones Variables - Worst-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
-				SJFVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				SJFVariablesWorstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 		}
 
 		/*
@@ -329,11 +335,11 @@ public class MainController {
 
 			// Particiones Variables - First-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
-				SRTFVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				SRTFVariablesFirstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 
 			// Particiones Variables - Worst-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
-				SRTFVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				SRTFVariablesWorstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 
 		}
 
@@ -353,11 +359,11 @@ public class MainController {
 
 			// Particiones Variables - First-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
-				SRTFcPrioridadVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				SRTFcPrioridadVariablesFirstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 
 			// Particiones Variables - Worst-Fit
 			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
-				SRTFcPrioridadVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos);
+				SRTFcPrioridadVariablesWorstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 		}
 
 		/*
@@ -391,7 +397,7 @@ public class MainController {
 			// Particiones Variables - First-Fit
 			if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit") {
 				try {
-					RRVariablesFirstFit.ejecutar(memoriaDisponible, elementosTablaProcesos,
+					RRVariablesFirstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos,
 							Integer.parseInt(quantum.getText()));
 				} catch (Exception e) {
 					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
@@ -402,7 +408,7 @@ public class MainController {
 			// Particiones Variables - Worst-Fit
 			if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit") {
 				try {
-					RRVariablesWorstFit.ejecutar(memoriaDisponible, elementosTablaProcesos,
+					RRVariablesWorstFit.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos,
 							Integer.parseInt(quantum.getText()));
 				} catch (Exception e) {
 					System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
@@ -416,12 +422,16 @@ public class MainController {
 		// Armo la barra de notificaciones
 		notificaciones.setText("Ejecutado: Algoritmo " + algoritmos.getValue() + " | Particiones "
 				+ particiones.getValue() + " | Política " + politicas.getValue());
-		// Para armar los titulos de las salidas
+		
+		// Para saber que salidas ejecutar
 		algoritmoEjecutado = algoritmos.getValue();
 		particionesEjecutado = particiones.getValue();
 		politicaEjecutado = politicas.getValue();
+		
 		// Habilito las salidas
 		ejecutado = true;
+		exito("Ejecutado: " + algoritmoEjecutado + " | Particiones "
+				+ particionesEjecutado + " | Política " + politicaEjecutado);
 	}
 
 	// EVENTO BOTON MAPA DE MEMORIA
@@ -434,9 +444,14 @@ public class MainController {
 		}
 		
 		// Calculo memoria del SO
-		int ram = Integer.parseInt(limiteMemoria.getText());
-		for (ElementoTablaParticion e : elementosTablaParticionesFijas) {
-			ram -= e.getTamanio();
+		int ramSO = Integer.parseInt(limiteMemoria.getText());
+		if (particiones.getValue() == "Fijas") {
+			for (ElementoTablaParticion e : elementosTablaParticionesFijas) {
+				ramSO -= e.getTamanio();
+			}
+		} else {
+			int ram = Integer.parseInt(limiteMemoria.getText());
+			ramSO = (int) (ram * 0.10);
 		}
 
 		// Armo los mapas
@@ -447,16 +462,16 @@ public class MainController {
 		 */
 		if (algoritmoEjecutado == "FCFS") {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasBestFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasBestFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(FCFSVariablesFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(FCFSVariablesFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(FCFSVariablesWorstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(FCFSVariablesWorstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 		}
 
@@ -466,16 +481,16 @@ public class MainController {
 		 */
 		else if (algoritmoEjecutado == "SJF") {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(SJFFijasFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(SJFFijasFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(SJFFijasBestFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(SJFFijasBestFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(SJFVariablesFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(SJFVariablesFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(SJFVariablesWorstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(SJFVariablesWorstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 		}
 
@@ -485,16 +500,16 @@ public class MainController {
 		 */
 		else if (algoritmoEjecutado == "SRTF") {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(SRTFFijasFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(SRTFFijasFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(SRTFFijasBestFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(SRTFFijasBestFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(SRTFVariablesFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(SRTFVariablesFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(SRTFVariablesWorstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(SRTFVariablesWorstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 		}
 
@@ -504,17 +519,17 @@ public class MainController {
 		 */
 		else if (algoritmoEjecutado == "SRTF (c/Prioridad)") {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(SRTFcPrioridadFijasFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(SRTFcPrioridadFijasFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(SRTFcPrioridadFijasBestFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(SRTFcPrioridadFijasBestFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
 				MemoryMapController.generarMapaMemoriaPartVariables(SRTFcPrioridadVariablesFirstFit.getMapaMemoria(),
-						ram, notificaciones.getText());
+						ramSO, notificaciones.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
 				MemoryMapController.generarMapaMemoriaPartVariables(SRTFcPrioridadVariablesWorstFit.getMapaMemoria(),
-						ram, notificaciones.getText());
+						ramSO, notificaciones.getText());
 		}
 
 		/*
@@ -523,16 +538,16 @@ public class MainController {
 		 */
 		else if (algoritmoEjecutado == "Round-Robin") {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit.getMapaMemoria(), ramSO,
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesFirstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesWorstFit.getMapaMemoria(), ram,
+				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesWorstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
@@ -843,14 +858,32 @@ public class MainController {
 	}
 
 	/*
-	 * ------------------------------ RESTRICCIONES ------------------------------
+	 * ------------------------------ VENTANAS EMERGENTES ------------------------------
 	 * 
 	 */
 
-	// VENTANA ERROR ENTRADA DE DATOS
+	// VENTANA ERROR
 	public void alerta(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error - Simulador");
+		alert.setHeaderText(null);
+		alert.setContentText(mensaje);
+		alert.showAndWait();
+	}
+	
+	// VENTANA EXITO
+	public void exito(String mensaje) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Información - Simulador");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+	}
+	
+	// VENTANA EXITO
+	public void confirmacion(String mensaje) {
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.setTitle("Confirmación - Simulador");
 		alert.setHeaderText(null);
 		alert.setContentText(mensaje);
 		alert.showAndWait();
@@ -917,13 +950,47 @@ public class MainController {
 
 	private ObservableList<ElementoTablaParticion> elementosTablaParticionesFijas = FXCollections.observableArrayList();
 
-	// BOTONES AGREGAR/ELIMINAR PARTICION
+	// BOTON LIMPIAR TABLA PARTICIONES
 	@FXML
-	private Button agregarParticion;
+	private Button limpiarTablaParticiones;
 
-	// CAMPO TAMANIO NUEVA PARTICION
+	// EVENTO BOTON LIMPIAR TABLA PARTICIONES
 	@FXML
-	private TextField tamanioNuevaParticion;
+	private void limpiarTablaParticiones(ActionEvent event) {
+
+		// Se ejecuta solo si la tabla NO esta vacia
+		if (!elementosTablaParticionesFijas.isEmpty()) {
+
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Confirmación - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Limpiar tabla de particiones fijas, ¿estás seguro?");
+
+			// Si confirma, limpio la tabla
+			Optional<ButtonType> respuesta = alert.showAndWait();
+			if (respuesta.get() == ButtonType.OK) {
+				// LIMPIO LA TABLA
+				elementosTablaParticionesFijas.clear();
+				tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+
+				// HABILITO Y REINICIO LOS CAMPOS MEMORIA RAM Y CANTIDAD
+				limiteMemoria.setDisable(false);
+				limiteMemoria.setText(null);
+
+				cantidadParticionesFijas.setDisable(false);
+				cantidadParticionesFijas.setText(null);
+
+				// REINICIO LOS IDs
+				idParticionFija = 1;
+
+				// REINICIO LAS VARIABLES AUXILIARES
+				mayorTamanioParticion = 0;
+				cantidadRestante = 0;
+				tamaniosParticiones.clear();
+			}
+		}
+	}
+	
 
 	// INICIALIZAR COLUMNAS TABLA PARTICIONES
 	private void inicializarColumnasTablaParticiones() {
@@ -932,6 +999,14 @@ public class MainController {
 		dirInicio.setCellValueFactory(new PropertyValueFactory<>("dirInicio"));
 		dirFin.setCellValueFactory(new PropertyValueFactory<>("dirFin"));
 	}
+	
+	// BOTONES AGREGAR PARTICION
+	@FXML
+	private Button agregarParticion;
+
+	// CAMPO TAMANIO NUEVA PARTICION
+	@FXML
+	private TextField tamanioNuevaParticion;
 
 	// EVENTO BOTON AGREGAR NUEVA PARTICION
 	@FXML
@@ -969,6 +1044,14 @@ public class MainController {
 
 		try {
 			int tamanioNuevaParticion = Integer.parseInt(this.tamanioNuevaParticion.getText().trim());
+			
+			// Controlo que la particion ingresada no sea repetida
+			if (cantidadRestante != 0 && tamaniosParticiones.contains(tamanioNuevaParticion)) {
+				alerta("Ya existe una partición de ese tamaño. Ingrese un nuevo valor.");
+				return;
+			}
+			
+			// Descuento en 1 la cantidad de aprticiones disponibles
 			cantidadRestante = Integer.parseInt(cantidadParticionesFijas.getText()) - idParticionFija + 1;
 
 			if (cantidadRestante == 0) {
@@ -997,6 +1080,9 @@ public class MainController {
 				// Resguardo mayor particion
 				if (tamanioNuevaParticion > mayorTamanioParticion)
 					mayorTamanioParticion = tamanioNuevaParticion;
+				
+				// Agrego la particion al SET para evitar repetidas
+				tamaniosParticiones.add(tamanioNuevaParticion);
 
 			}
 		} catch (Exception e) {
@@ -1027,13 +1113,40 @@ public class MainController {
 	public void botonGuardarCT(ActionEvent event) {
 		BD bd = BD.getInstance();
 		
+		// Chequeo que se ingrese un nombre
 		if (nombreCT.getText().isEmpty()) {
 			alerta("Ingresar un nombre para la carga de trabajo.");
 			return;
 		}
+		
+		// Chequeo que la tabla no este vacia
+		if (elementosTablaProcesos.isEmpty()) {
+			alerta("Agregar procesos antes de guardar.");
+			return;
+		}
+		
 		String nombre = nombreCT.getText();
 		
+		// Chequeo que el nombre ingresado este disponible
+		HashSet<String> setTemporalDeNombres = new HashSet<String>();
+		try {
+			ResultSet rs = bd.select("SELECT * FROM PROCESO");
+			while (rs.next()) {
+				String nombreTemporal = rs.getString("nombre");
+				setTemporalDeNombres.add(nombreTemporal);
+			}
+		} catch (Exception e) {
+			System.out.println("ERROR al intentar guardar la carga de trabajo.");
+		}
+		if (setTemporalDeNombres.contains(nombre)) {
+			alerta("Ya existe una CT con ese nombre.");
+			return;
+		}
+		
+		// INSERT
 		for (ElementoTablaProceso p: elementosTablaProcesos) {
+			
+			// Armamos el query para cada proceso
 			String query = "INSERT INTO PROCESO(NOMBRE, IDPROCESO, TAMANIO, TARRIBO, CPU1, ES1, CPU2, ES2, CPU3, PRIORIDAD) VALUES ("
 	                + "'" + nombre + "',"
 	                + "'" + p.getId() + "',"
@@ -1049,14 +1162,11 @@ public class MainController {
 			
 			System.out.println(query); // Imprimimos por consola
 			
-			// INSERT
+			// Realizamos el INSERT
 			if (!bd.insert(query)) return;
 		}
 		
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText("Carga de trabajo guardada.");
-        alert.showAndWait();
+        exito("Carga de trabajo guardada");
         
         leerCT(); // Actualizo el choicebox de CT
         guardados.setValue(" - Seleccione una CT - ");
@@ -1121,6 +1231,8 @@ public class MainController {
 				
 				// Y el ID de proceso
 				idProcesoNuevo = elementosTablaProcesos.size() + 1;
+				
+				exito("Cargada CT: " + ejercicio);
 			}
 			
 		} catch (Exception e) {
@@ -1152,10 +1264,37 @@ public class MainController {
 
 	private ObservableList<ElementoTablaProceso> elementosTablaProcesos = FXCollections.observableArrayList();
 	
-	// BOTON AGREGAR PROCESO
+	// BOTON LIMPIAR TABLA PROCESOS
 	@FXML
-	private Button agregarProceso;
-
+	private Button limpiarTablaProcesos;
+	
+	// EVENTO BOTON LIMPIAR TABLA PROCESOS
+	@FXML
+	private void limpiarTablaProcesos(ActionEvent event) {
+		
+		// Se ejecuta solo si la tabla NO esta vacia
+		if (!elementosTablaProcesos.isEmpty()) {
+			
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Confirmación - Simulador");
+			alert.setHeaderText(null);
+			alert.setContentText("Limpiar tabla de procesos, ¿estás seguro?");
+			
+			// Si confirma, limpio la tabla
+			Optional<ButtonType> respuesta = alert.showAndWait();
+			if (respuesta.get() == ButtonType.OK) {
+				// LIMPIO LA TABLA
+				elementosTablaProcesos.clear();
+				tablaProceso.getItems().setAll(elementosTablaProcesos);
+				
+				// REINICIO LOS IDs
+				idProcesoNuevo = 1;
+				
+				// REINICIO LAS VARIABLES AUXILIARES
+				mayorTamanioProceso = 0;
+			}
+		}
+	}
 
 	// CAMPOS NUEVO PROCESO
 	@FXML
@@ -1188,6 +1327,10 @@ public class MainController {
 		prioridadProceso.setCellValueFactory(new PropertyValueFactory<>("prioridad"));
 	}
 
+	// BOTON AGREGAR NUEVO PROCESO
+	@FXML
+	private Button agregarProceso;
+	
 	// EVENTO BOTON AGREGAR NUEVO PROCESO
 	@FXML
 	public void botonAgregarProceso(ActionEvent event) {
