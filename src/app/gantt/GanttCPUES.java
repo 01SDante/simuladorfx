@@ -18,20 +18,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class GanttCPU {
+public class GanttCPUES {
 
-	private static String[] colores = { "", "status-red", "status-orange", "status-yellow", "status-green",
+	public static String[] colores = { "", "status-red", "status-orange", "status-yellow", "status-green",
 			"status-cyan", "status-blue", "status-magenta", "status-silver", "status-saddlebrown", "status-teal" };
-	private static String[] coloresLeyenda = { "", "red", "orange", "yellow", "green", "cyan", "blue", "magenta",
+	public static String[] coloresLeyenda = { "", "red", "orange", "yellow", "green", "cyan", "blue", "magenta",
 			"silver", "saddlebrown", "teal" };
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "static-access" })
-	public static void generarGanttCPU(ArrayList<Integer> ganttCpu, String titulo) {
+	public static void generarGanttCPUES(ArrayList<Integer> ganttCpu, ArrayList<Integer> ganttEs, String titulo) {
 
 		Stage stage = new Stage();
 		stage.setTitle(titulo);
 
-		String[] machines = new String[] { "CPU" };
+		String[] machines = new String[] { "ES", "CPU" };
 
 		final NumberAxis xAxis = new NumberAxis();
 		final CategoryAxis yAxis = new CategoryAxis();
@@ -50,12 +50,25 @@ public class GanttCPU {
 		chart.setLegendVisible(false);
 		chart.setBlockHeight(50);
 		String machine;
-
+		
 		/*
-		 * CPU
+		 * ES
 		 */
 		machine = machines[0];
 		XYChart.Series series1 = new XYChart.Series();
+		
+		for (int i = 0; i < ganttEs.size() - 1; i++) {
+
+			// Inicio, CPU, Cantidad, Color
+			series1.getData().add(new XYChart.Data(i, machine, new ExtraData(1, colores[ganttEs.get(i)])));
+
+		}
+		
+		/*
+		 * CPU
+		 */
+		machine = machines[1];
+		XYChart.Series series2 = new XYChart.Series();
 
 		/*
 		 * Leyenda
@@ -68,7 +81,7 @@ public class GanttCPU {
 		for (int i = 0; i < ganttCpu.size() - 1; i++) {
 
 			// Inicio, CPU, Cantidad, Color
-			series1.getData().add(new XYChart.Data(i, machine, new ExtraData(1, colores[ganttCpu.get(i)])));
+			series2.getData().add(new XYChart.Data(i, machine, new ExtraData(1, colores[ganttCpu.get(i)])));
 
 			leyenda.add(ganttCpu.get(i));
 
@@ -90,7 +103,7 @@ public class GanttCPU {
 		/*
 		 * 
 		 */
-		chart.getData().addAll(series1);
+		chart.getData().addAll(series1, series2);
 
 		chart.getStylesheets().add("/app/gantt/gantt.css");
 
