@@ -159,18 +159,18 @@ public class MainController {
 		/*
 		 * datos de prueba
 		 */
-		limiteMemoria.setText("639");
-		cantidadParticionesFijas.setText("5");
-
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-		
-		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-		
-		mayorTamanioParticion = 300;
+//		limiteMemoria.setText("639");
+//		cantidadParticionesFijas.setText("5");
+//
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
+//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
+//		
+//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+//		
+//		mayorTamanioParticion = 300;
 		
 	}
 
@@ -192,6 +192,10 @@ public class MainController {
 		// REINICIO LOS IDs
 		idParticionFija = 1;
 		idProcesoNuevo = 1;
+		
+		// LIMPIO MEMORIA Y CANTIDAD
+		limiteMemoria.setText("");
+		cantidadParticionesFijas.setText("");
 
 		// REINICIO LAS VARIABLES AUXILIARES
 		mayorTamanioProceso = 0;
@@ -1058,48 +1062,6 @@ public class MainController {
 		alert.showAndWait();
 	}
 
-//	// RESTRICCION CAMPO LIMITE DE MEMORIA
-//	@FXML
-//	public void restriccionMemoria(ActionEvent event) {
-//		try {
-//			int limiteMemoria = Integer.parseInt(this.limiteMemoria.getText().trim());
-//			if (limiteMemoria < 100 || limiteMemoria > 1000) {
-//				alerta("Ingresar un entero entre 100 y 1000");
-//			}
-//		} catch (Exception e) {
-//			System.out.println("Error en ingreso de datos en campo 'Límite Memoria'. ERROR: " + e.getMessage());
-//			alerta("Ingresar un entero para el campo 'Tamaño de memoria'.");
-//		}
-//	}
-//
-//	// RESTRICCION CAMPO CANTIDAD PARTICIONES FIJAS
-//	@FXML
-//	public void restriccionCantidadParticionesFijas(ActionEvent event) {
-//		try {
-//			int cantidadParticionesFijas = Integer.parseInt(this.cantidadParticionesFijas.getText().trim());
-//			if (cantidadParticionesFijas < 3 || cantidadParticionesFijas > 10) {
-//				alerta("Ingresar un entero entre 3 y 10.");
-//			}
-//		} catch (Exception e) {
-//			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
-//			alerta("Ingresar un entero para el campo 'Cantidad'.");
-//		}
-//	}
-//
-//	// RESTRICCION CAMPO QUANTUM
-//	@FXML
-//	public void restriccionQuantum(ActionEvent event) {
-//		try {
-//			int quantum = Integer.parseInt(this.quantum.getText().trim());
-//			if (quantum < 1 || quantum > 8) {
-//				alerta("Ingresar un entero entre 1 y 8.");
-//			}
-//		} catch (Exception e) {
-//			System.out.println("Error en ingreso de datos en campo 'Cantidad'. ERROR: " + e.getMessage());
-//			alerta("Ingresar un entero para el campo 'Quantum'.");
-//		}
-//	}
-
 	/*
 	 * ------------------------ PESTANIA PARTICIONES FIJAS ------------------------
 	 * 
@@ -1149,6 +1111,14 @@ public class MainController {
 				mayorTamanioParticion = 0;
 				cantidadRestante = 0;
 				tamaniosParticiones.clear();
+				
+				String aux = limiteMemoria.getText();
+				limiteMemoria.setText("");
+				limiteMemoria.setText(aux);
+				
+				String notif = notificaciones.getText();
+				notif += " | Cantidad de particiones restantes: " + cantidadParticionesFijas.getText();
+				notificaciones.setText(notif);
 			}
 		}
 	}
@@ -1451,6 +1421,7 @@ public class MainController {
 				
 				// REINICIO LAS VARIABLES AUXILIARES
 				mayorTamanioProceso = 0;
+				
 			}
 		}
 	}
