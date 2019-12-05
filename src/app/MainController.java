@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import app.algoritmos.fcfs.FCFSFijasBestFit;
+import app.algoritmos.fcfs.FCFSFijasBestFit1ES;
+import app.algoritmos.fcfs.FCFSFijasBestFit2ES;
 import app.algoritmos.fcfs.FCFSFijasFirstFit;
 import app.algoritmos.fcfs.FCFSFijasFirstFit1ES;
 import app.algoritmos.fcfs.FCFSFijasFirstFit2ES;
@@ -159,18 +161,18 @@ public class MainController {
 		/*
 		 * datos de prueba
 		 */
-//		limiteMemoria.setText("639");
-//		cantidadParticionesFijas.setText("5");
-//
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-//		
-//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-//		
-//		mayorTamanioParticion = 300;
+		limiteMemoria.setText("639");
+		cantidadParticionesFijas.setText("5");
+
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
+		
+		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+		
+		mayorTamanioParticion = 300;
 		
 	}
 
@@ -196,6 +198,9 @@ public class MainController {
 		// LIMPIO MEMORIA Y CANTIDAD
 		limiteMemoria.setText("");
 		cantidadParticionesFijas.setText("");
+		
+		// LIMPIO QUANTUM
+		quantum.setText("");
 
 		// REINICIO LAS VARIABLES AUXILIARES
 		mayorTamanioProceso = 0;
@@ -352,6 +357,10 @@ public class MainController {
 				// Particiones Fijas - First-Fit
 				if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit" && es.getValue() == " 1 ")
 					FCFSFijasFirstFit1ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+				
+				// Particiones Fijas - Best-Fit
+				if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit" && es.getValue() == " 1 ")
+					FCFSFijasBestFit1ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 
 			}
 
@@ -374,6 +383,10 @@ public class MainController {
 			// Particiones Fijas - First-Fit
 			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit" && es.getValue() == " 2 ")
 				FCFSFijasFirstFit2ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+			
+			// Particiones Fijas - Best-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit" && es.getValue() == " 2 ")
+				FCFSFijasBestFit2ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 
 		}
 
@@ -568,9 +581,9 @@ public class MainController {
 				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 					MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasFirstFit1ES.getMapaMemoria(), ramSO,
 							notificaciones.getText());
-//				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-//					MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasBestFit.getMapaMemoria(), ramSO,
-//							notificaciones.getText());
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasBestFit1ES.getMapaMemoria(), ramSO,
+							notificaciones.getText());
 //				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
 //					MemoryMapController.generarMapaMemoriaPartVariables(FCFSVariablesFirstFit.getMapaMemoria(), ramSO,
 //							notificaciones.getText());
@@ -586,9 +599,9 @@ public class MainController {
 				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 					MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasFirstFit2ES.getMapaMemoria(), ramSO,
 							notificaciones.getText());
-//				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-//					MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasBestFit.getMapaMemoria(), ramSO,
-//							notificaciones.getText());
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					MemoryMapController.generarMapaMemoriaPartFijas(FCFSFijasBestFit2ES.getMapaMemoria(), ramSO,
+							notificaciones.getText());
 //				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
 //					MemoryMapController.generarMapaMemoriaPartVariables(FCFSVariablesFirstFit.getMapaMemoria(), ramSO,
 //							notificaciones.getText());
@@ -720,6 +733,10 @@ public class MainController {
 					GanttCPUES.generarGanttCPUES(FCFSFijasFirstFit1ES.getGanttCpu1ES(), FCFSFijasFirstFit1ES.getGantt1ES(),
 							notificaciones.getText());
 				
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					GanttCPUES.generarGanttCPUES(FCFSFijasBestFit1ES.getGanttCpu1ES(), FCFSFijasBestFit1ES.getGantt1ES(),
+							notificaciones.getText());
+				
 			}
 			
 			/*
@@ -728,6 +745,10 @@ public class MainController {
 			else if (es.getValue() == " 2 ") {
 				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 					GanttCPUES.generarGanttCPUES(FCFSFijasFirstFit2ES.getGanttCpu1ES(), FCFSFijasFirstFit2ES.getGantt1ES(),
+							notificaciones.getText());
+				
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					GanttCPUES.generarGanttCPUES(FCFSFijasBestFit2ES.getGanttCpu1ES(), FCFSFijasBestFit2ES.getGantt1ES(),
 							notificaciones.getText());
 				
 			}
@@ -850,6 +871,11 @@ public class MainController {
 				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 					EstadisticasController.estadisticas(FCFSFijasFirstFit1ES.getSalida(), FCFSFijasFirstFit1ES.getArribo(),
 							FCFSFijasFirstFit1ES.getIrrupcion(), notificaciones.getText());
+				
+				// Particiones Fijas - Best-Fit
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					EstadisticasController.estadisticas(FCFSFijasBestFit1ES.getSalida(), FCFSFijasBestFit1ES.getArribo(),
+							FCFSFijasBestFit1ES.getIrrupcion(), notificaciones.getText());
 			}
 			
 			/*
@@ -860,6 +886,11 @@ public class MainController {
 				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 					EstadisticasController.estadisticas(FCFSFijasFirstFit2ES.getSalida(), FCFSFijasFirstFit2ES.getArribo(),
 							FCFSFijasFirstFit2ES.getIrrupcion(), notificaciones.getText());
+				
+				// Particiones Fijas - Best-Fit
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					EstadisticasController.estadisticas(FCFSFijasBestFit2ES.getSalida(), FCFSFijasBestFit2ES.getArribo(),
+							FCFSFijasBestFit2ES.getIrrupcion(), notificaciones.getText());
 			}
 
 		}
