@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 
+import app.algoritmos.colas_multinivel.ColasMultinivelFijasFirstFit;
 import app.algoritmos.fcfs.FCFSFijasBestFit;
 import app.algoritmos.fcfs.FCFSFijasFirstFit;
 import app.algoritmos.fcfs.FCFSVariablesFirstFit;
@@ -110,8 +111,23 @@ public class MainController {
 	 */
 	private ObservableList<String> listaEs = FXCollections.observableArrayList(" 0 ", " 1 ", " 2 ");
 	@FXML private ChoiceBox<String> es;
+	
+	/*
+	 * Colas Multinivel
+	 */
+	
+	private ObservableList<String> listaCola1 = FXCollections.observableArrayList("FCFS", "SRTF");
+	@FXML private ChoiceBox<String> cola1;
+	
+	private ObservableList<String> listaCola2 = FXCollections.observableArrayList("FCFS", "SRTF");
+	@FXML private ChoiceBox<String> cola2;
+	
+	private ObservableList<String> listaCola3 = FXCollections.observableArrayList("FCFS", "SRTF");
+	@FXML private ChoiceBox<String> cola3;
 
-	// BARRA NOTIFICACIONES
+	/*
+	 *  BARRA NOTIFICACIONES
+	 */
 	@FXML private Label notificaciones;
 
 	// VARIABLES AUXILIARES
@@ -139,6 +155,13 @@ public class MainController {
 		es.setValue(" 0 ");
 		es.setItems(listaEs);
 		
+		cola1.setValue("FCFS");
+		cola1.setItems(listaCola1);
+		cola2.setValue("FCFS");
+		cola2.setItems(listaCola2);
+		cola3.setValue("FCFS");
+		cola3.setItems(listaCola3);
+		
 		// CARGAMOS LAS CT GUARDADAS
 		leerCT();
 		guardados.setValue(" - Seleccione una CT - ");
@@ -165,18 +188,18 @@ public class MainController {
 		/*
 		 * datos de prueba
 		 */
-//		limiteMemoria.setText("639");
-//		cantidadParticionesFijas.setText("5");
-//
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-//		
-//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-//		
-//		mayorTamanioParticion = 300;
+		limiteMemoria.setText("639");
+		cantidadParticionesFijas.setText("5");
+
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
+		
+		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+		
+		mayorTamanioParticion = 300;
 		
 	}
 
@@ -329,7 +352,7 @@ public class MainController {
 			if (es.getValue() == " 0 ") {
 				
 				// Particiones Fijas - First-Fit
-				if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+				if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit" && es.getValue() == " 0 ")
 					FCFSFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
 				
 				// Particiones Fijas - Best-Fit
@@ -350,7 +373,7 @@ public class MainController {
 			} else if (es.getValue() == " 1 ") {
 
 				for (ElementoTablaProceso p : elementosTablaProcesos) {
-					if (p.getEs1() == 0) {
+					if (p.getEs1() == 0 | p.getEs2() == 0) {
 						notificaciones.setText(
 								"Modificar la cantidad de ráfagas de E/S en la pestaña de 'Condiciones Iniciales' o bien modificar la CT.");
 						alerta("La CT cargada no tiene las ráfagas suficientes de E/S por lo tanto no es posible aplicar el algoritmo.");
@@ -390,25 +413,24 @@ public class MainController {
 					}
 				}
 
+				// Particiones Fijas - First-Fit
+				if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
+					FCFSFijasFirstFit2ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+				// Particiones Fijas - Best-Fit
+				else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
+					FCFSFijasBestFit2ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
+
+				// Particiones Variables - First-Fit
+				else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
+					FCFSVariablesFirstFit2ES.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
+
+				// Particiones Variables - Worst-Fit
+				else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
+					FCFSVariablesWorstFit2ES.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
 			}
 
-			// Particiones Fijas - First-Fit
-			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
-				FCFSFijasFirstFit2ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-			
-			// Particiones Fijas - Best-Fit
-			else if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit")
-				FCFSFijasBestFit2ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos);
-			
-			// Particiones Variables - First-Fit
-			else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit")
-				FCFSVariablesFirstFit2ES.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
-
-			// Particiones Variables - Worst-Fit
-			else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit")
-				FCFSVariablesWorstFit2ES.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos);
-
-		}
+		} // Fin FCFS
 
 		/*
 		 * SJF
@@ -462,6 +484,13 @@ public class MainController {
 		 * 
 		 */
 		else if (algoritmos.getValue() == "SRTF (c/Prioridad)") {
+			
+			for (ElementoTablaProceso p : elementosTablaProcesos) {
+				if (p.getPrioridad() == 0) {
+					alerta("Éste algoritmo no es aplicable a una CT sin prioridades.");
+					return;
+				}
+			}
 
 			// Particiones Fijas - First-Fit
 			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit")
@@ -530,8 +559,22 @@ public class MainController {
 				}
 			}
 
-		} else
+		} else 
 			System.out.println(algoritmos.getValue() + " not yet.");
+		
+		/*
+		 * Colas Multinivel
+		 * 
+		 */
+//		else if (algoritmos.getValue() == "Colas Multinivel") {
+//
+//			// Particiones Fijas - First-Fit
+//			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
+//				ColasMultinivelFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+//						cola1.getValue(), cola2.getValue(), cola3.getValue());
+//			}
+//
+//		}
 
 		// Armo la barra de notificaciones
 		notificaciones.setText("Ejecutado: Algoritmo " + algoritmos.getValue() + " | Particiones "
@@ -1094,6 +1137,18 @@ public class MainController {
 			prioridadNuevoProceso.setDisable(false);
 		else
 			prioridadNuevoProceso.setDisable(true);
+		
+		if (algoritmos.getValue() == "Colas Multinivel") {
+			es.setDisable(true);
+			cola1.setDisable(false);
+			cola2.setDisable(false);
+			cola3.setDisable(false);
+		} else {
+			es.setDisable(false);
+			cola1.setDisable(true);
+			cola2.setDisable(true);
+			cola3.setDisable(true);
+		}
 	}
 
 	// EVENTO CHOICEBOX RAFAGAS DE E/S

@@ -93,7 +93,7 @@
                                  </children>
                               </HBox>
                               <Separator layoutX="10.0" layoutY="269.0" prefWidth="200.0" />
-                              <HBox alignment="CENTER" layoutX="10.0" layoutY="210.0" prefHeight="200.0" prefWidth="200.0" spacing="15.0">
+                              <HBox alignment="CENTER" layoutX="10.0" layoutY="210.0" prefHeight="130.0" prefWidth="200.0" spacing="15.0">
                                  <children>
                                     <Label minWidth="70.0" prefHeight="26.0" prefWidth="70.0" text="Algoritmo: ">
                                        <HBox.margin>
@@ -124,6 +124,25 @@
                                        </HBox.margin>
                                     </ChoiceBox>
                                  </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="130.0" prefWidth="200.0" spacing="15.0">
+                                 <children>
+                                    <Label prefWidth="36.0" text="Cola 1:" />
+                                    <ChoiceBox fx:id="cola1" minWidth="125.0" prefWidth="125.0" />
+                                    <Label prefWidth="36.0" text="Cola 2:" />
+                                    <ChoiceBox fx:id="cola2" minWidth="125.0" prefWidth="125.0" />
+                                    <Label prefWidth="36.0" text="Cola 3:" />
+                                    <ChoiceBox fx:id="cola3" minWidth="130.0" prefWidth="125.0" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets bottom="20.0" left="30.0" />
+                                 </padding>
                               </HBox>
                            </children>
                         </VBox>
