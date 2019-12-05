@@ -159,18 +159,18 @@ public class MainController {
 		/*
 		 * datos de prueba
 		 */
-//		limiteMemoria.setText("639");
-//		cantidadParticionesFijas.setText("5");
-//
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-//		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-//		
-//		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-//		
-//		mayorTamanioParticion = 300;
+		limiteMemoria.setText("639");
+		cantidadParticionesFijas.setText("5");
+
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
+		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
+		
+		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
+		
+		mayorTamanioParticion = 300;
 		
 	}
 

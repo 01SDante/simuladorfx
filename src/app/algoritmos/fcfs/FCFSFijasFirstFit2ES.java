@@ -101,7 +101,7 @@ public class FCFSFijasFirstFit2ES {
 			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
-			tIrrupcion += proceso.getCpu1() + proceso.getCpu2();
+			tIrrupcion += proceso.getCpu1() + proceso.getCpu2() + proceso.getCpu3();
 		}
 
 		Collections.sort(procesos, new OrdenarPorTArribo());
@@ -116,7 +116,7 @@ public class FCFSFijasFirstFit2ES {
 
 		for (int i = 0; i < procesos.size(); i++) {
 			arribo[procesos.get(i).getId()] = procesos.get(i).getTArribo();
-			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2();
+			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2() + procesos.get(i).getCpu3();
 		}
 
 		/*
@@ -128,8 +128,8 @@ public class FCFSFijasFirstFit2ES {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
-		while (t <= tIrrupcion + tOcioso) {
-
+		while (t <= tIrrupcion + tOcioso) { // tIrrupcion + tOcioso
+			
 			/*
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
@@ -170,6 +170,13 @@ public class FCFSFijasFirstFit2ES {
 			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
 			}
+			
+			/*
+			 * Si llego el ultimo, ejecutandoCpu esta vacia pero ejecutandoEs no --> hay
+			 * tiempo ocioso
+			 */
+			if (llegoElUltimo && !ejecutandoEs.isEmpty() && ejecutandoCpu.isEmpty())
+				tOcioso++;
 
 			/*
 			 * ARMO LA COLA DE LISTOS EN INSTANTE t
@@ -372,5 +379,5 @@ public class FCFSFijasFirstFit2ES {
 		}
 
 	}
-
+	
 }

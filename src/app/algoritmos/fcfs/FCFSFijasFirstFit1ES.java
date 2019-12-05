@@ -169,12 +169,14 @@ public class FCFSFijasFirstFit1ES {
 			 */
 			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
-				/*
-				 * Si llego el ultimo y la cola de ejecutandoCpu esta vacia pero la de
-				 * ejecutandoEs no, significa que ese ultimo proceso esta ejecutando E/S --> hay
-				 * tiempo ocioso en CPU
-				 */
 			}
+			
+			/*
+			 * Si llego el ultimo, ejecutandoCpu esta vacia pero ejecutandoEs no --> hay
+			 * tiempo ocioso
+			 */
+			if (llegoElUltimo && !ejecutandoEs.isEmpty() && ejecutandoCpu.isEmpty())
+				tOcioso++;
 
 			/*
 			 * ARMO LA COLA DE LISTOS EN INSTANTE t
@@ -218,7 +220,7 @@ public class FCFSFijasFirstFit1ES {
 			 */
 			if (ejecutandoCpu.isEmpty())
 				ganttCpu.add(0);
-
+			
 			/*
 			 * GUARDO EL ESTADO DE LAS PARTICIONES
 			 * 
