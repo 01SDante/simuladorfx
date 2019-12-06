@@ -25,6 +25,8 @@ import app.algoritmos.rr.RRFijasBestFit;
 import app.algoritmos.rr.RRFijasFirstFit;
 import app.algoritmos.rr.RRVariablesFirstFit;
 import app.algoritmos.rr.RRVariablesWorstFit;
+import app.algoritmos.rr._1es.RRFijasBestFit1ES;
+import app.algoritmos.rr._1es.RRFijasFirstFit1ES;
 import app.algoritmos.sjf.SJFFijasBestFit;
 import app.algoritmos.sjf.SJFFijasFirstFit;
 import app.algoritmos.sjf.SJFVariablesFirstFit;
@@ -743,7 +745,27 @@ public class MainController {
 					}
 				}
 				
+				// Particiones Fijas - First-Fit
+				if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
+					try {
+						RRFijasFirstFit1ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+								Integer.parseInt(quantum.getText()));
+					} catch (Exception e) {
+						System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+						alerta("Ingresar un entero para el campo 'Quantum'.");
+					}
+				}
 				
+				// Particiones Fijas - Best-Fit
+				if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit") {
+					try {
+						RRFijasBestFit1ES.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+								Integer.parseInt(quantum.getText()));
+					} catch (Exception e) {
+						System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+						alerta("Ingresar un entero para el campo 'Quantum'.");
+					}
+				}
 				
 			}
 			
@@ -1067,19 +1089,53 @@ public class MainController {
 		 * 
 		 */
 		else if (algoritmoEjecutado == "Round-Robin") {
-			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasFirstFit.getMapaMemoria(), ramSO,
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit.getMapaMemoria(), ramSO,
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesFirstFit.getMapaMemoria(), ramSO,
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesWorstFit.getMapaMemoria(), ramSO,
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-		}
+			
+			/*
+			 * Sin E/S
+			 */
+			if (es.getValue() == " 0 ") {
+				
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+					MemoryMapController.generarMapaMemoriaPartFijas(RRFijasFirstFit.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+					MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesFirstFit.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+					MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesWorstFit.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+			}
+			
+			/*
+			 * 1 Rafaga de E/S
+			 */
+			else if (es.getValue() == " 1 ") {
+				
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+					MemoryMapController.generarMapaMemoriaPartFijas(RRFijasFirstFit1ES.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit1ES.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+			}
+			
+			/*
+			 * 2 Rafagas de E/S
+			 */
+			else if (es.getValue() == " 2 ") {
+				
+				
+				
+			}
+			
+			
+		} // Fin RR
 
 		/*
 		 * Colas Multinivel
@@ -1279,7 +1335,7 @@ public class MainController {
 			}
 			
 			/*
-			 * 
+			 * 2 Rafagas de E/S
 			 */
 			else if (es.getValue() == " 2 ") {
 				
@@ -1326,7 +1382,18 @@ public class MainController {
 			 */
 			if (es.getValue() == " 0 ") {
 				
-				
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+					GanttCPU.generarGanttCPU(RRFijasFirstFit.getGanttCpu(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					GanttCPU.generarGanttCPU(RRFijasBestFit.getGanttCpu(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+					GanttCPU.generarGanttCPU(RRVariablesFirstFit.getGanttCpu(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+					GanttCPU.generarGanttCPU(RRVariablesWorstFit.getGanttCpu(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
 			}
 			
@@ -1335,7 +1402,12 @@ public class MainController {
 			 */
 			else if (es.getValue() == " 1 ") {
 				
-				
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+					GanttCPUES.generarGanttCPUES(RRFijasFirstFit1ES.getGanttCpu(), RRFijasFirstFit1ES.getGanttEs(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					GanttCPUES.generarGanttCPUES(RRFijasBestFit1ES.getGanttCpu(), RRFijasBestFit1ES.getGanttEs(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
 			}
 			
@@ -1348,18 +1420,6 @@ public class MainController {
 				
 			}
 			
-			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				GanttCPU.generarGanttCPU(RRFijasFirstFit.getGanttCpu(),
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				GanttCPU.generarGanttCPU(RRFijasBestFit.getGanttCpu(),
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				GanttCPU.generarGanttCPU(RRVariablesFirstFit.getGanttCpu(),
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				GanttCPU.generarGanttCPU(RRVariablesWorstFit.getGanttCpu(),
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
 			
 		} // Fin RR
 
@@ -1695,7 +1755,27 @@ public class MainController {
 			 */
 			if (es.getValue() == " 0 ") {
 				
+				// Particiones Fijas - First-Fit
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+					EstadisticasController.estadisticas(RRFijasFirstFit.getSalida(), RRFijasFirstFit.getArribo(),
+							RRFijasFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
+				// Particiones Fijas - Best-Fit
+				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					EstadisticasController.estadisticas(RRFijasBestFit.getSalida(), RRFijasBestFit.getArribo(),
+							RRFijasBestFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+				// Particiones Variables - First-Fit
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+					EstadisticasController.estadisticas(RRVariablesFirstFit.getSalida(), RRVariablesFirstFit.getArribo(),
+							RRVariablesFirstFit.getIrrupcion(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+				// Particiones Variables - Worst-Fit
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+					EstadisticasController.estadisticas(RRVariablesWorstFit.getSalida(), RRVariablesWorstFit.getArribo(),
+							RRVariablesWorstFit.getIrrupcion(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
 			}
 			
@@ -1704,7 +1784,15 @@ public class MainController {
 			 */
 			else if (es.getValue() == " 1 ") {
 				
+				// Particiones Fijas - First-Fit
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+					EstadisticasController.estadisticas(RRFijasFirstFit1ES.getSalida(), RRFijasFirstFit1ES.getArribo(),
+							RRFijasFirstFit1ES.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
+				// Particiones Fijas - Best-Fit
+				if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+					EstadisticasController.estadisticas(RRFijasBestFit1ES.getSalida(), RRFijasBestFit1ES.getArribo(),
+							RRFijasBestFit1ES.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
 			}
 			
@@ -1717,27 +1805,6 @@ public class MainController {
 				
 			}
 
-			// Particiones Fijas - First-Fit
-			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
-				EstadisticasController.estadisticas(RRFijasFirstFit.getSalida(), RRFijasFirstFit.getArribo(),
-						RRFijasFirstFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
-
-			// Particiones Fijas - Best-Fit
-			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
-				EstadisticasController.estadisticas(RRFijasBestFit.getSalida(), RRFijasBestFit.getArribo(),
-						RRFijasBestFit.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
-
-			// Particiones Variables - First-Fit
-			else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
-				EstadisticasController.estadisticas(RRVariablesFirstFit.getSalida(), RRVariablesFirstFit.getArribo(),
-						RRVariablesFirstFit.getIrrupcion(),
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
-
-			// Particiones Variables - Worst-Fit
-			else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
-				EstadisticasController.estadisticas(RRVariablesWorstFit.getSalida(), RRVariablesWorstFit.getArribo(),
-						RRVariablesWorstFit.getIrrupcion(),
-						notificaciones.getText() + " | Quantum = " + quantum.getText());
 			
 		} // Fin RR
 
@@ -1799,18 +1866,20 @@ public class MainController {
 		else
 			quantum.setDisable(true);
 
-		if (algoritmos.getValue() == "SRTF (c/Prioridad)" || algoritmos.getValue() == "Colas Multinivel")
+		if (algoritmos.getValue() == "SRTF (c/Prioridad)" || algoritmos.getValue() == "Colas Multinivel") {
 			prioridadNuevoProceso.setDisable(false);
-		else
+			es.setDisable(true);
+		}
+		else {
 			prioridadNuevoProceso.setDisable(true);
+			es.setDisable(false);
+		}
 		
 		if (algoritmos.getValue() == "Colas Multinivel") {
-			es.setDisable(true);
 			cola1.setDisable(false);
 			cola2.setDisable(false);
 			cola3.setDisable(false);
 		} else {
-			es.setDisable(false);
 			cola1.setDisable(true);
 			cola2.setDisable(true);
 			cola3.setDisable(true);
