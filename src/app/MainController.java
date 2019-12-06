@@ -670,6 +670,17 @@ public class MainController {
 		 */
 		else if (algoritmos.getValue() == "Round-Robin") {
 			
+			try {
+				if (Integer.parseInt(quantum.getText()) < 1 || Integer.parseInt(quantum.getText()) > 8) {
+					alerta("Ingresar un entero entre 1 y 8 para el campo 'Quantum'.");
+					return;
+				}
+			} catch (Exception e) {
+				alerta("Ingresar un entero para el campo 'Quantum'.");
+				return;
+			}
+			
+			
 			/*
 			 * Sin E/S
 			 */
