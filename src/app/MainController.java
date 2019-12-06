@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 
+import app.algoritmos.colas_multinivel.ColasMultinivelFijasBestFit;
 import app.algoritmos.colas_multinivel.ColasMultinivelFijasFirstFit;
 import app.algoritmos.fcfs.FCFSFijasBestFit;
 import app.algoritmos.fcfs.FCFSFijasFirstFit;
@@ -579,6 +580,24 @@ public class MainController {
 				ColasMultinivelFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
 						cola1.getValue(), cola2.getValue(), cola3.getValue());
 			}
+			
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "Best-Fit") {
+				ColasMultinivelFijasBestFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+						cola1.getValue(), cola2.getValue(), cola3.getValue());
+			}
+
+//			// Particiones Variables - First-Fit
+//			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
+//				ColasMultinivelFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+//						cola1.getValue(), cola2.getValue(), cola3.getValue());
+//			}
+//
+//			// Particiones Variables - Worst-Fit
+//			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
+//				ColasMultinivelFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+//						cola1.getValue(), cola2.getValue(), cola3.getValue());
+//			}
 
 		} // Fin Colas Multinivel
 
@@ -765,6 +784,15 @@ public class MainController {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 				MemoryMapController.generarMapaMemoriaPartFijas(ColasMultinivelFijasFirstFit.getMapaMemoria(), ramSO,
 						notificaciones.getText());
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				MemoryMapController.generarMapaMemoriaPartFijas(ColasMultinivelFijasBestFit.getMapaMemoria(), ramSO,
+						notificaciones.getText());
+//			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+//				MemoryMapController.generarMapaMemoriaPartFijas(ColasMultinivelFijasFirstFit.getMapaMemoria(), ramSO,
+//						notificaciones.getText());
+//			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+//				MemoryMapController.generarMapaMemoriaPartFijas(ColasMultinivelFijasFirstFit.getMapaMemoria(), ramSO,
+//						notificaciones.getText());
 		}
 
 	}
@@ -918,6 +946,15 @@ public class MainController {
 		else if (algoritmoEjecutado == "Colas Multinivel") {
 			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
 				GanttCPU.generarGanttCPU(ColasMultinivelFijasFirstFit.getGanttCpu(), notificaciones.getText());
+			
+			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				GanttCPU.generarGanttCPU(ColasMultinivelFijasBestFit.getGanttCpu(), notificaciones.getText());
+			
+//			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+//				GanttCPU.generarGanttCPU(ColasMultinivelFijasFirstFit.getGanttCpu(), notificaciones.getText());
+//			
+//			else if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+//				GanttCPU.generarGanttCPU(ColasMultinivelFijasFirstFit.getGanttCpu(), notificaciones.getText());
 		}
 	}
 
@@ -1134,6 +1171,24 @@ public class MainController {
 				EstadisticasController.estadisticas(ColasMultinivelFijasFirstFit.getSalida(),
 						ColasMultinivelFijasFirstFit.getArribo(), ColasMultinivelFijasFirstFit.getIrrupcion(),
 						notificaciones.getText());
+			
+			// Particiones Fijas - Best-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
+				EstadisticasController.estadisticas(ColasMultinivelFijasBestFit.getSalida(),
+						ColasMultinivelFijasBestFit.getArribo(), ColasMultinivelFijasBestFit.getIrrupcion(),
+						notificaciones.getText());
+
+//			// Particiones Fijas - First-Fit
+//			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+//				EstadisticasController.estadisticas(ColasMultinivelFijasFirstFit.getSalida(),
+//						ColasMultinivelFijasFirstFit.getArribo(), ColasMultinivelFijasFirstFit.getIrrupcion(),
+//						notificaciones.getText());
+//
+//			// Particiones Fijas - First-Fit
+//			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+//				EstadisticasController.estadisticas(ColasMultinivelFijasFirstFit.getSalida(),
+//						ColasMultinivelFijasFirstFit.getArribo(), ColasMultinivelFijasFirstFit.getIrrupcion(),
+//						notificaciones.getText());
 			
 		}
 
