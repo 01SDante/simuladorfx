@@ -1,10 +1,9 @@
-package app.algoritmos.srtf;
+package app.algoritmos.srtf._1es;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import app.algoritmos.util.OrdenarPorCPU1;
-import app.algoritmos.util.OrdenarPorPrioridad;
+import app.algoritmos.util.OrdenarPorCPU1CPU2;
 import app.algoritmos.util.OrdenarPorTArribo;
 import app.modelo.ElementoTablaParticion;
 import app.modelo.ElementoTablaProceso;
@@ -12,28 +11,34 @@ import app.modelo.Particion;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class SRTFcPrioridadFijasBestFit {
+public class SRTFFijasBestFit1ES {
 
-	public static ArrayList<ArrayList<Particion>> mapaMemoria;
+	private static ArrayList<ArrayList<Particion>> mapaMemoria;
 
-	public static ArrayList<Integer> ganttCpu;
+	private static ArrayList<Integer> ganttCpu;
+	private static ArrayList<Integer> ganttEs;
 
-	public static int[] salida;
-	public static int[] arribo;
-	public static int[] irrupcion;
+	private static int[] salida;
+	private static int[] arribo;
+	private static int[] irrupcion;
 
 	/*
-	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
+	 * Devuelve el estado de las particiones para armar el mapa
 	 */
 	public static ArrayList<ArrayList<Particion>> getMapaMemoria() {
 		return mapaMemoria;
 	}
 
 	/*
-	 * Devuelve los procesos para armar el gantt
+	 * Devuelve los procesos para armar el Gantt
 	 */
-	public static ArrayList<Integer> getGanttCpu() {
+
+	public static ArrayList<Integer> getGanttCpu() { // nuevo
 		return ganttCpu;
+	}
+
+	public static ArrayList<Integer> getGanttEs() { // nuevo
+		return ganttEs;
 	}
 
 	/*
@@ -62,7 +67,7 @@ public class SRTFcPrioridadFijasBestFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SRTF c/Prioridad - Particiones Fijas - BestFit\n");
+		System.out.println("SRTF 1E/S - Particiones Fijas - BestFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -71,12 +76,14 @@ public class SRTFcPrioridadFijasBestFit {
 		ArrayList<Proceso> listos = new ArrayList<Proceso>();
 
 		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
+		ArrayList<Proceso> ejecutandoEs = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
 
-		// Inicializamos ganttCpu
+		// Inicializamos los Gantt
 		ganttCpu = new ArrayList<Integer>();
+		ganttEs = new ArrayList<Integer>();
 
 		/*
 		 * Cargamos la lista de Particiones
@@ -95,7 +102,7 @@ public class SRTFcPrioridadFijasBestFit {
 			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
-			tIrrupcion += proceso.getCpu1();
+			tIrrupcion += proceso.getCpu1() + proceso.getCpu2();
 		}
 
 		Collections.sort(procesos, new OrdenarPorTArribo());
@@ -110,7 +117,7 @@ public class SRTFcPrioridadFijasBestFit {
 
 		for (int i = 0; i < procesos.size(); i++) {
 			arribo[procesos.get(i).getId()] = procesos.get(i).getTArribo();
-			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1();
+			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2();
 		}
 
 		/*
@@ -137,20 +144,40 @@ public class SRTFcPrioridadFijasBestFit {
 			}
 
 			/*
-			 * EJECUTO CPU
+			 * COLA EJECUTANDO ES
+			 * 
+			 */
+			if (!ejecutandoEs.isEmpty()) {
+				ejecutarES(particiones, procesos, ejecutandoCpu, ejecutandoEs, tablaProcesos, t);
+			}
+
+			/*
+			 * COLA EJECUTANDO CPU
 			 * 
 			 */
 			if (!ejecutandoCpu.isEmpty()) {
-				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
+				ejecutarCPU(particiones, procesos, ejecutandoCpu, ejecutandoEs, tablaProcesos, t);
 			}
 
 			/*
 			 * TIEMPO OCIOSO
 			 * 
 			 */
+
+			/*
+			 * Si las colas de nuevos y ejecutandoCpu estan vacias pero no llego el ultimo
+			 * proceso --> hay tiempo ocioso en CPU
+			 */
 			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
 			}
+
+			/*
+			 * Si llego el ultimo, ejecutandoCpu esta vacia pero ejecutandoEs no --> hay
+			 * tiempo ocioso
+			 */
+			if (llegoElUltimo && !ejecutandoEs.isEmpty() && ejecutandoCpu.isEmpty())
+				tOcioso++;
 
 			/*
 			 * ARMO LA COLA DE LISTOS EN INSTANTE t
@@ -160,20 +187,20 @@ public class SRTFcPrioridadFijasBestFit {
 				Proceso pNuevo = nuevos.get(i);
 				
 				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
-				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
+				int idParticionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
 				
 				// Recorro la lista de particiones para encontrar el mejor ajuste
 				for (Particion particion : particiones) {
 					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
 						tamanioBestFit = particion.getTamanio();
-						posicionBestFit = particion.getId();
+						idParticionBestFit = particion.getId();
 					}
 				}
 				
 				// Si la encuentro, le asigno el proceso nuevo
-				if (posicionBestFit != 0) {
+				if (idParticionBestFit != 0) {
 					for (Particion particion: particiones) {
-						if (particion.getId() == posicionBestFit) {
+						if (particion.getId() == idParticionBestFit) {
 							listos.add(pNuevo);
 							particion.setProceso(pNuevo.getId());
 							particion.setLibre(false);
@@ -198,7 +225,14 @@ public class SRTFcPrioridadFijasBestFit {
 			}
 
 			/*
-			 * TIEMPO OCIOSO EN GANTT
+			 * TIEMPO OCIOSO EN GANTT ES
+			 * 
+			 */
+			if (ejecutandoEs.isEmpty())
+				ganttEs.add(0);
+
+			/*
+			 * TIEMPO OCIOSO EN GANTT CPU
 			 * 
 			 */
 			if (ejecutandoCpu.isEmpty())
@@ -216,78 +250,107 @@ public class SRTFcPrioridadFijasBestFit {
 
 			t++;
 
-		} // Fin While
+		} // Fin while
 
 		salida[0] = tOcioso;
 
 	} // Fin SRTF
 
 	/*
-	 * METODO EJECUTAR CPU
+	 * EJECUTANDO CPU
 	 * 
 	 */
-	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+	private static void ejecutarCPU(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
+			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		// Ordeno por prioridad
-		Collections.sort(ejecutandoCpu, new OrdenarPorPrioridad());
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1CPU2());
 
-		// Guardo el primero
 		Proceso procesoActual = ejecutandoCpu.get(0);
 
-		// Luego me fijo si hay prioridades iguales
-		ArrayList<Proceso> aux = new ArrayList<Proceso>();
+		if (procesoActual.getCpu1() > 0) { // Trato CPU1
 
-		if (ejecutandoCpu.size() > 1) {
-			for (int i = 1; i < ejecutandoCpu.size(); i++) {
-				if (procesoActual.getPrioridad() == ejecutandoCpu.get(i).getPrioridad())
-					aux.add(ejecutandoCpu.get(i)); // Si hay los agrego a una lista auxiliar
+			int cpu = procesoActual.getCpu1();
+			cpu--;
+
+			// Actualizo Gantt
+			ganttCpu.add(procesoActual.getId());
+
+			// Actualizo el valor de CPU1
+			procesoActual.setCpu1(cpu);
+			ejecutandoCpu.remove(0);
+			ejecutandoCpu.add(0, procesoActual);
+
+			if (cpu == 0) {
+
+				// Lo saco y lo paso a ES
+				ejecutandoEs.add(ejecutandoCpu.get(0));
+				ejecutandoCpu.remove(0);
+
+			}
+
+		} else if (procesoActual.getCpu2() > 0 && procesoActual.getEs1() == 0) { // Trato CPU2
+
+			int cpu = procesoActual.getCpu2();
+			cpu--;
+
+			// Actualizo Gantt
+			ganttCpu.add(procesoActual.getId());
+
+			// Actualizo el valor de CPU2
+			procesoActual.setCpu2(cpu);
+			ejecutandoCpu.remove(0);
+			ejecutandoCpu.add(0, procesoActual);
+
+			if (cpu == 0) {
+
+				// Libero la particion
+				for (Particion particion : particiones) {
+					if (particion.getProceso() == procesoActual.getId()) {
+						particion.setProceso(0);
+						particion.setLibre(true);
+						break;
+					}
+				}
+
+				// Guardo el t de salida
+				salida[procesoActual.getId()] = t;
+
+				// Luego saco el proceso
+				ejecutandoCpu.remove(0);
 			}
 		}
+	}
 
-		// Ordeno la lista por menor tiempo remanente
-		if (!aux.isEmpty()) { // Si hay ocurrencias
-			// Agrego al actual
-			aux.add(procesoActual);
-			// Y ordeno
-			Collections.sort(aux, new OrdenarPorCPU1());
-			// Y los agrego a ejecutandoCpu desde el menor al mayor
-			while (!aux.isEmpty()) {
-				Proceso ProcesoAux = aux.get(0);
-				ejecutandoCpu.add(0, ProcesoAux);
-				aux.remove(0);
-			}
-			// Actualizo procesoActual
-			procesoActual = ejecutandoCpu.get(0);
-		}
+	/*
+	 * EJECUTANDO ES
+	 * 
+	 */
+	private static void ejecutarES(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
+			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		int cpu = procesoActual.getCpu1();
-		cpu--;
+		Proceso procesoActual = ejecutandoEs.get(0);
+		int es = procesoActual.getEs1();
+		es--;
 
 		// Actualizo Gantt
-		ganttCpu.add(procesoActual.getId());
+		ganttEs.add(procesoActual.getId());
 
-		// Actualizo el valor de CPU1
-		procesoActual.setCpu1(cpu);
-		ejecutandoCpu.remove(0);
-		ejecutandoCpu.add(0, procesoActual);
+		// Actualizo el valor de ES1
+		procesoActual.setEs1(es);
+		ejecutandoEs.remove(0);
+		ejecutandoEs.add(0, procesoActual);
 
-		if (cpu == 0) {
+		if (es == 0) {
 
-			// Libero la particion
-			for (Particion particion : particiones) {
-				if (particion.getProceso() == procesoActual.getId()) {
-					particion.setProceso(0);
-					particion.setLibre(true);
-					break;
-				}
-			}
-
-			// Guardo el t de salida
-			salida[procesoActual.getId()] = t;
-
-			// Luego saco el proceso
-			ejecutandoCpu.remove(0);
+			// Lo saco y lo paso a CPU
+			ejecutandoCpu.add(ejecutandoEs.get(0));
+			ejecutandoEs.remove(0);
 
 		}
 

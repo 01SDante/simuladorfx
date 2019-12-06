@@ -32,11 +32,11 @@ public class FCFSFijasBestFit2ES {
 	 * Devuelve los procesos para armar el Gantt
 	 */
 
-	public static ArrayList<Integer> getGanttCpu1ES() { // nuevo
+	public static ArrayList<Integer> getGanttCpu() { // nuevo
 		return ganttCpu;
 	}
 
-	public static ArrayList<Integer> getGantt1ES() { // nuevo
+	public static ArrayList<Integer> getGanttEs() { // nuevo
 		return ganttEs;
 	}
 
@@ -66,7 +66,7 @@ public class FCFSFijasBestFit2ES {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("FCFS 1E/S - Particiones Fijas - FirstFit\n");
+		System.out.println("FCFS 2E/S - Particiones Fijas - BestFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();

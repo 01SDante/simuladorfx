@@ -1,4 +1,4 @@
-package app.algoritmos.srtf;
+package app.algoritmos.srtf.c_prioridad;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import app.modelo.Particion;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class SRTFcPrioridadFijasFirstFit {
-	
+public class SRTFcPrioridadFijasBestFit {
+
 	public static ArrayList<ArrayList<Particion>> mapaMemoria;
 
 	public static ArrayList<Integer> ganttCpu;
@@ -62,7 +62,7 @@ public class SRTFcPrioridadFijasFirstFit {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("SRTF c/Prioridad - Particiones Fijas - FirstFit\n");
+		System.out.println("SRTF c/Prioridad - Particiones Fijas - BestFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -158,16 +158,32 @@ public class SRTFcPrioridadFijasFirstFit {
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
 				Proceso pNuevo = nuevos.get(i);
+				
+				int tamanioBestFit = Integer.MAX_VALUE; // Para guardar el tamanio del mejor ajuste
+				int posicionBestFit = 0; // Para guardar el ID de la particion con mejor ajuste
+				
+				// Recorro la lista de particiones para encontrar el mejor ajuste
 				for (Particion particion : particiones) {
-					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
-						listos.add(pNuevo);
-						particion.setProceso(pNuevo.getId());
-						particion.setLibre(false);
-						nuevos.remove(i);
-						i--;// Para evitar ConcurrentModificationException
-						break;
+					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio() && particion.getTamanio() < tamanioBestFit) {
+						tamanioBestFit = particion.getTamanio();
+						posicionBestFit = particion.getId();
 					}
 				}
+				
+				// Si la encuentro, le asigno el proceso nuevo
+				if (posicionBestFit != 0) {
+					for (Particion particion: particiones) {
+						if (particion.getId() == posicionBestFit) {
+							listos.add(pNuevo);
+							particion.setProceso(pNuevo.getId());
+							particion.setLibre(false);
+							nuevos.remove(i);
+							i--;// Para evitar ConcurrentModificationException
+							break;
+						}
+					}
+				}
+				
 			}
 
 			/*
@@ -201,7 +217,7 @@ public class SRTFcPrioridadFijasFirstFit {
 			t++;
 
 		} // Fin While
-		
+
 		salida[0] = tOcioso;
 
 	} // Fin SRTF
@@ -215,20 +231,20 @@ public class SRTFcPrioridadFijasFirstFit {
 
 		// Ordeno por prioridad
 		Collections.sort(ejecutandoCpu, new OrdenarPorPrioridad());
-		
+
 		// Guardo el primero
 		Proceso procesoActual = ejecutandoCpu.get(0);
 
 		// Luego me fijo si hay prioridades iguales
 		ArrayList<Proceso> aux = new ArrayList<Proceso>();
-		
+
 		if (ejecutandoCpu.size() > 1) {
-			for (int i=1; i < ejecutandoCpu.size(); i++) {
+			for (int i = 1; i < ejecutandoCpu.size(); i++) {
 				if (procesoActual.getPrioridad() == ejecutandoCpu.get(i).getPrioridad())
 					aux.add(ejecutandoCpu.get(i)); // Si hay los agrego a una lista auxiliar
 			}
 		}
-		
+
 		// Ordeno la lista por menor tiempo remanente
 		if (!aux.isEmpty()) { // Si hay ocurrencias
 			// Agrego al actual
@@ -244,7 +260,7 @@ public class SRTFcPrioridadFijasFirstFit {
 			// Actualizo procesoActual
 			procesoActual = ejecutandoCpu.get(0);
 		}
-		
+
 		int cpu = procesoActual.getCpu1();
 		cpu--;
 

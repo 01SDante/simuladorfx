@@ -1,18 +1,19 @@
-package app.algoritmos.fcfs._2es;
+package app.algoritmos.srtf._2es;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import app.algoritmos.util.OrdenarPorCPU1CPU2CPU3;
+import app.algoritmos.util.OrdenarPorDirInicio;
 import app.algoritmos.util.OrdenarPorTArribo;
-import app.modelo.ElementoTablaParticion;
 import app.modelo.ElementoTablaProceso;
-import app.modelo.Particion;
+import app.modelo.ParticionVariable;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class FCFSFijasFirstFit2ES {
+public class SRTFVariablesFirstFit2ES {
 
-	private static ArrayList<ArrayList<Particion>> mapaMemoria;
+	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
 	private static ArrayList<Integer> ganttCpu;
 	private static ArrayList<Integer> ganttEs;
@@ -24,7 +25,7 @@ public class FCFSFijasFirstFit2ES {
 	/*
 	 * Devuelve el estado de las particiones para armar el mapa
 	 */
-	public static ArrayList<ArrayList<Particion>> getMapaMemoria() {
+	public static ArrayList<ArrayList<ParticionVariable>> getMapaMemoria() {
 		return mapaMemoria;
 	}
 
@@ -63,12 +64,11 @@ public class FCFSFijasFirstFit2ES {
 	 * EJECUTAR
 	 * 
 	 */
-	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
-			ObservableList<ElementoTablaProceso> tablaProcesos) {
+	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("FCFS 2E/S - Particiones Fijas - FirstFit\n");
+		System.out.println("FCFS 2E/S - Particiones Variables - FirstFit\n");
 
-		ArrayList<Particion> particiones = new ArrayList<Particion>();
+		ArrayList<ParticionVariable> particiones = new ArrayList<ParticionVariable>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
 
 		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
@@ -78,19 +78,17 @@ public class FCFSFijasFirstFit2ES {
 		ArrayList<Proceso> ejecutandoEs = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
-		mapaMemoria = new ArrayList<ArrayList<Particion>>();
+		mapaMemoria = new ArrayList<ArrayList<ParticionVariable>>();
 
 		// Inicializamos los Gantt
 		ganttCpu = new ArrayList<Integer>();
 		ganttEs = new ArrayList<Integer>();
 
 		/*
-		 * Cargamos la lista de Particiones
+		 * Inicializamos la lista de Particiones
 		 */
-		for (ElementoTablaParticion p : tablaParticiones) {
-			Particion particion = new Particion(p.getId(), p.getTamanio(), true);
-			particiones.add(particion);
-		}
+		ParticionVariable particionInicial = new ParticionVariable(1, memoriaDisponible, true);
+		particiones.add(particionInicial);
 
 		/*
 		 * Cargamos la lista de Procesos
@@ -116,7 +114,8 @@ public class FCFSFijasFirstFit2ES {
 
 		for (int i = 0; i < procesos.size(); i++) {
 			arribo[procesos.get(i).getId()] = procesos.get(i).getTArribo();
-			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2() + procesos.get(i).getCpu3();
+			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2()
+					+ procesos.get(i).getCpu3();
 		}
 
 		/*
@@ -128,8 +127,8 @@ public class FCFSFijasFirstFit2ES {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
-		while (t <= tIrrupcion + tOcioso) { // tIrrupcion + tOcioso
-			
+		while (t <= tIrrupcion + tOcioso) {
+
 			/*
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
@@ -170,7 +169,7 @@ public class FCFSFijasFirstFit2ES {
 			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
 			}
-			
+
 			/*
 			 * Si llego el ultimo, ejecutandoCpu esta vacia pero ejecutandoEs no --> hay
 			 * tiempo ocioso
@@ -183,18 +182,43 @@ public class FCFSFijasFirstFit2ES {
 			 * 
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
+
 				Proceso pNuevo = nuevos.get(i);
-				for (Particion particion : particiones) {
-					if (particion.isLibre() && pNuevo.getTamanio() <= particion.getTamanio()) {
+
+				for (int j = 0; j < particiones.size(); j++) {
+
+					ParticionVariable particion = particiones.get(j);
+					int tamanio = particion.getDirFin() - particion.getDirInicio() + 1;
+
+					if (particion.isLibre() && pNuevo.getTamanio() <= tamanio) {
+
+						// Agrego el proceso a la cola de listos
 						listos.add(pNuevo);
-						particion.setProceso(pNuevo.getId());
-						particion.setLibre(false);
+
+						// Saco la particion
+						particiones.remove(j);
+
+						// Divido la particion y hago dos nuevas
+						ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
+								particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
+						ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
+						particiones.add(p1);
+
+						if (pNuevo.getTamanio() < tamanio) {
+							particiones.add(p2);
+						}
+
+						// Ordeno las particiones
+						Collections.sort(particiones, new OrdenarPorDirInicio());
+
 						nuevos.remove(i);
 						i--;// Para evitar ConcurrentModificationException
 						break;
 					}
-				}
-			}
+
+				} // Fin para particiones
+
+			} // Fin para nuevos
 
 			/*
 			 * AGREGO LOS LISTOS A EJECUCION
@@ -225,9 +249,10 @@ public class FCFSFijasFirstFit2ES {
 			 * GUARDO EL ESTADO DE LAS PARTICIONES
 			 * 
 			 */
-			mapaMemoria.add(t, new ArrayList<Particion>());
-			for (Particion p : particiones) {
-				Particion particion = new Particion(p.getId(), p.getTamanio(), p.getProceso(), p.isLibre());
+			mapaMemoria.add(t, new ArrayList<ParticionVariable>());
+			for (ParticionVariable p : particiones) {
+				ParticionVariable particion = new ParticionVariable(p.getDirInicio(), p.getDirFin(), p.getProceso(),
+						p.isLibre());
 				mapaMemoria.get(t).add(particion);
 			}
 
@@ -243,10 +268,16 @@ public class FCFSFijasFirstFit2ES {
 	 * EJECUTANDO CPU
 	 * 
 	 */
-	private static void ejecutarCPU(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+	private static void ejecutarCPU(ArrayList<ParticionVariable> particiones, ArrayList<Proceso> procesos,
 			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1CPU2CPU3());
+		
 		Proceso procesoActual = ejecutandoCpu.get(0);
 
 		if (procesoActual.getCpu1() > 0) { // Trato CPU1
@@ -307,11 +338,28 @@ public class FCFSFijasFirstFit2ES {
 			if (cpu == 0) {
 
 				// Libero la particion
-				for (Particion particion : particiones) {
+				for (ParticionVariable particion : particiones) {
 					if (particion.getProceso() == procesoActual.getId()) {
 						particion.setProceso(0);
 						particion.setLibre(true);
 						break;
+					}
+				}
+
+				// Junto las particiones libres contiguas
+				if (particiones.size() > 1) {
+					for (int i = 1; i < particiones.size(); i++) {
+						if (particiones.get(i - 1).isLibre() && particiones.get(i).isLibre()) {
+							ParticionVariable anterior = particiones.get(i - 1);
+							ParticionVariable actual = particiones.get(i);
+							ParticionVariable nueva = new ParticionVariable(anterior.getDirInicio(), actual.getDirFin(),
+									true);
+							particiones.add(nueva);
+							particiones.remove(i - 1);
+							particiones.remove(i - 1);
+							Collections.sort(particiones, new OrdenarPorDirInicio());
+							i = 0;
+						}
 					}
 				}
 
@@ -328,12 +376,12 @@ public class FCFSFijasFirstFit2ES {
 	 * EJECUTANDO ES
 	 * 
 	 */
-	private static void ejecutarES(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
+	private static void ejecutarES(ArrayList<ParticionVariable> particiones, ArrayList<Proceso> procesos,
 			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
 		Proceso procesoActual = ejecutandoEs.get(0);
-		
+
 		if (procesoActual.getEs1() > 0) { // Trato ES1
 
 			int es = procesoActual.getEs1();
@@ -356,28 +404,28 @@ public class FCFSFijasFirstFit2ES {
 			}
 
 		} else if (procesoActual.getEs2() > 0 && procesoActual.getCpu2() == 0) { // Trato ES2
-			
+
 			int es = procesoActual.getEs2();
 			es--;
-			
+
 			// Actualizo Gantt
 			ganttEs.add(procesoActual.getId());
-			
+
 			// Actualizo el valor de ES2
 			procesoActual.setEs2(es);
 			ejecutandoEs.remove(0);
 			ejecutandoEs.add(0, procesoActual);
-			
+
 			if (es == 0) {
-				
+
 				// Lo saco y lo paso a CPU
 				ejecutandoCpu.add(ejecutandoEs.get(0));
 				ejecutandoEs.remove(0);
-				
+
 			}
-			
+
 		}
 
 	}
-	
+
 }

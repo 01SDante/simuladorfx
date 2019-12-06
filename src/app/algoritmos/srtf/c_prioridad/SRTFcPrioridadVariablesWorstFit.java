@@ -1,4 +1,4 @@
-package app.algoritmos.srtf;
+package app.algoritmos.srtf.c_prioridad;
 
 import java.util.ArrayList;
 import java.util.Collections;

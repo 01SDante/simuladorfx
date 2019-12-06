@@ -2,11 +2,8 @@ package app.gantt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import app.gantt.GanttChart.ExtraData;
-import app.modelo.Proceso;
 import app.modelo.ProcesoGantt;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
@@ -14,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -29,6 +25,7 @@ public class GanttController {
 	public static String[] coloresLeyenda = { "", "red", "orange", "yellow", "green", "cyan", "blue", "magenta",
 			"silver", "saddlebrown", "teal" };
 
+	@SuppressWarnings("static-access")
 	public static void GanttFCFS(ArrayList<ProcesoGantt> ganttCpu, ArrayList<ProcesoGantt> ganttEs) {
 		
 		// HashMap<Integer, Proceso> ganttCpuHM, HashMap<Integer, Proceso> ganttEsHM

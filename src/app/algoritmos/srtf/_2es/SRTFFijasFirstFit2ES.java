@@ -1,8 +1,9 @@
-package app.algoritmos.fcfs._2es;
+package app.algoritmos.srtf._2es;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import app.algoritmos.util.OrdenarPorCPU1CPU2CPU3;
 import app.algoritmos.util.OrdenarPorTArribo;
 import app.modelo.ElementoTablaParticion;
 import app.modelo.ElementoTablaProceso;
@@ -10,8 +11,8 @@ import app.modelo.Particion;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class FCFSFijasFirstFit2ES {
-
+public class SRTFFijasFirstFit2ES {
+	
 	private static ArrayList<ArrayList<Particion>> mapaMemoria;
 
 	private static ArrayList<Integer> ganttCpu;
@@ -246,6 +247,12 @@ public class FCFSFijasFirstFit2ES {
 	private static void ejecutarCPU(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
 			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+		
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1CPU2CPU3());
 
 		Proceso procesoActual = ejecutandoCpu.get(0);
 
@@ -332,6 +339,12 @@ public class FCFSFijasFirstFit2ES {
 			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1CPU2CPU3());
+		
 		Proceso procesoActual = ejecutandoEs.get(0);
 		
 		if (procesoActual.getEs1() > 0) { // Trato ES1
@@ -379,5 +392,5 @@ public class FCFSFijasFirstFit2ES {
 		}
 
 	}
-	
+
 }

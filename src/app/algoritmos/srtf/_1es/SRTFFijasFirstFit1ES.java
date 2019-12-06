@@ -1,8 +1,9 @@
-package app.algoritmos.fcfs._2es;
+package app.algoritmos.srtf._1es;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import app.algoritmos.util.OrdenarPorCPU1CPU2;
 import app.algoritmos.util.OrdenarPorTArribo;
 import app.modelo.ElementoTablaParticion;
 import app.modelo.ElementoTablaProceso;
@@ -10,7 +11,7 @@ import app.modelo.Particion;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class FCFSFijasFirstFit2ES {
+public class SRTFFijasFirstFit1ES {
 
 	private static ArrayList<ArrayList<Particion>> mapaMemoria;
 
@@ -66,7 +67,7 @@ public class FCFSFijasFirstFit2ES {
 	public static void ejecutar(ObservableList<ElementoTablaParticion> tablaParticiones,
 			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("FCFS 2E/S - Particiones Fijas - FirstFit\n");
+		System.out.println("SRTF 1E/S - Particiones Fijas - FirstFit\n");
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -101,7 +102,7 @@ public class FCFSFijasFirstFit2ES {
 			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
-			tIrrupcion += proceso.getCpu1() + proceso.getCpu2() + proceso.getCpu3();
+			tIrrupcion += proceso.getCpu1() + proceso.getCpu2();
 		}
 
 		Collections.sort(procesos, new OrdenarPorTArribo());
@@ -116,7 +117,7 @@ public class FCFSFijasFirstFit2ES {
 
 		for (int i = 0; i < procesos.size(); i++) {
 			arribo[procesos.get(i).getId()] = procesos.get(i).getTArribo();
-			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2() + procesos.get(i).getCpu3();
+			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2();
 		}
 
 		/*
@@ -128,8 +129,8 @@ public class FCFSFijasFirstFit2ES {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
-		while (t <= tIrrupcion + tOcioso) { // tIrrupcion + tOcioso
-			
+		while (t <= tIrrupcion + tOcioso) {
+
 			/*
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
@@ -170,7 +171,7 @@ public class FCFSFijasFirstFit2ES {
 			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
 			}
-			
+
 			/*
 			 * Si llego el ultimo, ejecutandoCpu esta vacia pero ejecutandoEs no --> hay
 			 * tiempo ocioso
@@ -237,7 +238,7 @@ public class FCFSFijasFirstFit2ES {
 
 		salida[0] = tOcioso;
 
-	} // Fin FCFS
+	} // Fin SRTF
 
 	/*
 	 * EJECUTANDO CPU
@@ -247,6 +248,11 @@ public class FCFSFijasFirstFit2ES {
 			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
+		/*
+		 * Ordeno la lista ejecutandoCpu segun menor tiempo remanente
+		 * 
+		 */
+		Collections.sort(ejecutandoCpu, new OrdenarPorCPU1CPU2());
 		Proceso procesoActual = ejecutandoCpu.get(0);
 
 		if (procesoActual.getCpu1() > 0) { // Trato CPU1
@@ -285,27 +291,6 @@ public class FCFSFijasFirstFit2ES {
 
 			if (cpu == 0) {
 
-				// Lo saco y lo paso a ES
-				ejecutandoEs.add(ejecutandoCpu.get(0));
-				ejecutandoCpu.remove(0);
-
-			}
-
-		} else if (procesoActual.getCpu3() > 0 && procesoActual.getEs2() == 0) { // Trato CPU3
-
-			int cpu = procesoActual.getCpu3();
-			cpu--;
-
-			// Actualizo Gantt
-			ganttCpu.add(procesoActual.getId());
-
-			// Actualizo el valor de CPU3
-			procesoActual.setCpu3(cpu);
-			ejecutandoCpu.remove(0);
-			ejecutandoCpu.add(0, procesoActual);
-
-			if (cpu == 0) {
-
 				// Libero la particion
 				for (Particion particion : particiones) {
 					if (particion.getProceso() == procesoActual.getId()) {
@@ -333,51 +318,25 @@ public class FCFSFijasFirstFit2ES {
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
 		Proceso procesoActual = ejecutandoEs.get(0);
-		
-		if (procesoActual.getEs1() > 0) { // Trato ES1
+		int es = procesoActual.getEs1();
+		es--;
 
-			int es = procesoActual.getEs1();
-			es--;
+		// Actualizo Gantt
+		ganttEs.add(procesoActual.getId());
 
-			// Actualizo Gantt
-			ganttEs.add(procesoActual.getId());
+		// Actualizo el valor de ES1
+		procesoActual.setEs1(es);
+		ejecutandoEs.remove(0);
+		ejecutandoEs.add(0, procesoActual);
 
-			// Actualizo el valor de ES1
-			procesoActual.setEs1(es);
+		if (es == 0) {
+
+			// Lo saco y lo paso a CPU
+			ejecutandoCpu.add(ejecutandoEs.get(0));
 			ejecutandoEs.remove(0);
-			ejecutandoEs.add(0, procesoActual);
 
-			if (es == 0) {
-
-				// Lo saco y lo paso a CPU
-				ejecutandoCpu.add(ejecutandoEs.get(0));
-				ejecutandoEs.remove(0);
-
-			}
-
-		} else if (procesoActual.getEs2() > 0 && procesoActual.getCpu2() == 0) { // Trato ES2
-			
-			int es = procesoActual.getEs2();
-			es--;
-			
-			// Actualizo Gantt
-			ganttEs.add(procesoActual.getId());
-			
-			// Actualizo el valor de ES2
-			procesoActual.setEs2(es);
-			ejecutandoEs.remove(0);
-			ejecutandoEs.add(0, procesoActual);
-			
-			if (es == 0) {
-				
-				// Lo saco y lo paso a CPU
-				ejecutandoCpu.add(ejecutandoEs.get(0));
-				ejecutandoEs.remove(0);
-				
-			}
-			
 		}
 
 	}
-	
+
 }
