@@ -1,17 +1,18 @@
-package app.algoritmos.fcfs._1es;
+package app.algoritmos.sjf._1es;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import app.algoritmos.util.OrdenarPorCPU1CPU2;
 import app.algoritmos.util.OrdenarPorDirInicio;
 import app.algoritmos.util.OrdenarPorTArribo;
 import app.modelo.ElementoTablaProceso;
 import app.modelo.ParticionVariable;
-import app.modelo.Proceso;
+import app.modelo.ProcesoSJF;
 import javafx.collections.ObservableList;
 
-public class FCFSVariablesWorstFit1ES {
-
+public class SJFVariablesFirstFit1ES {
+	
 	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
 	private static ArrayList<Integer> ganttCpu;
@@ -63,18 +64,19 @@ public class FCFSVariablesWorstFit1ES {
 	 * EJECUTAR
 	 * 
 	 */
-	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos) {
+	public static void ejecutar(int memoriaDisponible,
+			ObservableList<ElementoTablaProceso> tablaProcesos) {
 
-		System.out.println("FCFS 1E/S - Particiones Fijas - FirstFit\n");
+		System.out.println("SJF 1E/S - Particiones Variables - FirstFit\n");
 
 		ArrayList<ParticionVariable> particiones = new ArrayList<ParticionVariable>();
-		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
+		ArrayList<ProcesoSJF> procesos = new ArrayList<ProcesoSJF>();
 
-		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
-		ArrayList<Proceso> listos = new ArrayList<Proceso>();
+		ArrayList<ProcesoSJF> nuevos = new ArrayList<ProcesoSJF>();
+		ArrayList<ProcesoSJF> listos = new ArrayList<ProcesoSJF>();
 
-		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
-		ArrayList<Proceso> ejecutandoEs = new ArrayList<Proceso>();
+		ArrayList<ProcesoSJF> ejecutandoCpu = new ArrayList<ProcesoSJF>();
+		ArrayList<ProcesoSJF> ejecutandoEs = new ArrayList<ProcesoSJF>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<ParticionVariable>>();
@@ -95,7 +97,7 @@ public class FCFSVariablesWorstFit1ES {
 		int tIrrupcion = 0; // Para controlar el bucle principal
 
 		for (ElementoTablaProceso p : tablaProcesos) {
-			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
+			ProcesoSJF proceso = new ProcesoSJF(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
 			tIrrupcion += proceso.getCpu1() + proceso.getCpu2();
@@ -131,7 +133,7 @@ public class FCFSVariablesWorstFit1ES {
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
 			 * 
 			 */
-			for (Proceso p : procesos) {
+			for (ProcesoSJF p : procesos) {
 				if (p.getTArribo() == t) {
 					nuevos.add(p);
 					if (p.getId() == idUltimoProceso)
@@ -181,49 +183,40 @@ public class FCFSVariablesWorstFit1ES {
 			 */
 			for (int i = 0; i < nuevos.size(); i++) {
 
-				Proceso pNuevo = nuevos.get(i);
+				ProcesoSJF pNuevo = nuevos.get(i);
 
-				int tamanioWorstFit = Integer.MIN_VALUE; // Para guardar el tamanio del peor ajuste
-				int posicionWorstFit = -1; // Para guardar la posicion de la particion con peor ajuste
-
-				// Recorro la lista de particiones para encontrar el peor ajuste
 				for (int j = 0; j < particiones.size(); j++) {
-					ParticionVariable p = particiones.get(j);
-					int tamanio = p.getDirFin() - p.getDirInicio() + 1;
-					if (p.isLibre() && pNuevo.getTamanio() <= tamanio && tamanio > tamanioWorstFit) {
-						tamanioWorstFit = tamanio;
-						posicionWorstFit = j;
-					}
-				}
 
-				// Si lo encuentro, le asigno el proceso nuevo
-				if (posicionWorstFit != -1) {
-
-					// Obtengo la particion con worst-fit
-					ParticionVariable particion = particiones.get(posicionWorstFit);
+					ParticionVariable particion = particiones.get(j);
 					int tamanio = particion.getDirFin() - particion.getDirInicio() + 1;
 
-					// Agrego el proceso a la cola de listos
-					listos.add(pNuevo);
+					if (particion.isLibre() && pNuevo.getTamanio() <= tamanio) {
 
-					// Saco la particion
-					particiones.remove(posicionWorstFit);
+						// Agrego el proceso a la cola de listos
+						listos.add(pNuevo);
 
-					// Divido la particion y hago dos nuevas
-					ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
-							particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
-					ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
-					particiones.add(p1);
+						// Saco la particion
+						particiones.remove(j);
 
-					if (pNuevo.getTamanio() < tamanio) {
-						particiones.add(p2);
+						// Divido la particion y hago dos nuevas
+						ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
+								particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
+						ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
+						particiones.add(p1);
+
+						if (pNuevo.getTamanio() < tamanio) {
+							particiones.add(p2);
+						}
+
+						// Ordeno las particiones
+						Collections.sort(particiones, new OrdenarPorDirInicio());
+
+						nuevos.remove(i);
+						i--;// Para evitar ConcurrentModificationException
+						break;
 					}
 
-					// Ordeno las particiones
-					Collections.sort(particiones, new OrdenarPorDirInicio());
-
-					nuevos.remove(i);
-				}
+				} // Fin para particiones
 
 			} // Fin para nuevos
 
@@ -232,7 +225,7 @@ public class FCFSVariablesWorstFit1ES {
 			 * 
 			 */
 			for (int i = 0; i < listos.size(); i++) {
-				Proceso pListo = listos.get(i);
+				ProcesoSJF pListo = listos.get(i);
 				ejecutandoCpu.add(pListo);
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
@@ -275,11 +268,16 @@ public class FCFSVariablesWorstFit1ES {
 	 * EJECUTANDO CPU
 	 * 
 	 */
-	private static void ejecutarCPU(ArrayList<ParticionVariable> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
+	private static void ejecutarCPU(ArrayList<ParticionVariable> particiones, ArrayList<ProcesoSJF> procesos,
+			ArrayList<ProcesoSJF> ejecutandoCpu, ArrayList<ProcesoSJF> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		Proceso procesoActual = ejecutandoCpu.get(0);
+		if (!ejecutandoCpu.get(0).getEstaEjecutando()) {
+			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1CPU2());
+			ejecutandoCpu.get(0).setEstaEjecutando(true);
+		}
+		
+		ProcesoSJF procesoActual = ejecutandoCpu.get(0);
 
 		if (procesoActual.getCpu1() > 0) { // Trato CPU1
 
@@ -296,6 +294,8 @@ public class FCFSVariablesWorstFit1ES {
 
 			if (cpu == 0) {
 
+				ejecutandoCpu.get(0).setEstaEjecutando(false);
+				
 				// Lo saco y lo paso a ES
 				ejecutandoEs.add(ejecutandoCpu.get(0));
 				ejecutandoCpu.remove(0);
@@ -325,7 +325,7 @@ public class FCFSVariablesWorstFit1ES {
 						break;
 					}
 				}
-
+				
 				// Junto las particiones libres contiguas
 				if (particiones.size() > 1) {
 					for (int i = 1; i < particiones.size(); i++) {
@@ -356,11 +356,11 @@ public class FCFSVariablesWorstFit1ES {
 	 * EJECUTANDO ES
 	 * 
 	 */
-	private static void ejecutarES(ArrayList<ParticionVariable> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ArrayList<Proceso> ejecutandoEs,
+	private static void ejecutarES(ArrayList<ParticionVariable> particiones, ArrayList<ProcesoSJF> procesos,
+			ArrayList<ProcesoSJF> ejecutandoCpu, ArrayList<ProcesoSJF> ejecutandoEs,
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
-		Proceso procesoActual = ejecutandoEs.get(0);
+		ProcesoSJF procesoActual = ejecutandoEs.get(0);
 		int es = procesoActual.getEs1();
 		es--;
 

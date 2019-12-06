@@ -32,11 +32,11 @@ public class FCFSVariablesFirstFit1ES {
 	 * Devuelve los procesos para armar el Gantt
 	 */
 
-	public static ArrayList<Integer> getGanttCpu1ES() { // nuevo
+	public static ArrayList<Integer> getGanttCpu() { // nuevo
 		return ganttCpu;
 	}
 
-	public static ArrayList<Integer> getGantt1ES() { // nuevo
+	public static ArrayList<Integer> getGanttEs() { // nuevo
 		return ganttEs;
 	}
 

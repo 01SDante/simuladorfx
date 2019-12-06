@@ -213,18 +213,23 @@ public class SJFFijasFirstFit {
 			ArrayList<ProcesoSJF> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
 		/*
-		 * Veo si el primero se esta ejcutando, si es asi lo saco momentaneamente y
+		 * Veo si el primero se esta ejecutando, si es asi lo saco momentaneamente y
 		 * ordeno el resto de los procesos segun menor tiempo remanente
 		 * 
 		 * Sino ordeno directamente
 		 * 
-		 */
+		 *
 		if (ejecutandoCpu.get(0).getEstaEjecutando()) {
 			ProcesoSJF temporal = ejecutandoCpu.get(0);
 			ejecutandoCpu.remove(0);
 			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
 			ejecutandoCpu.add(0, temporal);
 		} else {
+			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+			ejecutandoCpu.get(0).setEstaEjecutando(true);
+		}*/
+		
+		if (!ejecutandoCpu.get(0).getEstaEjecutando()) {
 			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
 			ejecutandoCpu.get(0).setEstaEjecutando(true);
 		}
