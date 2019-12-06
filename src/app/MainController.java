@@ -2470,6 +2470,29 @@ public class MainController {
 			int es2NuevoProceso = Integer.parseInt(this.es2NuevoProceso.getText().trim());
 			int cpu3NuevoProceso = Integer.parseInt(this.cpu3NuevoProceso.getText().trim());
 			int prioridadNuevoProceso = Integer.parseInt(this.prioridadNuevoProceso.getText().trim());
+			
+			if (tArriboNuevoProceso < 0) {
+				alerta("El tiempo de arribo debe ser un entero mayor ó igual a 0.");
+				return;
+			}
+			// Chequeo los campos del nuevo proceso
+			if (es.getValue() == " 2 ") {
+				if (tamanioNuevoProceso <= 0 || cpu1NuevoProceso <= 0 || es1NuevoProceso <= 0 || cpu2NuevoProceso <= 0
+						|| es2NuevoProceso <= 0 || cpu3NuevoProceso <= 0) {
+					alerta("Completar todos los campos con valores enteros mayores a 0. Sólo el tiempo de arribo puede ser 0.");
+					return;
+				}
+			} else if (es.getValue() == " 1 ") {
+				if (tamanioNuevoProceso <= 0 || cpu1NuevoProceso <= 0 || es1NuevoProceso <= 0 || cpu2NuevoProceso <= 0) {
+					alerta("Completar todos los campos con valores enteros mayores a 0. Sólo el tiempo de arribo puede ser 0.");
+					return;
+				}
+			} else if (es.getValue() == " 0 ") {
+				if (tamanioNuevoProceso <= 0 || cpu1NuevoProceso <= 0) {
+					alerta("Completar todos los campos con valores enteros mayores a 0. Sólo el tiempo de arribo puede ser 0.");
+					return;
+				}
+			}
 
 			if (idProcesoNuevo <= 10) {
 				
