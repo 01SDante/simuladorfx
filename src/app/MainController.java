@@ -559,22 +559,28 @@ public class MainController {
 				}
 			}
 
-		} else 
-			System.out.println(algoritmos.getValue() + " not yet.");
+		}
 		
 		/*
 		 * Colas Multinivel
 		 * 
 		 */
-//		else if (algoritmos.getValue() == "Colas Multinivel") {
-//
-//			// Particiones Fijas - First-Fit
-//			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
-//				ColasMultinivelFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
-//						cola1.getValue(), cola2.getValue(), cola3.getValue());
-//			}
-//
-//		}
+		else if (algoritmos.getValue() == "Colas Multinivel") {
+			
+			for (ElementoTablaProceso p : elementosTablaProcesos) {
+				if (p.getPrioridad() == 0) {
+					alerta("Éste algoritmo no es aplicable a una CT sin prioridades.");
+					return;
+				}
+			}
+
+			// Particiones Fijas - First-Fit
+			if (particiones.getValue() == "Fijas" && politicas.getValue() == "First-Fit") {
+				ColasMultinivelFijasFirstFit.ejecutar(elementosTablaParticionesFijas, elementosTablaProcesos,
+						cola1.getValue(), cola2.getValue(), cola3.getValue());
+			}
+
+		} // Fin Colas Multinivel
 
 		// Armo la barra de notificaciones
 		notificaciones.setText("Ejecutado: Algoritmo " + algoritmos.getValue() + " | Particiones "
@@ -751,8 +757,15 @@ public class MainController {
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
-		else
-			System.out.println(algoritmos.getValue() + " not yet.");
+		/*
+		 * Colas Multinivel
+		 * 
+		 */
+		else if (algoritmoEjecutado == "Colas Multinivel") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				MemoryMapController.generarMapaMemoriaPartFijas(ColasMultinivelFijasFirstFit.getMapaMemoria(), ramSO,
+						notificaciones.getText());
+		}
 
 	}
 
@@ -898,8 +911,14 @@ public class MainController {
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
-		else
-			System.out.println(algoritmos.getValue() + " not yet.");
+		/*
+		 * Colas Multinivel
+		 * 
+		 */
+		else if (algoritmoEjecutado == "Colas Multinivel") {
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				GanttCPU.generarGanttCPU(ColasMultinivelFijasFirstFit.getGanttCpu(), notificaciones.getText());
+		}
 	}
 
 	// EVENTO BOTON ESTADISTICAS
@@ -1104,8 +1123,19 @@ public class MainController {
 						notificaciones.getText() + " | Quantum = " + quantum.getText());
 		}
 
-		else
-			System.out.println(algoritmos.getValue() + " not yet.");
+		/*
+		 * Colas Multinivel
+		 * 
+		 */
+		else if (algoritmoEjecutado == "Colas Multinivel") {
+			
+			// Particiones Fijas - First-Fit
+			if (particionesEjecutado == "Fijas" && politicaEjecutado == "First-Fit")
+				EstadisticasController.estadisticas(ColasMultinivelFijasFirstFit.getSalida(),
+						ColasMultinivelFijasFirstFit.getArribo(), ColasMultinivelFijasFirstFit.getIrrupcion(),
+						notificaciones.getText());
+			
+		}
 
 	}
 
@@ -1133,7 +1163,7 @@ public class MainController {
 		else
 			quantum.setDisable(true);
 
-		if (algoritmos.getValue() == "SRTF (c/Prioridad)")
+		if (algoritmos.getValue() == "SRTF (c/Prioridad)" || algoritmos.getValue() == "Colas Multinivel")
 			prioridadNuevoProceso.setDisable(false);
 		else
 			prioridadNuevoProceso.setDisable(true);

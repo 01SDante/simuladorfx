@@ -3,6 +3,7 @@ package app.algoritmos.colas_multinivel;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import app.algoritmos.util.OrdenarPorCPU1;
 import app.algoritmos.util.OrdenarPorTArribo;
 import app.modelo.ElementoTablaParticion;
 import app.modelo.ElementoTablaProceso;
@@ -61,7 +62,9 @@ public class ColasMultinivelFijasFirstFit {
 			ObservableList<ElementoTablaProceso> tablaProcesos, String algoritmoCola1, String algoritmoCola2,
 			String algoritmoCola3) {
 
-		System.out.println("FCFS - Particiones Fijas - FirstFit\n");
+		System.out.println("Colas Multinivel - Particiones Fijas - FirstFit\n");
+		System.out
+				.println("Cola 1: " + algoritmoCola1 + " | Cola 2: " + algoritmoCola2 + " | Cola 3: " + algoritmoCola3);
 
 		ArrayList<Particion> particiones = new ArrayList<Particion>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -69,7 +72,9 @@ public class ColasMultinivelFijasFirstFit {
 		ArrayList<Proceso> nuevos = new ArrayList<Proceso>();
 		ArrayList<Proceso> listos = new ArrayList<Proceso>();
 
-		ArrayList<Proceso> ejecutandoCpu = new ArrayList<Proceso>();
+		ArrayList<Proceso> ejecutandoCpuCola1 = new ArrayList<Proceso>();
+		ArrayList<Proceso> ejecutandoCpuCola2 = new ArrayList<Proceso>();
+		ArrayList<Proceso> ejecutandoCpuCola3 = new ArrayList<Proceso>();
 
 		// Inicializamos mapaMemoria
 		mapaMemoria = new ArrayList<ArrayList<Particion>>();
@@ -139,15 +144,21 @@ public class ColasMultinivelFijasFirstFit {
 			 * EJECUTO CPU
 			 * 
 			 */
-			if (!ejecutandoCpu.isEmpty()) {
-				ejecutarCpu(particiones, procesos, ejecutandoCpu, tablaProcesos, t);
-			}
+			if (!ejecutandoCpuCola1.isEmpty()) {
+				ejecutarCpu(particiones, procesos, ejecutandoCpuCola1, algoritmoCola1, tablaProcesos, t);
+				
+			} else if (!ejecutandoCpuCola2.isEmpty()) {
+				ejecutarCpu(particiones, procesos, ejecutandoCpuCola2, algoritmoCola2, tablaProcesos, t);
+				
+			} else if (!ejecutandoCpuCola3.isEmpty())
+				ejecutarCpu(particiones, procesos, ejecutandoCpuCola3, algoritmoCola3, tablaProcesos, t);
 
 			/*
 			 * TIEMPO OCIOSO
 			 * 
 			 */
-			if (nuevos.isEmpty() && ejecutandoCpu.isEmpty() && !llegoElUltimo) {
+			if (nuevos.isEmpty() && ejecutandoCpuCola1.isEmpty() && ejecutandoCpuCola2.isEmpty()
+					&& ejecutandoCpuCola3.isEmpty() && !llegoElUltimo) {
 				tOcioso++;
 			}
 
@@ -175,7 +186,14 @@ public class ColasMultinivelFijasFirstFit {
 			 */
 			for (int i = 0; i < listos.size(); i++) {
 				Proceso pListo = listos.get(i);
-				ejecutandoCpu.add(pListo);
+				
+				if (pListo.getPrioridad() >= 8)
+					ejecutandoCpuCola1.add(pListo);
+				else if (pListo.getPrioridad() >= 5)
+					ejecutandoCpuCola2.add(pListo);
+				else
+					ejecutandoCpuCola3.add(pListo);
+				
 				listos.remove(i);
 				i--; // Para evitar ConcurrentModificationException
 			}
@@ -184,7 +202,7 @@ public class ColasMultinivelFijasFirstFit {
 			 * TIEMPO OCIOSO EN GANTT
 			 * 
 			 */
-			if (ejecutandoCpu.isEmpty())
+			if (ejecutandoCpuCola1.isEmpty() && ejecutandoCpuCola2.isEmpty() && ejecutandoCpuCola3.isEmpty())
 				ganttCpu.add(0);
 
 			/*
@@ -210,8 +228,11 @@ public class ColasMultinivelFijasFirstFit {
 	 * 
 	 */
 	private static void ejecutarCpu(ArrayList<Particion> particiones, ArrayList<Proceso> procesos,
-			ArrayList<Proceso> ejecutandoCpu, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
+			ArrayList<Proceso> ejecutandoCpu, String algoritmoCola, ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
+		if (algoritmoCola == "SRTF")
+			Collections.sort(ejecutandoCpu, new OrdenarPorCPU1());
+		
 		Proceso procesoActual = ejecutandoCpu.get(0);
 		int cpu = procesoActual.getCpu1();
 		cpu--;
