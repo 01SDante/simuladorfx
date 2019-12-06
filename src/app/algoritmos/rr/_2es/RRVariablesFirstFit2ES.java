@@ -1,4 +1,4 @@
-package app.algoritmos.rr._1es;
+package app.algoritmos.rr._2es;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import app.modelo.ParticionVariable;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class RRVariablesFirstFit1ES {
+public class RRVariablesFirstFit2ES {
 
 	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
@@ -88,7 +88,7 @@ public class RRVariablesFirstFit1ES {
 	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos,
 			int quantum) {
 
-		System.out.println("RR 1E/S con quantum =  " + quantum + " - Particiones Variables - FirstFit\n");
+		System.out.println("RR 2E/S con quantum =  " + quantum + " - Particiones Variables - FirstFit\n");
 
 		ArrayList<ParticionVariable> particiones = new ArrayList<ParticionVariable>();
 		ArrayList<Proceso> procesos = new ArrayList<Proceso>();
@@ -121,7 +121,7 @@ public class RRVariablesFirstFit1ES {
 			Proceso proceso = new Proceso(p.getId(), p.getTamanio(), p.getTArribo(), p.getCpu1(), p.getEs1(),
 					p.getCpu2(), p.getEs2(), p.getCpu3(), p.getPrioridad());
 			procesos.add(proceso);
-			tIrrupcion += proceso.getCpu1() + proceso.getCpu2();
+			tIrrupcion += proceso.getCpu1() + proceso.getCpu2() + proceso.getCpu3();
 		}
 
 		Collections.sort(procesos, new OrdenarPorTArribo());
@@ -136,7 +136,8 @@ public class RRVariablesFirstFit1ES {
 
 		for (int i = 0; i < procesos.size(); i++) {
 			arribo[procesos.get(i).getId()] = procesos.get(i).getTArribo();
-			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2();
+			irrupcion[procesos.get(i).getId()] = procesos.get(i).getCpu1() + procesos.get(i).getCpu2()
+					+ procesos.get(i).getCpu3();
 		}
 
 		/*
@@ -151,7 +152,7 @@ public class RRVariablesFirstFit1ES {
 		int tOcioso = 0;
 		boolean llegoElUltimo = false;
 
-		while (t <= tIrrupcion + tOcioso) {
+		while (t <= tIrrupcion + tOcioso) { // tIrrupcion + tOcioso
 
 			/*
 			 * ARMO LA COLA DE NUEVOS DEL INSTANTE t
@@ -357,6 +358,44 @@ public class RRVariablesFirstFit1ES {
 
 			if (cpu == 0) {
 
+				// Lo saco y lo paso a ES
+				ejecutandoEs.add(ejecutandoCpu.get(0));
+				ejecutandoCpu.remove(0);
+
+				// Reinicio el quantum
+				q = quantum;
+
+			} else if (q == 0) { // Si termino el quantum
+
+				// Reinicio el quantum
+				q = quantum;
+
+				/*
+				 * Saco el proceso y lo guardo en una variable auxiliar para que no anteponga a
+				 * los listos que se agregan en este instante t, luego de actualizar los listos
+				 * lo agrego a ejecucion
+				 */
+				ejecutandoCpu.remove(0);
+				procesoAux = procesoActual;
+
+			}
+
+		} else if (procesoActual.getCpu3() > 0 && procesoActual.getEs2() == 0) { // Trato CPU3
+
+			int cpu = procesoActual.getCpu3();
+			cpu--;
+			q--; // Descuento el quantum
+
+			// Actualizo Gantt
+			ganttCpu.add(procesoActual.getId());
+
+			// Actualizo el valor de CPU3
+			procesoActual.setCpu3(cpu);
+			ejecutandoCpu.remove(0);
+			ejecutandoCpu.add(0, procesoActual);
+
+			if (cpu == 0) {
+
 				// Libero la particion
 				for (ParticionVariable particion : particiones) {
 					if (particion.getProceso() == procesoActual.getId()) {
@@ -418,22 +457,48 @@ public class RRVariablesFirstFit1ES {
 			ObservableList<ElementoTablaProceso> tablaProcesos, int t) {
 
 		Proceso procesoActual = ejecutandoEs.get(0);
-		int es = procesoActual.getEs1();
-		es--;
 
-		// Actualizo Gantt
-		ganttEs.add(procesoActual.getId());
+		if (procesoActual.getEs1() > 0) { // Trato ES1
 
-		// Actualizo el valor de ES1
-		procesoActual.setEs1(es);
-		ejecutandoEs.remove(0);
-		ejecutandoEs.add(0, procesoActual);
+			int es = procesoActual.getEs1();
+			es--;
 
-		if (es == 0) {
+			// Actualizo Gantt
+			ganttEs.add(procesoActual.getId());
 
-			// Lo saco y lo paso a CPU
-			ejecutandoCpu.add(ejecutandoEs.get(0));
+			// Actualizo el valor de ES1
+			procesoActual.setEs1(es);
 			ejecutandoEs.remove(0);
+			ejecutandoEs.add(0, procesoActual);
+
+			if (es == 0) {
+
+				// Lo saco y lo paso a CPU
+				ejecutandoCpu.add(ejecutandoEs.get(0));
+				ejecutandoEs.remove(0);
+
+			}
+
+		} else if (procesoActual.getEs2() > 0 && procesoActual.getCpu2() == 0) { // Trato ES2
+
+			int es = procesoActual.getEs2();
+			es--;
+
+			// Actualizo Gantt
+			ganttEs.add(procesoActual.getId());
+
+			// Actualizo el valor de ES2
+			procesoActual.setEs2(es);
+			ejecutandoEs.remove(0);
+			ejecutandoEs.add(0, procesoActual);
+
+			if (es == 0) {
+
+				// Lo saco y lo paso a CPU
+				ejecutandoCpu.add(ejecutandoEs.get(0));
+				ejecutandoEs.remove(0);
+
+			}
 
 		}
 

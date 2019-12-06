@@ -31,6 +31,8 @@ import app.algoritmos.rr._1es.RRVariablesFirstFit1ES;
 import app.algoritmos.rr._1es.RRVariablesWorstFit1ES;
 import app.algoritmos.rr._2es.RRFijasBestFit2ES;
 import app.algoritmos.rr._2es.RRFijasFirstFit2ES;
+import app.algoritmos.rr._2es.RRVariablesFirstFit2ES;
+import app.algoritmos.rr._2es.RRVariablesWorstFit2ES;
 import app.algoritmos.sjf.SJFFijasBestFit;
 import app.algoritmos.sjf.SJFFijasFirstFit;
 import app.algoritmos.sjf.SJFVariablesFirstFit;
@@ -209,22 +211,6 @@ public class MainController {
 
 		// INICIALIZAMOS LAS COLUMNAS DE LA TABLA PROCESOS
 		inicializarColumnasTablaProcesos();
-		
-		/*
-		 * datos de prueba
-		 */
-		limiteMemoria.setText("639");
-		cantidadParticionesFijas.setText("5");
-
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(1, 100, 1, 100));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(2, 150, 101, 250));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(3, 200, 251, 450));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(4, 75, 451, 525));
-		elementosTablaParticionesFijas.add(new ElementoTablaParticion(5, 50, 526, 575));
-		
-		tablaParticion.getItems().setAll(elementosTablaParticionesFijas);
-		
-		mayorTamanioParticion = 300;
 		
 	}
 
@@ -831,9 +817,29 @@ public class MainController {
 					}
 				}
 				
+				// Particiones Variables - First-Fit
+				else if (particiones.getValue() == "Variables" && politicas.getValue() == "First-Fit") {
+					try {
+						RRVariablesFirstFit2ES.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos,
+								Integer.parseInt(quantum.getText()));
+					} catch (Exception e) {
+						System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+						alerta("Ingresar un entero para el campo 'Quantum'.");
+					}
+				}
+				
+				// Particiones Variables - Worst-Fit
+				else if (particiones.getValue() == "Variables" && politicas.getValue() == "Worst-Fit") {
+					try {
+						RRVariablesWorstFit2ES.ejecutar(memoriaDisponibleParticionVariable, elementosTablaProcesos,
+								Integer.parseInt(quantum.getText()));
+					} catch (Exception e) {
+						System.out.println("Error en ingreso de datos en campo 'Quantum'. ERROR: " + e.getMessage());
+						alerta("Ingresar un entero para el campo 'Quantum'.");
+					}
+				}
+				
 			}
-
-			
 
 		} // Fin RR
 		
@@ -1192,6 +1198,14 @@ public class MainController {
 					MemoryMapController.generarMapaMemoriaPartFijas(RRFijasBestFit2ES.getMapaMemoria(), ramSO,
 							notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+					MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesFirstFit2ES.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+					MemoryMapController.generarMapaMemoriaPartVariables(RRVariablesWorstFit2ES.getMapaMemoria(), ramSO,
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
 			}
 			
 			
@@ -1487,6 +1501,12 @@ public class MainController {
 							notificaciones.getText() + " | Quantum = " + quantum.getText());
 				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 					GanttCPUES.generarGanttCPUES(RRFijasBestFit2ES.getGanttCpu(), RRFijasBestFit2ES.getGanttEs(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+					GanttCPUES.generarGanttCPUES(RRVariablesFirstFit2ES.getGanttCpu(), RRVariablesFirstFit2ES.getGanttEs(),
+							notificaciones.getText() + " | Quantum = " + quantum.getText());
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+					GanttCPUES.generarGanttCPUES(RRVariablesWorstFit2ES.getGanttCpu(), RRVariablesWorstFit2ES.getGanttEs(),
 							notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
 			}
@@ -1891,6 +1911,16 @@ public class MainController {
 				else if (particionesEjecutado == "Fijas" && politicaEjecutado == "Best-Fit")
 					EstadisticasController.estadisticas(RRFijasBestFit2ES.getSalida(), RRFijasBestFit2ES.getArribo(),
 							RRFijasBestFit2ES.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+				// Particiones Variables - First-Fit
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "First-Fit")
+					EstadisticasController.estadisticas(RRVariablesFirstFit2ES.getSalida(), RRVariablesFirstFit2ES.getArribo(),
+							RRVariablesFirstFit2ES.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
+				
+				// Particiones Variables - Worst-Fit
+				else if (particionesEjecutado == "Variables" && politicaEjecutado == "Worst-Fit")
+					EstadisticasController.estadisticas(RRVariablesWorstFit2ES.getSalida(), RRVariablesWorstFit2ES.getArribo(),
+							RRVariablesWorstFit2ES.getIrrupcion(), notificaciones.getText() + " | Quantum = " + quantum.getText());
 				
 			}
 
