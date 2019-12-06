@@ -62,7 +62,7 @@ public class ColasMultinivelFijasBestFit {
 			ObservableList<ElementoTablaProceso> tablaProcesos, String algoritmoCola1, String algoritmoCola2,
 			String algoritmoCola3) {
 
-		System.out.println("Colas Multinivel - Particiones Fijas - FirstFit\n");
+		System.out.println("Colas Multinivel - Particiones Fijas - BestFit\n");
 		System.out
 				.println("Cola 1: " + algoritmoCola1 + " | Cola 2: " + algoritmoCola2 + " | Cola 3: " + algoritmoCola3);
 

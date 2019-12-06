@@ -11,7 +11,7 @@ import app.modelo.ParticionVariable;
 import app.modelo.Proceso;
 import javafx.collections.ObservableList;
 
-public class ColasMultinivelVariablesFirstFit {
+public class ColasMultinivelVariablesWorstFit {
 
 	private static ArrayList<ArrayList<ParticionVariable>> mapaMemoria;
 
@@ -22,7 +22,7 @@ public class ColasMultinivelVariablesFirstFit {
 	private static int[] irrupcion;
 
 	/*
-	 * Devuelve el estado de las aprticiones para armar el mapa de memoria
+	 * Devuelve el estado de las particiones para armar el mapa de memoria
 	 */
 	public static ArrayList<ArrayList<ParticionVariable>> getMapaMemoria() {
 		return mapaMemoria;
@@ -61,7 +61,7 @@ public class ColasMultinivelVariablesFirstFit {
 	public static void ejecutar(int memoriaDisponible, ObservableList<ElementoTablaProceso> tablaProcesos,
 			String algoritmoCola1, String algoritmoCola2, String algoritmoCola3) {
 
-		System.out.println("Colas Multinivel - Particiones Variables - FirstFit\n");
+		System.out.println("Colas Multinivel - Particiones Variables - WorstFit\n");
 		System.out
 				.println("Cola 1: " + algoritmoCola1 + " | Cola 2: " + algoritmoCola2 + " | Cola 3: " + algoritmoCola3);
 
@@ -167,38 +167,47 @@ public class ColasMultinivelVariablesFirstFit {
 
 				Proceso pNuevo = nuevos.get(i);
 
-				for (int j = 0; j < particiones.size(); j++) {
+				int tamanioWorstFit = Integer.MIN_VALUE; // Para guardar el tamanio del peor ajuste
+				int posicionWorstFit = -1; // Para guardar la posicion de la particion con peor ajuste
 
-					ParticionVariable particion = particiones.get(j);
+				// Recorro la lista de particiones para encontrar el peor ajuste
+				for (int j = 0; j < particiones.size(); j++) {
+					ParticionVariable p = particiones.get(j);
+					int tamanio = p.getDirFin() - p.getDirInicio() + 1;
+					if (p.isLibre() && pNuevo.getTamanio() <= tamanio && tamanio > tamanioWorstFit) {
+						tamanioWorstFit = tamanio;
+						posicionWorstFit = j;
+					}
+				}
+
+				// Si lo encuentro, le asigno el proceso nuevo
+				if (posicionWorstFit != -1) {
+
+					// Obtengo la particion con worst-fit
+					ParticionVariable particion = particiones.get(posicionWorstFit);
 					int tamanio = particion.getDirFin() - particion.getDirInicio() + 1;
 
-					if (particion.isLibre() && pNuevo.getTamanio() <= tamanio) {
+					// Agrego el proceso a la cola de listos
+					listos.add(pNuevo);
 
-						// Agrego el proceso a la cola de listos
-						listos.add(pNuevo);
+					// Saco la particion
+					particiones.remove(posicionWorstFit);
 
-						// Saco la particion
-						particiones.remove(j);
+					// Divido la particion y hago dos nuevas
+					ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
+							particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
+					ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
+					particiones.add(p1);
 
-						// Divido la particion y hago dos nuevas
-						ParticionVariable p1 = new ParticionVariable(particion.getDirInicio(),
-								particion.getDirInicio() + pNuevo.getTamanio() - 1, pNuevo.getId(), false);
-						ParticionVariable p2 = new ParticionVariable(p1.getDirFin() + 1, particion.getDirFin(), true);
-						particiones.add(p1);
-
-						if (pNuevo.getTamanio() < tamanio) {
-							particiones.add(p2);
-						}
-
-						// Ordeno las particiones
-						Collections.sort(particiones, new OrdenarPorDirInicio());
-
-						nuevos.remove(i);
-						i--;// Para evitar ConcurrentModificationException
-						break;
+					if (pNuevo.getTamanio() < tamanio) {
+						particiones.add(p2);
 					}
 
-				} // Fin para particiones
+					// Ordeno las particiones
+					Collections.sort(particiones, new OrdenarPorDirInicio());
+
+					nuevos.remove(i);
+				}
 
 			} // Fin para nuevos
 
@@ -279,7 +288,7 @@ public class ColasMultinivelVariablesFirstFit {
 					break;
 				}
 			}
-			
+
 			// Junto las particiones libres contiguas
 			if (particiones.size() > 1) {
 				for (int i = 1; i < particiones.size(); i++) {
