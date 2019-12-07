@@ -14,7 +14,7 @@ public class BD {
 
 	private static BD bd = null;
 
-	private static final String URL_BD = "jdbc:h2:~/dev/H2-Databases/simuladorfx";
+	private static final String URL_BD = "jdbc:h2:~/simuladorfx";
 	private static Connection con = null;
 	private static Statement stmt = null;
 
