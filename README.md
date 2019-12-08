@@ -31,7 +31,7 @@ Click derecho en el proyecto -> Build Path -> Configure Build Path -> Java Build
 
 #### NetBeans: 
 ```
-Click derecho en el proyecto --> Properties --> Libraries --> Add Jar/Folder --> h2-1.4.199.jar
+Click derecho en el proyecto -> Properties -> Libraries -> Add Jar/Folder -> h2-1.4.199.jar
 ```
 
 ### Con Java 9+
@@ -46,17 +46,17 @@ Crear una nueva librería de usuario (*User Library*) en:
 Eclipse -> Window -> Preferences -> Java -> Build Path -> User Libraries -> New
 ```
 
-Nombrarla ```JavaFX 11``` e incluir los jars que se encuantran en la carpeta ```lib``` dentro de la carpeta ```javafx-sdk-11.0.2```
+Nombrarla ```JavaFX 11``` e incluir los jars que se encuentran en la carpeta ```lib``` dentro de la carpeta ```javafx-sdk-11.0.2```
 
-Agregar la librería recíen creada al classpath:
+Agregar la librería recién creada al classpath:
 
 ```
 Click derecho en el proyecto -> Build Path -> Configure Build Path... -> Java Build Path -> Classpath -> Add Library... -> User Library... -> JavaFX 11
 ```
 
-Crear un nuevo *run configuration* en ```Run -> Run Configurations...  -> Java Application``` y en ```VM argumets``` agregar:
+Crear un nuevo *run configuration* en ```Run -> Run Configurations...  -> Java Application``` y en ```VM arguments``` agregar:
 
-```--module-path "\path\to\javafx-sdk-11.0.2\lib" --add-modules javafx.controls,javafx.fxml``` donde ```"\path\to\javafx-sdk-11.0.2\lib"``` es la ruta donde se encuentan las librerías Java FX descargadas anteriormente.
+```--module-path "\path\to\javafx-sdk-11.0.2\lib" --add-modules javafx.controls,javafx.fxml``` donde ```"\path\to\javafx-sdk-11.0.2\lib"``` es la ruta donde se encuentran las librerías Java FX descargadas anteriormente.
 
 #### NetBeans
 
@@ -66,12 +66,12 @@ Crear una nueva librería global (*Global Library*) en:
 Tools -> Libraries -> New Library
 ```
 
-Nombrarla ```JavaFX 11``` e incluir los jars que se encuantran en la carpeta ```lib``` dentro de la carpeta ```javafx-sdk-11.0.2``` sin incluir el archivo ```src.zip``` ya que causará una excepción al correr el proyecto.
+Nombrarla ```JavaFX 11``` e incluir los jars que se encuentran en la carpeta ```lib``` dentro de la carpeta ```javafx-sdk-11.0.2``` sin incluir el archivo ```src.zip``` ya que causará una excepción al correr el proyecto.
 
-Agregar la librería recíen creada al classpath:
+Agregar la librería recién creada al classpath:
 
 ```
 Properties -> Libraries -> Compile -> Class-path -> + -> Add Library -> JavaFX 11
 ```
 
-Ir a ```Properties -> Run``` y en ```VM argumets``` agregar: ```--module-path "\path\to\javafx-sdk-11.0.2\lib" --add-modules javafx.controls,javafx.fxml``` donde ```"\path\to\javafx-sdk-11.0.2\lib"``` es la ruta donde se encuentan las librerías Java FX descargadas anteriormente.
+Ir a ```Properties -> Run``` y en ```VM arguments``` agregar: ```--module-path "\path\to\javafx-sdk-11.0.2\lib" --add-modules javafx.controls,javafx.fxml``` donde ```"\path\to\javafx-sdk-11.0.2\lib"``` es la ruta donde se encuentran las librerías Java FX descargadas anteriormente.
